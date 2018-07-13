@@ -60,8 +60,37 @@ Describe any challenges encountered while building the app.
     See the License for the specific language governing permissions and
     limitations under the License.
 
+0. Registration Page
+  * create your own userid (text field)
+    * add protection from creating adentical userids 
+  * schools selection (drop down list)
+    * few hardcoded schools 
+    * (optional) filtering
+    * (optional) fetch schools from the server (some open source provider)
+  * workplace (text field)
+    * (optional) saving workplaces and provide them later to other people
+  * (optional) registation via facebook 
+  * (optional) upload you picture
 
-1. Map
+1. Map (view)
+  * displaying items on a map
+  * google maps api
+    * (optional) create clasters of items (when you have >1 item in small space)
+  * (optional) routing 
+  * UI
+    * screen with a map
+      * diffrent pins (may be diffrent colors) for different categories
+      * dialog should be opened when point is pressed 
+        * dialog should containt
+          * basic info
+          * distance
+          * (optional) picture
+          * category 
+          * button "take me there"
+          * (optional) how many people visited 
+    * (optional) sreen with a list ordered by distance to a point from you
+
+2. Map (add item)
   * adding item 
     * bike racks
     * coffee shops 
@@ -77,34 +106,38 @@ Describe any challenges encountered while building the app.
     * category
     * (optional) comments
     * (optional) 'report' 
-  * displaying items on a map
-    * google maps api
-    * (optional) create clasters of items (when you have >1 item in small space)
-  * (optional) routing 
-  * UI
-    * screen with map
-      * diffrent pins (may be diffrent colors) for different categories
-      * dialog should be opened when point is pressed 
-        * dialog should containt
-          * basic info
-          * distance
-          * (optional) picture
-          * category 
-          * button "take me there"
-          * (optional) how many people visited 
-    * (optional) sreen with a list ordered by distance to a point from you
+  * UI   
     * screen to add an point 
       * fields to add information 
-2. Registration Page
-  * create your own userid (text field)
-    * add protection from creating adentical userids 
-  * schools selection (drop down list)
-    * few hardcoded schools 
-    * (optional) filtering
-    * (optional) fetch schools from the server (some open source provider)
-  * workplace (text field)
-    * (optional) saving workplaces and provide them later to other people
+
+3. Checkin
+    * based on your location show closest item and provide a button to checkin
+        * upload to the server side info that you visited that specific place
+    * (optional) qr code scanner to indicate that you visited a place
+    * (optional) pic regognition (of a cap or a bin etc., can be a sticker) 
+    * (optional) AR overlay on lop of a tash bin or any other item
+    * (optional) comment about the point 
+    * (optional) report if not corrrect
     
+4. Leader board 
+    * list with people
+        * indication of 1st, 2nd, 3ed places 
+        * indicate you rank and your score 
+        * iteam with should look different 
+    * (optional) infinite scrolling / pagination
+    * (optional) pull-to-refresh
+   
+5. (optional) Adding friends 
+    * finding people by name
+    * (optional) qr code scanner for you friends 
+    
+6. (optional) Adding goal for recycling 
+
+7. (optional) Sharing a video of you recycling
+
+8. (optional) Location based notifications if you are close to a recycling bin or coffee shop
+
+
     
       
       
