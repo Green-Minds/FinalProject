@@ -57,6 +57,9 @@ The following features are implemented:
   * [ ] UI   
     * screen to add an point 
     * fields to add information 
+    
+    
+    https://developers.google.com/maps/documentation/android-sdk/marker
 
 * **3. Checkin**
     * [ ] based on your location show closest item and provide a button to checkin
