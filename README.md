@@ -94,12 +94,12 @@ Server side classes:
  * password
  * checkin count
  * bottle count
- * # of made pins
+ * number of made pins
 
  Pin:
  * LatLng
  * Category
- * # of checkins
+ * number of checkins
  * Comment
  * Photo
  * User
