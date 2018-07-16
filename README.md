@@ -9,26 +9,26 @@ Time spent: hours spent in total
 The following features are implemented:
 
 * 0. Registration Page
-  [ ] create your own userid (text field)
-    [ ] add protection from creating adentical userids 
-  [ ] schools selection (drop down list)
-    [ ] few hardcoded schools 
-    [ ] *(optional)* filtering
-    [ ] *(optional)* fetch schools from the server (some open source provider)
-  [ ] workplace (text field)
-    [ ] *(optional)* saving workplaces and provide them later to other people
-  [ ] *(optional)* registation via facebook 
-  [ ] *(optional)* upload you picture
+  * [ ] create your own userid (text field)
+   * [ ] add protection from creating identical userids 
+  * [ ] schools selection (drop down list)
+   * [ ] few hardcoded schools 
+   * [ ] *(optional)* filtering
+   * [ ] *(optional)* fetch schools from the server (some open source provider)
+ * [ ] workplace (text field)
+   * [ ] *(optional)* saving workplaces and provide them later to other people
+ * [ ] *(optional)* registation via facebook 
+ * [ ] *(optional)* upload you picture
   
 * 1. Map (view)
-  [ ] displaying items on a map
-  [ ] google maps api
-    [ ] (optional) create clasters of items (when you have >1 item in small space)
-  [ ] (optional) routing 
-  [ ] UI
-    [ ] screen with a map
-      [ ] diffrent pins (may be diffrent colors) for different categories
-       [ ] dialog should be opened when point is pressed 
+ * [ ] displaying items on a map
+ * [ ] google maps api
+   * [ ] (optional) create clasters of items (when you have >1 item in small space)
+  * [ ] (optional) routing 
+  * [ ] UI
+    * [ ] screen with a map
+      * [ ] diffrent pins (may be diffrent colors) for different categories
+       * [ ] dialog should be opened when point is pressed 
         * dialog should contain
           * basic info
           * distance
@@ -36,44 +36,44 @@ The following features are implemented:
           * category 
           * button "take me there"
           * *(optional)* how many people visited 
-    [ ] *(optional)* sreen with a list ordered by distance to a point from you
+    * [ ] *(optional)* sreen with a list ordered by distance to a point from you
 
 * 2. Map (add item)
-  [ ] adding item 
+  * [ ] adding item 
     * bike racks
     * coffee shops 
     * trash bins 
     * water fountains 
-  [ ] load item 
+  * [ ] load item 
     * loading should be done based on your location
     * *(optional)* filtering items 
-  [ ] item information 
+  * [ ] item information 
     * picture
     * location 
     * how many people visited that location
     * category
     * (optional) comments
     * (optional) 'report' 
-  [ ] UI   
+  * [ ] UI   
     * screen to add an point 
       * fields to add information 
 
 * 3. Checkin
-    [ ] based on your location show closest item and provide a button to checkin
+    * [ ] based on your location show closest item and provide a button to checkin
         * upload to the server side info that you visited that specific place
-    [ ] *(optional)* qr code scanner to indicate that you visited a place
-    [ ] *(optional)* pic regognition (of a cap or a bin etc., can be a sticker) 
-    [ ] *(optional)* AR overlay on lop of a tash bin or any other item
-    [ ] *(optional)* comment about the point 
-    [ ] *(optional)* report if not corrrect
+    * [ ] *(optional)* qr code scanner to indicate that you visited a place
+    * [ ] *(optional)* pic regognition (of a cap or a bin etc., can be a sticker) 
+    * [ ] *(optional)* AR overlay on lop of a tash bin or any other item
+    * [ ] *(optional)* comment about the point 
+    * [ ] *(optional)* report if not corrrect
     
 * 4. Leader board 
-    [ ] list with people
+    * [ ] list with people
         * indication of 1st, 2nd, 3ed places 
         * indicate you rank and your score 
         * iteam with should look different 
-    [ ] *(optional)* infinite scrolling / pagination
-    [ ] *(optional)* pull-to-refresh
+    * [ ] *(optional)* infinite scrolling / pagination
+    * [ ] *(optional)* pull-to-refresh
    
 * 5. **(optional)** Adding friends 
     * finding people by name
