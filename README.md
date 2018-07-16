@@ -77,7 +77,7 @@ The following features are implemented:
    
 * 5. **(optional)** Adding friends 
     * finding people by name
-    * (optional) qr code scanner for you friends 
+    * *(optional)* qr code scanner for you friends 
     
 * 6. **(optional)** Adding goal for recycling 
 
