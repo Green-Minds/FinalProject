@@ -75,15 +75,15 @@ The following features are implemented:
     * [ ] *(optional)* infinite scrolling / pagination
     * [ ] *(optional)* pull-to-refresh
    
-* 5. **(optional)** Adding friends 
-    * finding people by name
-    * *(optional)* qr code scanner for you friends 
+* **5. (optional) Adding friends**
+    [ ] finding people by name
+    [ ] *(optional)* qr code scanner for you friends 
     
-* 6. **(optional)** Adding goal for recycling 
+* [ ] **6. (optional) Adding goal for recycling** 
 
-* 7. **(optional)** Sharing a video of you recycling
+* [ ] **7. (optional) Sharing a video of you recycling**
 
-* 8. **(optional)** Location based notifications if you are close to a recycling bin or coffee shop
+* [ ] **8. (optional) Location based notifications if you are close to a recycling bin or coffee shop**
 
 ## Video Walkthrough
 
