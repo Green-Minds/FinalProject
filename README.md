@@ -10,13 +10,13 @@ The following features are implemented:
 
 * 0. Registration Page
   * [ ] create your own userid (text field)
-   * [ ] add protection from creating identical userids 
+    * [ ] add protection from creating identical userids 
   * [ ] schools selection (drop down list)
-   * [ ] few hardcoded schools 
-   * [ ] *(optional)* filtering
-   * [ ] *(optional)* fetch schools from the server (some open source provider)
+    * [ ] few hardcoded schools 
+    * [ ] *(optional)* filtering
+    * [ ] *(optional)* fetch schools from the server (some open source provider)
  * [ ] workplace (text field)
-   * [ ] *(optional)* saving workplaces and provide them later to other people
+    * [ ] *(optional)* saving workplaces and provide them later to other people
  * [ ] *(optional)* registation via facebook 
  * [ ] *(optional)* upload you picture
   
