@@ -92,6 +92,7 @@ The following features are implemented:
 Server side classes:
  User:
  * username
+ * profile image
  * password
  * checkin count
  * bottle count
