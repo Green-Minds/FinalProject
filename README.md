@@ -14,6 +14,7 @@ The following features are implemented:
   * [ ] schools selection (drop down list)
     * [ ] few hardcoded schools 
     * [ ] *(optional)* filtering
+          https://www.androidhive.info/2017/11/android-recyclerview-with-search-filter-functionality/
     * [ ] *(optional)* fetch schools from the server (some open source provider)
   * [ ] workplace (text field)
     * [ ] *(optional)* saving workplaces and provide them later to other people
