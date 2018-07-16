@@ -15,17 +15,17 @@ The following features are implemented:
     * [ ] few hardcoded schools 
     * [ ] *(optional)* filtering
     * [ ] *(optional)* fetch schools from the server (some open source provider)
- * [ ] workplace (text field)
+  * [ ] workplace (text field)
     * [ ] *(optional)* saving workplaces and provide them later to other people
- * [ ] *(optional)* registation via facebook 
- * [ ] *(optional)* upload you picture
+  * [ ] *(optional)* registation via facebook 
+  * [ ] *(optional)* upload you picture
   
 * 1. Map (view)
- * [ ] displaying items on a map
- * [ ] google maps api
-   * [ ] (optional) create clasters of items (when you have >1 item in small space)
-  * [ ] (optional) routing 
-  * [ ] UI
+   * [ ] displaying items on a map
+   * [ ] google maps api
+   * [ ] *(optional)* create clusters of items (when you have >1 item in small space)
+   * [ ] *(optional)* routing 
+   * [ ] UI
     * [ ] screen with a map
       * [ ] diffrent pins (may be diffrent colors) for different categories
        * [ ] dialog should be opened when point is pressed 
