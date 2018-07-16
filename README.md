@@ -8,7 +8,7 @@ Time spent: hours spent in total
 
 The following features are implemented:
 
-* 0. Registration Page
+* **0. Registration Page**
   * [ ] create your own userid (text field)
     * [ ] add protection from creating identical userids 
   * [ ] schools selection (drop down list)
@@ -20,7 +20,7 @@ The following features are implemented:
   * [ ] *(optional)* registation via facebook 
   * [ ] *(optional)* upload you picture
   
-* 1. Map (view)
+* **1. Map (view)**
    * [ ] displaying items on a map
    * [ ] google maps api
    * [ ] *(optional)* create clusters of items (when you have >1 item in small space)
@@ -38,7 +38,7 @@ The following features are implemented:
           * *(optional)* how many people visited 
     * [ ] *(optional)* sreen with a list ordered by distance to a point from you
 
-* 2. Map (add item)
+* **2. Map (add item)**
   * [ ] adding item 
     * bike racks
     * coffee shops 
@@ -58,7 +58,7 @@ The following features are implemented:
     * screen to add an point 
       * fields to add information 
 
-* 3. Checkin
+* **3. Checkin**
     * [ ] based on your location show closest item and provide a button to checkin
         * upload to the server side info that you visited that specific place
     * [ ] *(optional)* qr code scanner to indicate that you visited a place
@@ -67,7 +67,7 @@ The following features are implemented:
     * [ ] *(optional)* comment about the point 
     * [ ] *(optional)* report if not corrrect
     
-* 4. Leader board 
+* **4. Leader board**
     * [ ] list with people
         * indication of 1st, 2nd, 3ed places 
         * indicate you rank and your score 
