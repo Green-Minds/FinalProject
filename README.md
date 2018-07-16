@@ -102,3 +102,4 @@ Server side classes:
  * # of checkins
  * Comment
  * Photo
+ * User
