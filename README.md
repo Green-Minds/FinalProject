@@ -75,9 +75,9 @@ The following features are implemented:
     * [ ] *(optional)* infinite scrolling / pagination
     * [ ] *(optional)* pull-to-refresh
    
-* **5. (optional) Adding friends**
-    [ ] finding people by name
-    [ ] *(optional)* qr code scanner for you friends 
+* [ ] **5. (optional) Adding friends**
+    * [ ] finding people by name
+    * [ ] *(optional)* qr code scanner for you friends 
     
 * [ ] **6. (optional) Adding goal for recycling** 
 
