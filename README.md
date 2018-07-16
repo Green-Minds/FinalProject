@@ -56,7 +56,7 @@ The following features are implemented:
     * (optional) 'report' 
   * [ ] UI   
     * screen to add an point 
-      * fields to add information 
+    * fields to add information 
 
 * **3. Checkin**
     * [ ] based on your location show closest item and provide a button to checkin
