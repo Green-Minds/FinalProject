@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Activities.MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/tv_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to login"
@@ -15,7 +16,7 @@
         tools:layout_editor_absoluteY="86dp" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/tv_signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to signup"
@@ -23,11 +24,43 @@
         tools:layout_editor_absoluteY="134dp" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/tv_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to home / map page"
         tools:layout_editor_absoluteX="147dp"
         tools:layout_editor_absoluteY="182dp" />
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/tv_newpin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="go to new pin"
+        tools:layout_editor_absoluteX="147dp"
+        tools:layout_editor_absoluteY="230dp" />
+
+    <Button
+        android:id="@+id/tv_userinfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="go to user info"
+        tools:layout_editor_absoluteX="147dp"
+        tools:layout_editor_absoluteY="278dp" />
+
+    <Button
+        android:id="@+id/tv_leaderboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="go to leaderboard"
+        tools:layout_editor_absoluteX="147dp"
+        tools:layout_editor_absoluteY="326dp" />
+
+    <Button
+        android:id="@+id/tv_checkin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="go to checkin"
+        tools:layout_editor_absoluteX="147dp"
+        tools:layout_editor_absoluteY="374dp" />
+
+</LinearLayout>
