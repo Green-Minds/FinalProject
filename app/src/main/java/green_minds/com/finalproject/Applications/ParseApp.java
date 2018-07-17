@@ -1,4 +1,4 @@
-package green_minds.com.finalproject;
+package green_minds.com.finalproject.Applications;
 
 import android.app.Application;
 import com.parse.Parse;

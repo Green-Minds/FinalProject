@@ -1,7 +1,9 @@
-package green_minds.com.finalproject;
+package green_minds.com.finalproject.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import green_minds.com.finalproject.R;
 
 public class MainActivity extends AppCompatActivity {
 
