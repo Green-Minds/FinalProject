@@ -12,13 +12,13 @@ import green_minds.com.finalproject.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.tv_checkin) public Button btn_checkin;
-    @BindView(R.id.tv_signup) public Button btn_signup;
-    @BindView(R.id.tv_login) public Button btn_login;
-    @BindView(R.id.tv_map) public Button btn_map;
-    @BindView(R.id.tv_newpin) public Button btn_newpin;
-    @BindView(R.id.tv_userinfo) public Button btn_userinfo;
-    @BindView(R.id.tv_leaderboard) public Button btn_leaderboard;
+    @BindView(R.id.btn_checkin) public Button btn_checkin;
+    @BindView(R.id.btn_signup) public Button btn_signup;
+    @BindView(R.id.btn_login) public Button btn_login;
+    @BindView(R.id.btn_map) public Button btn_map;
+    @BindView(R.id.btn_newpin) public Button btn_newpin;
+    @BindView(R.id.btn_userinfo) public Button btn_userinfo;
+    @BindView(R.id.btn_leaderboard) public Button btn_leaderboard;
 
 
     @Override

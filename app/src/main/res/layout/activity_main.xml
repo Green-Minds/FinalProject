@@ -8,7 +8,7 @@
     tools:context=".Activities.MainActivity">
 
     <Button
-        android:id="@+id/tv_login"
+        android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to login"
@@ -16,7 +16,7 @@
         tools:layout_editor_absoluteY="86dp" />
 
     <Button
-        android:id="@+id/tv_signup"
+        android:id="@+id/btn_signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to signup"
@@ -24,7 +24,7 @@
         tools:layout_editor_absoluteY="134dp" />
 
     <Button
-        android:id="@+id/tv_map"
+        android:id="@+id/btn_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to home / map page"
@@ -32,7 +32,7 @@
         tools:layout_editor_absoluteY="182dp" />
 
     <Button
-        android:id="@+id/tv_newpin"
+        android:id="@+id/btn_newpin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to new pin"
@@ -40,7 +40,7 @@
         tools:layout_editor_absoluteY="230dp" />
 
     <Button
-        android:id="@+id/tv_userinfo"
+        android:id="@+id/btn_userinfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to user info"
@@ -48,7 +48,7 @@
         tools:layout_editor_absoluteY="278dp" />
 
     <Button
-        android:id="@+id/tv_leaderboard"
+        android:id="@+id/btn_leaderboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to leaderboard"
@@ -56,7 +56,7 @@
         tools:layout_editor_absoluteY="326dp" />
 
     <Button
-        android:id="@+id/tv_checkin"
+        android:id="@+id/btn_checkin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="go to checkin"

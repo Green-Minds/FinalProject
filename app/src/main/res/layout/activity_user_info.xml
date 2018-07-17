@@ -7,10 +7,10 @@
     tools:context=".Activities.UserInfoActivity">
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btn_leaderboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/btn_map"
         android:layout_alignParentStart="true"
         android:text="LEADERBOARD"
         tools:layout_editor_absoluteX="205dp"
@@ -25,5 +25,30 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="0dp"
         android:text="User info and stats" />
+
+    <Button
+        android:id="@+id/btn_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="map"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/btn_checkin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/btn_map"
+        android:text="check in" />
+
+    <Button
+        android:id="@+id/btn_stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/btn_checkin"
+        android:text="stats" />
 
 </RelativeLayout>
