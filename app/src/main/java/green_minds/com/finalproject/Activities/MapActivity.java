@@ -67,7 +67,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     private long FASTEST_INTERVAL = 5000; /* 5 secs */
     private double lat = 0;
     private double lon = 0;
-    private String type = "";
+    private int type = 0;
 
     private final static String KEY_LOCATION = "location";
 

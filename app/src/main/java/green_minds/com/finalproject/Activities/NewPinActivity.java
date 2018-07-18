@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -28,6 +29,9 @@ public class NewPinActivity extends AppCompatActivity {
 
     @BindView(R.id.btn_pin)
     Button btn_pin;
+
+    @BindView(R.id.et_comment)
+    EditText et_comment;
 
     @BindView(R.id.iv_preview)
     ImageView iv_preview;
@@ -103,8 +107,10 @@ public class NewPinActivity extends AppCompatActivity {
         Log.i("IDX", idx + "");
 
         //Toast.makeText(this, idx, Toast.LENGTH_LONG).show();
-
-        pin.setCategory("");
+        String comment = et_comment.getText().toString();
+        pin.setCategory(idx);
+        pin.setComment(comment);
+        //pin.setPhoto();
     }
 
     private void loadCamera(){
