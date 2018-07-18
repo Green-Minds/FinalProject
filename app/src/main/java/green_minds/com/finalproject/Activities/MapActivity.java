@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -56,7 +57,7 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 @RuntimePermissions
 public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLongClickListener{
 
-
+    private Button newPinBtn;
     private Pin.Query pinQuery;
     ArrayList<Pin> pins;
     private SupportMapFragment mapFragment;
@@ -67,7 +68,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     private long FASTEST_INTERVAL = 5000; /* 5 secs */
     private double lat = 0;
     private double lon = 0;
-    private String type = "";
+    private int type = 0;
 
     private final static String KEY_LOCATION = "location";
 
@@ -83,6 +84,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
         setContentView(R.layout.activity_map);
 
 
+        newPinBtn = findViewById(R.id.newPinBtn);
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_api_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
         }
@@ -117,8 +119,22 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
             Toast.makeText(this, "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
             MapActivityPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapActivityPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
+
+
+
+            newPinBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MapActivity.this, NewPinActivity.class);
+                    Log.d("MapActivity", "Pin at " + mCurrentLocation.getLatitude());
+                    intent.putExtra("latitude", mCurrentLocation.getLatitude());
+                    intent.putExtra("longitude", mCurrentLocation.getLongitude());
+                    startActivity(intent);
+                }
+            });
+
             // Attach long click listener to the map here
-            map.setOnMapLongClickListener(this);
+
 
 
             pinQuery = new Pin.Query();
