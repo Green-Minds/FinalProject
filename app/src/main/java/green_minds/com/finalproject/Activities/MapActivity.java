@@ -3,12 +3,18 @@ package green_minds.com.finalproject.Activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -21,6 +27,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -47,6 +54,8 @@ import com.parse.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import green_minds.com.finalproject.Model.Pin;
 import green_minds.com.finalproject.R;
 import permissions.dispatcher.NeedsPermission;
@@ -57,7 +66,9 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 @RuntimePermissions
 public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLongClickListener{
 
-    private Button newPinBtn;
+
+    @BindView(R.id.newPinBtn) public Button newPinBtn;
+    @BindView(R.id.checkinBtn) public Button checkinBtn;
     private Pin.Query pinQuery;
     ArrayList<Pin> pins;
     private SupportMapFragment mapFragment;
@@ -83,8 +94,8 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        ButterKnife.bind(this);
 
-        newPinBtn = findViewById(R.id.newPinBtn);
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_api_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
         }
@@ -133,9 +144,16 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 }
             });
 
-            // Attach long click listener to the map here
-
-
+            checkinBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MapActivity.this, CheckInActivity.class);
+                    Log.d("MapActivity", "Pin at " + mCurrentLocation.getLatitude());
+                    intent.putExtra("latitude", mCurrentLocation.getLatitude());
+                    intent.putExtra("longitude", mCurrentLocation.getLongitude());
+                    startActivity(intent);
+                }
+            });
 
             pinQuery = new Pin.Query();
             pins = new ArrayList<>();
@@ -145,27 +163,30 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 public void done(List<Pin> objects, ParseException e) {
                     if (e==null){
                         for (int i = objects.size()-1; i >= 0; i--) {
-                            Log.d("MapActivity", "Pin at " + objects.get(i).getLatLng().getLatitude());
 
-                            lat = objects.get(i).getLatLng().getLatitude();
-                            lon = objects.get(i).getLatLng().getLongitude();
-                            type = objects.get(i).getCategory();
+                            if (objects.get(i).has("latlng"))  {
+                                lat = objects.get(i).getLatLng().getLatitude();
+                                lon = objects.get(i).getLatLng().getLongitude();
+                                type = objects.get(i).getCategory();
 
+                                Pin pin = objects.get(i);
+                                pins.add(pin);
 
-                            Pin pin = objects.get(i);
-                            pins.add(pin);
+                                // Set the color of the marker to green
+                                // BitmapDescriptor customMarker =
+                                        // BitmapDescriptorFactory.fromResource(R.drawable.ic_recycling_bin);
+                                // listingPosition is a LatLng point
 
-                            // Set the color of the marker to green
-                            BitmapDescriptor defaultMarker =
-                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-                            // listingPosition is a LatLng point
-                            LatLng listingPosition = new LatLng(lat, lon);
-                            // Create the marker on the fragment
-                            Marker mapMarker = map.addMarker(new MarkerOptions()
-                                    .position(listingPosition)
-                                    .title("checkins: " + objects.get(i).getCheckincount())
-                                    .snippet(objects.get(i).getComment())
-                                    .icon(defaultMarker));
+                                BitmapDescriptor defaultMarker =
+                                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                                LatLng listingPosition = new LatLng(lat, lon);
+                                // Create the marker on the fragment
+                                Marker mapMarker = map.addMarker(new MarkerOptions()
+                                        .position(listingPosition)
+                                        .title("checkins: " + objects.get(i).getCheckincount())
+                                        .snippet(objects.get(i).getComment())
+                                        .icon(defaultMarker));
+                            }
 
                         }
                     } else {
@@ -424,6 +445,16 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 }
             }
         });
+    }
+
+    // makes vector images accessible
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
 }
