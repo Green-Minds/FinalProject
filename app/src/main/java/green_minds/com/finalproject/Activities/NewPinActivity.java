@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.SaveCallback;
 
 import java.io.File;
@@ -49,6 +50,7 @@ public class NewPinActivity extends AppCompatActivity {
 
     private File current_file;
     private Context context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +116,10 @@ public class NewPinActivity extends AppCompatActivity {
         String comment = et_comment.getText().toString();
         pin.setCategory(idx);
         pin.setComment(comment);
+
+        Double lat = getIntent().getDoubleExtra("latitude", 0.0);
+        Double lon = getIntent().getDoubleExtra("longitude", 0.0);
+        pin.setLatLng(new ParseGeoPoint(lat, lon));
 
         pin.setPhoto(new ParseFile(current_file));
 
