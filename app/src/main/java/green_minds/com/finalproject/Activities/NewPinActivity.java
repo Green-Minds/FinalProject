@@ -1,5 +1,6 @@
 package green_minds.com.finalproject.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +16,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileInputStream;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.SaveCallback;
+
+import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,14 +47,16 @@ public class NewPinActivity extends AppCompatActivity {
     @BindView(R.id.rb_categories)
     RadioGroup rb_categories;
 
-    private Bitmap current_image;
+    private File current_file;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_pin);
         ButterKnife.bind(this);
-        current_image = null;
+        current_file = null;
+        context = this;
 
         btn_camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,10 +76,9 @@ public class NewPinActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bmp = null;
-        String filename = data.getStringExtra("image");
+        String filepath = data.getStringExtra("image");
         try {
-            FileInputStream is = this.openFileInput(filename);
-            bmp = BitmapFactory.decodeStream(is);
+            bmp = BitmapFactory.decodeFile(filepath);
             int wid = bmp.getWidth();
             int hei = bmp.getHeight();
 
@@ -81,17 +87,16 @@ public class NewPinActivity extends AppCompatActivity {
             iv_preview.getLayoutParams().width = wid;
             iv_preview.setImageBitmap(bmp);
 
-            current_image = bmp;
+            current_file = new File(filepath);
             tv_upload.setVisibility(View.GONE);
 
-            is.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void uploadPin(){
-        if(current_image == null){
+        if(current_file == null){
             Toast.makeText(this,"Please upload an image first!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -106,11 +111,21 @@ public class NewPinActivity extends AppCompatActivity {
         int idx = rb_categories.indexOfChild(radioButton);
         Log.i("IDX", idx + "");
 
-        //Toast.makeText(this, idx, Toast.LENGTH_LONG).show();
         String comment = et_comment.getText().toString();
         pin.setCategory(idx);
         pin.setComment(comment);
-        //pin.setPhoto();
+
+        pin.setPhoto(new ParseFile(current_file));
+
+        pin.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e!=null) e.printStackTrace();
+                Toast.makeText(context, "new pin complete!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
     }
 
     private void loadCamera(){
