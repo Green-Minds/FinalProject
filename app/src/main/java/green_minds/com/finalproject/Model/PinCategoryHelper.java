@@ -6,9 +6,9 @@ public class PinCategoryHelper {
             case 0:
                 return "Bottles / Cans";
             case 1:
-                return "Water Fountains";
+                return "Water Fountain";
             case 2:
-                return "Bike Racks";
+                return "Bike Rack";
             case 3:
                 return "Batteries / Electronic Waste";
             case 4:

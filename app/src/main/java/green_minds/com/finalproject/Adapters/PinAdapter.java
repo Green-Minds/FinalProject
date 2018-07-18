@@ -6,13 +6,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.SaveCallback;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import green_minds.com.finalproject.Model.GlideApp;
+import green_minds.com.finalproject.Model.Pin;
 import green_minds.com.finalproject.Model.PinCategoryHelper;
 import green_minds.com.finalproject.Model.RelativePositionPin;
 import green_minds.com.finalproject.R;
@@ -40,12 +49,37 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
     // binds an inflated view to a new item
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
-        // get the Post data at the specified position
-        RelativePositionPin pin = mPins.get(i);
-
+        //relative position pin holds the relative position
+        RelativePositionPin rp_pin = mPins.get(i);
+        final Pin pin = rp_pin.getPin();
         holder.tv_comment.setText(pin.getComment());
-        holder.tv_miles_away.setText(String.format("{0:0.00} miles away", pin.getDistanceAway()));
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        String formatted = df.format(rp_pin.getDistanceAwayinMiles()).replaceAll("\\.00$", "");;
+        holder.tv_miles_away.setText(formatted + " miles away");
         holder.tv_type.setText(PinCategoryHelper.getPinIdentifier(pin.getCategory()));
+        holder.tv_checkin_count.setText("Visited " + pin.getCheckincount() + " times.");
+        final TextView checkin = holder.tv_checkin_count;
+
+        ParseFile photo = pin.getPhoto();
+        if(photo != null){
+            String imageUrl = photo.getUrl();
+            GlideApp.with(context).load(imageUrl).centerCrop().into(holder.iv_preview);
+        }
+        holder.btn_checkin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pin.put("checkincount", pin.getCheckincount() + 1);
+                pin.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        Toast.makeText(context, "Checked in!", Toast.LENGTH_LONG).show();
+                        int numtimes  = pin.getCheckincount();
+                        checkin.setText("Visited " + numtimes + " times.");
+                    }
+                });
+            }
+        });
     }
 
     // returns the total number of items in the list
@@ -70,10 +104,15 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
         @BindView(R.id.iv_preview)
         ImageView iv_preview;
 
+        @BindView(R.id.btn_checkin)
+        Button btn_checkin;
+
+        @BindView(R.id.tv_checkin_count)
+        TextView tv_checkin_count;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
-            // lookup view objects by id
             ButterKnife.bind(this, itemView);
         }
     }

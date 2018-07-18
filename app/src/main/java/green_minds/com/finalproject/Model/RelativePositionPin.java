@@ -1,15 +1,24 @@
 package green_minds.com.finalproject.Model;
 
-public class RelativePositionPin extends Pin{
+
+import android.support.annotation.NonNull;
+
+public class RelativePositionPin implements Comparable<RelativePositionPin>{
 
     private Double distanceAwayFromCurrent; //in meters
+    //won't let me extend pin for some reason :(
+    private Pin pin;
 
-    public RelativePositionPin(){
-        super();
+    public RelativePositionPin(Pin pin){
+        this.pin = pin;
     }
 
     public void setDistanceAway(Double dist){
         distanceAwayFromCurrent = dist;
+    }
+
+    public Pin getPin(){
+        return pin;
     }
 
     public Double getDistanceAway() {
@@ -22,5 +31,16 @@ public class RelativePositionPin extends Pin{
 
     public static Double metersToMiles(Double meters){
         return meters * 0.000621371;
+    }
+
+    @Override
+    public int compareTo(@NonNull RelativePositionPin o) {
+        if(this.getDistanceAway() - o.getDistanceAway() < 0){
+            return -1;
+        } else if (this.getDistanceAway() - o.getDistanceAway() > 0){
+            return 1;
+        } else{
+            return 0;
+        }
     }
 }

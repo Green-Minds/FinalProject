@@ -12,6 +12,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import green_minds.com.finalproject.Adapters.PinAdapter;
@@ -48,12 +49,14 @@ public class CheckInActivity extends AppCompatActivity {
                     @Override
                     public void done(List<Pin> objects, ParseException e) {
 
-                        ArrayList<RelativePositionPin> rp_list = new ArrayList<>();
-                        for(Pin pin: objects){
-                            RelativePositionPin rp_pin = (convert(pin, curr_location));
-                            if(rp_pin.getDistanceAwayinMiles() < 0.5) rp_list.add(rp_pin);
-                        }
                         if (e == null) {
+                            ArrayList<RelativePositionPin> rp_list = new ArrayList<>();
+                            for(Pin pin: objects){
+                                RelativePositionPin rp_pin = (convert(pin, curr_location));
+                                if(rp_pin.getDistanceAwayinMiles() < 0.5) rp_list.add(rp_pin);
+                            }
+                            Collections.sort(rp_list);
+                            mPins.clear();
                             mPins.addAll(rp_list);
                             adapter.notifyDataSetChanged();
                         } else {
@@ -64,7 +67,7 @@ public class CheckInActivity extends AppCompatActivity {
     }
 
     private RelativePositionPin convert(Pin pin, Location curr_location){
-        RelativePositionPin rp = (RelativePositionPin)pin;
+        RelativePositionPin rp = new RelativePositionPin(pin);
         Location pin_loc = getLocationFromPin(pin);
         rp.setDistanceAway((double)curr_location.distanceTo(pin_loc));
         return rp;

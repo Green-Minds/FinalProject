@@ -7,15 +7,6 @@
     tools:context=".Activities.CheckInActivity">
 
     <Button
-        android:id="@+id/btn_sendpin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_map"
-        android:layout_alignParentStart="true"
-        android:text="Check in!"
-        tools:layout_editor_absoluteX="147dp"
-        tools:layout_editor_absoluteY="408dp" />
-    <Button
         android:id="@+id/btn_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,5 +36,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
+        android:layout_above="@id/btn_stats"
         android:layout_alignParentTop="true" />
 </RelativeLayout>
