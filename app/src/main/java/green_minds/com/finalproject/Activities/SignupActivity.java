@@ -11,7 +11,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -30,7 +29,6 @@ public class SignupActivity extends AppCompatActivity {
     @BindView(R.id.etPasswordInput) public EditText etPasswordInput;
     @BindView(R.id.btnSignup) public Button btnSignup;
     @BindView(R.id.rgSelection) public RadioGroup rgSelection;
-    @BindView(R.id.rbSchool) public RadioButton rbSchool;
     @BindView(R.id.rbWork) public RadioButton rbWork;
     @BindView(R.id.schoolList) public Spinner schoolList;
     @BindView(R.id.etCompany) public EditText etCompany;
@@ -69,10 +67,11 @@ public class SignupActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String username = etUsernameInput.getText().toString();
-                final String password = etPasswordInput.getText().toString();
-
-                signUp (username, password);
+                String username = etUsernameInput.getText().toString();
+                String password = etPasswordInput.getText().toString();
+                String connection = schoolList.getSelectedItem().toString();
+                if (rbWork.isChecked()) connection = etCompany.getText().toString();
+                signUp (username, password, connection);
             }
         });
     }
@@ -82,8 +81,6 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = parent.getItemAtPosition(position).toString();
-
-                Toast.makeText(parent.getContext(), "Selected " + item, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -93,10 +90,11 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    public void signUp(String username, String password) {
+    private void signUp(String username, String password, String connection) {
         ParseUser user = (ParseUser) ParseUser.create("_User");
         user.setPassword(password);
         user.setUsername(username);
+        user.put("connection", connection);
         user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
@@ -110,5 +108,11 @@ public class SignupActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void gotoLogin(View v) {
+        final Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
