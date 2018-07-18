@@ -16,6 +16,7 @@
         android:required="true" />
 
     <application
+        android:name=".Applications.ParseApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -40,6 +41,8 @@
         <activity android:name=".Activities.UserInfoActivity"></activity>
 
         <uses-library android:required="true" android:name="com.google.android.maps" />
+
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

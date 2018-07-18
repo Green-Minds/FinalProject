@@ -1,8 +1,12 @@
 package green_minds.com.finalproject.Applications;
 
 import android.app.Application;
+import android.util.Log;
+
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.SaveCallback;
 
 import green_minds.com.finalproject.Model.Pin;
 
@@ -20,5 +24,7 @@ public class ParseApp extends Application{
                 .build();
 
         Parse.initialize(configuration);
+
+
     }
 }

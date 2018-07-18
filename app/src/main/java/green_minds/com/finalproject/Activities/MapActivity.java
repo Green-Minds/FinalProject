@@ -3,6 +3,7 @@ package green_minds.com.finalproject.Activities;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -40,8 +41,17 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.parse.FindCallback;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import green_minds.com.finalproject.Manifest;
+import green_minds.com.finalproject.Model.Pin;
 import green_minds.com.finalproject.R;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -51,12 +61,18 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 @RuntimePermissions
 public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLongClickListener{
 
+
+    private Pin.Query pinQuery;
+    ArrayList<Pin> pins;
     private SupportMapFragment mapFragment;
     private GoogleMap map;
     private LocationRequest mLocationRequest;
     Location mCurrentLocation;
     private long UPDATE_INTERVAL = 60000;  /* 60 secs */
     private long FASTEST_INTERVAL = 5000; /* 5 secs */
+    private double lat = 0;
+    private double lon = 0;
+    private String type = "";
 
     private final static String KEY_LOCATION = "location";
 
@@ -70,6 +86,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
 
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_api_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
@@ -107,6 +124,44 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
             MapActivityPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
             // Attach long click listener to the map here
             map.setOnMapLongClickListener(this);
+
+
+            pinQuery = new Pin.Query();
+            pins = new ArrayList<>();
+            pinQuery.getTop();
+            pinQuery.findInBackground(new FindCallback<Pin>() {
+                @Override
+                public void done(List<Pin> objects, ParseException e) {
+                    if (e==null){
+                        for (int i = objects.size()-1; i >= 0; i--) {
+                            Log.d("MapActivity", "Pin at " + objects.get(i).getLatLng().getLatitude());
+
+                            lat = objects.get(i).getLatLng().getLatitude();
+                            lon = objects.get(i).getLatLng().getLongitude();
+                            type = objects.get(i).getCategory();
+
+
+                            Pin pin = objects.get(i);
+                            pins.add(pin);
+
+                            // Set the color of the marker to green
+                            BitmapDescriptor defaultMarker =
+                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                            // listingPosition is a LatLng point
+                            LatLng listingPosition = new LatLng(lat, lon);
+                            // Create the marker on the fragment
+                            Marker mapMarker = map.addMarker(new MarkerOptions()
+                                    .position(listingPosition)
+                                    .title("checkins: " + objects.get(i).getCheckincount())
+                                    .snippet(objects.get(i).getComment())
+                                    .icon(defaultMarker));
+
+                        }
+                    } else {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
