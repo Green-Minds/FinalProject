@@ -5,10 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,9 @@ public class NewPinActivity extends AppCompatActivity {
     @BindView(R.id.tv_upload)
     TextView tv_upload;
 
+    @BindView(R.id.rb_categories)
+    RadioGroup rb_categories;
+
     private Bitmap current_image;
 
     @Override
@@ -52,7 +57,7 @@ public class NewPinActivity extends AppCompatActivity {
         btn_pin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                uploadPin();
             }
         });
     }
@@ -86,7 +91,20 @@ public class NewPinActivity extends AppCompatActivity {
             Toast.makeText(this,"Please upload an image first!", Toast.LENGTH_LONG).show();
             return;
         }
+        if(rb_categories.getCheckedRadioButtonId() == -1){
+            Toast.makeText(this,"Please check a category first!", Toast.LENGTH_LONG).show();
+            return;
+        }
         Pin pin = new Pin();
+
+        int radioButtonID = rb_categories.getCheckedRadioButtonId();
+        View radioButton = rb_categories.findViewById(radioButtonID);
+        int idx = rb_categories.indexOfChild(radioButton);
+        Log.i("IDX", idx + "");
+
+        //Toast.makeText(this, idx, Toast.LENGTH_LONG).show();
+
+        pin.setCategory("");
     }
 
     private void loadCamera(){

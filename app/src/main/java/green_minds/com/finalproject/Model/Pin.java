@@ -29,9 +29,9 @@ public class Pin extends ParseObject{
 
     public void setComment(String comment) {put(KEY_COMMENT, comment);}
 
-    public String getCategory() {return getString(KEY_CATEGORY);}
+    public int getCategory() {return getInt(KEY_CATEGORY);}
 
-    public void setCategory(String category) {put(KEY_CATEGORY, category);}
+    public void setCategory(int category) {put(KEY_CATEGORY, category);}
 
     public Integer getCheckincount() {return getInt(KEY_CHECKINCOUNT);}
 
