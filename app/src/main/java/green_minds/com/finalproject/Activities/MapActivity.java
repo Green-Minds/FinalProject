@@ -171,21 +171,39 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
                                 Pin pin = objects.get(i);
                                 pins.add(pin);
+                                BitmapDescriptor customMarker =
+                                        BitmapDescriptorFactory.fromResource(R.drawable.recycling_bin);
 
-                                // Set the color of the marker to green
-                                // BitmapDescriptor customMarker =
-                                        // BitmapDescriptorFactory.fromResource(R.drawable.ic_recycling_bin);
-                                // listingPosition is a LatLng point
+                                switch (type) {
+                                    case 0:
+                                        customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.recycling_bin);
+                                       break;
 
-                                BitmapDescriptor defaultMarker =
-                                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                                    case 1:
+                                        customMarker = BitmapDescriptorFactory.fromResource(R.drawable.drop);
+                                        break;
+                                    case 2:
+                                        customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.bicycle);
+                                        break;
+                                    case 3:
+                                        customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.growth);
+                                        break;
+                                    case 4:
+                                        customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.battery);
+                                        break;
+                                }
+
                                 LatLng listingPosition = new LatLng(lat, lon);
                                 // Create the marker on the fragment
                                 Marker mapMarker = map.addMarker(new MarkerOptions()
                                         .position(listingPosition)
                                         .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
-                                        .icon(defaultMarker));
+                                        .icon(customMarker));
                             }
 
                         }
