@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -69,6 +70,14 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
     @BindView(R.id.newPinBtn) public Button newPinBtn;
     @BindView(R.id.checkinBtn) public Button checkinBtn;
+    @BindView(R.id.fab) public FloatingActionButton fab;
+    @BindView(R.id.fab0) public FloatingActionButton fab0;
+    @BindView(R.id.fab1) public FloatingActionButton fab1;
+    @BindView(R.id.fab2) public FloatingActionButton fab2;
+    @BindView(R.id.fab3) public FloatingActionButton fab3;
+    @BindView(R.id.fab4) public FloatingActionButton fab4;
+
+
     private Pin.Query pinQuery;
     ArrayList<Pin> pins;
     private SupportMapFragment mapFragment;
@@ -80,6 +89,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     private double lat = 0;
     private double lon = 0;
     private int type = 0;
+    private boolean isFABOpen = false;
 
     private final static String KEY_LOCATION = "location";
 
@@ -155,6 +165,38 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 }
             });
 
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!isFABOpen){
+                        showFABMenu();
+                    }else{
+                        closeFABMenu();
+                    }
+                }
+
+                private void closeFABMenu() {
+                    isFABOpen=false;
+                    fab0.animate().translationY(0);
+                    fab1.animate().translationY(0);
+                    fab2.animate().translationY(0);
+                    fab3.animate().translationY(0);
+                    fab4.animate().translationY(0);
+                }
+
+                private void showFABMenu() {
+                    isFABOpen=true;
+                    fab0.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+                    fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
+                    fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
+                    fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_205));
+                    fab4.animate().translationY(-getResources().getDimension(R.dimen.standard_255));
+
+
+                }
+            });
+
+
             pinQuery = new Pin.Query();
             pins = new ArrayList<>();
             pinQuery.getTop();
@@ -171,21 +213,39 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
                                 Pin pin = objects.get(i);
                                 pins.add(pin);
+                                BitmapDescriptor customMarker =
+                                        BitmapDescriptorFactory.fromResource(R.drawable.recycling_bin);
 
-                                // Set the color of the marker to green
-                                // BitmapDescriptor customMarker =
-                                        // BitmapDescriptorFactory.fromResource(R.drawable.ic_recycling_bin);
-                                // listingPosition is a LatLng point
+                                switch (type) {
+                                    case 0:
+                                        customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.recycling_bin);
+                                       break;
 
-                                BitmapDescriptor defaultMarker =
-                                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                                    case 1:
+                                        customMarker = BitmapDescriptorFactory.fromResource(R.drawable.drop);
+                                        break;
+                                    case 2:
+                                        customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.bicycle);
+                                        break;
+                                    case 3:
+                                        customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.growth);
+                                        break;
+                                    case 4:
+                                        customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.battery);
+                                        break;
+                                }
+
                                 LatLng listingPosition = new LatLng(lat, lon);
                                 // Create the marker on the fragment
                                 Marker mapMarker = map.addMarker(new MarkerOptions()
                                         .position(listingPosition)
                                         .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
-                                        .icon(defaultMarker));
+                                        .icon(customMarker));
                             }
 
                         }

@@ -116,6 +116,7 @@ public class NewPinActivity extends AppCompatActivity {
         String comment = et_comment.getText().toString();
         pin.setCategory(idx);
         pin.setComment(comment);
+        pin.setCheckincount(0);
 
         Double lat = getIntent().getDoubleExtra("latitude", 0.0);
         Double lon = getIntent().getDoubleExtra("longitude", 0.0);

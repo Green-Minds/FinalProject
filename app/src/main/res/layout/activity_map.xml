@@ -28,4 +28,79 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:text="CHECK IN" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab4"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignStart="@+id/fab"
+        android:layout_gravity="bottom|end"
+        app:backgroundTint="@android:color/background_light"
+        app:rippleColor="@android:color/transparent"
+        android:layout_alignTop="@+id/fab"
+        app:srcCompat="@drawable/battery" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab3"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignStart="@+id/fab"
+        android:layout_gravity="bottom|end"
+        app:backgroundTint="@android:color/background_light"
+        app:rippleColor="@android:color/transparent"
+        android:layout_alignTop="@+id/fab"
+        app:srcCompat="@drawable/growth" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab2"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignStart="@+id/fab"
+        android:layout_gravity="bottom|end"
+        app:backgroundTint="@android:color/background_light"
+        app:rippleColor="@android:color/transparent"
+        android:layout_alignTop="@+id/fab"
+        app:srcCompat="@drawable/bicycle" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab1"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignStart="@+id/fab"
+        android:layout_alignTop="@+id/fab"
+        android:layout_gravity="bottom|end"
+        app:backgroundTint="@android:color/background_light"
+        app:rippleColor="@android:color/transparent"
+        app:srcCompat="@drawable/drop" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab0"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignStart="@+id/fab"
+        android:layout_gravity="bottom|end"
+        app:backgroundTint="@android:color/background_light"
+        app:rippleColor="@android:color/transparent"
+        android:layout_alignTop="@+id/fab"
+        app:srcCompat="@drawable/recycling_bin" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="11dp"
+        android:layout_marginEnd="11dp"
+        android:clickable="true"
+        app:backgroundTint="@android:color/background_light"
+        app:rippleColor="@android:color/transparent"
+        app:srcCompat="@drawable/menu_black" />
+
+
+
 </RelativeLayout>

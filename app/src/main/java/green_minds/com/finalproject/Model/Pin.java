@@ -35,7 +35,11 @@ public class Pin extends ParseObject{
 
     public Integer getCheckincount() {return getInt(KEY_CHECKINCOUNT);}
 
-    public void updateCheckincount() { put(KEY_CHECKINCOUNT, getCheckincount() + 1);}
+    public void updateCheckincount() {
+        put(KEY_CHECKINCOUNT, this.getCheckincount() + 1);
+    }
+
+    public void setCheckincount(int num) {put(KEY_CHECKINCOUNT, num); }
 
     public ParseFile getPhoto() { return getParseFile(KEY_PHOTO);}
 
