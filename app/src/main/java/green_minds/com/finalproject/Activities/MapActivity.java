@@ -255,10 +255,222 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 }
             });
 
+            fab0.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 0);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.recycling_bin);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            fab1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 1);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.drop);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            fab2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 2);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.bicycle);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            fab3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 3);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.growth);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            fab4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 4);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.battery);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
