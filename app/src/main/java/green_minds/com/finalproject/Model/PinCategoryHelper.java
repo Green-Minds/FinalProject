@@ -16,4 +16,20 @@ public class PinCategoryHelper {
         }
         return "error getting category";
     }
+    //for the database
+    public static String getTypeKey(int i){
+        switch (i){
+            case 0:
+                return "bottlecount";
+            case 1:
+                return "watercount";
+            case 2:
+                return "bikecount";
+            case 3:
+                return "batterycount";
+            case 4:
+                return "coffeecount";
+        }
+        return "error getting category";
+    }
 }
