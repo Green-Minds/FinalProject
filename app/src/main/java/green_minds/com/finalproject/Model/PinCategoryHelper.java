@@ -10,9 +10,9 @@ public class PinCategoryHelper {
             case 2:
                 return "Bike Rack";
             case 3:
-                return "Batteries / Electronic Waste";
-            case 4:
                 return "Coffee shop with discount";
+            case 4:
+                return "Batteries / Electronic Waste";
         }
         return "error getting category";
     }
@@ -26,9 +26,9 @@ public class PinCategoryHelper {
             case 2:
                 return "bikecount";
             case 3:
-                return "batterycount";
-            case 4:
                 return "coffeecount";
+            case 4:
+                return "batterycount";
         }
         return "error getting category";
     }
