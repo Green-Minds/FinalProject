@@ -29,6 +29,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(ParseUser.getCurrentUser().getString("connection") + " Leaderboard");
         setContentView(R.layout.activity_leaderboard);
         ButterKnife.bind(this);
 
@@ -38,11 +39,17 @@ public class LeaderboardActivity extends AppCompatActivity {
         rvUsers.setAdapter(leaderboardAdapter);
 
         showLeaderboard();
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLeaderboard();
+            }
+        });
     }
 
     private void showLeaderboard() {
         ParseQuery query = ParseUser.getQuery();
-        query.setLimit(20).findInBackground(new FindCallback<ParseUser>() {
+        query.orderByAscending("points").addAscendingOrder("pincount").whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection")).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
                 ParseUser user = null;
@@ -57,6 +64,31 @@ public class LeaderboardActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+        });
+    }
+
+    private void refreshLeaderboard() {
+        ParseQuery query = ParseUser.getQuery();
+        query.orderByAscending("points").addAscendingOrder("pincount").whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection")).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                ArrayList<ParseUser> temp_users = new ArrayList<>();
+                leaderboardAdapter.clear();
+                ParseUser user = null;
+                if(e == null){
+                    for (int i = objects.size() - 1; i >= 0; i--) {
+                        user = objects.get(i);
+                        temp_users.add(user);
+                    }
+                }
+                else {
+                    e.printStackTrace();
+                }
+                leaderboardAdapter.addAll(temp_users);
+                leaderboardAdapter.notifyDataSetChanged();
+                swipeContainer.setRefreshing(false);
+            }
+
         });
     }
 }

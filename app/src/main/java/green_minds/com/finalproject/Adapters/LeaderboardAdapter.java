@@ -25,6 +25,11 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     public LeaderboardAdapter(List<ParseUser> users) {mUsers = users;}
 
+    public void clear () {
+        mUsers.clear();
+        notifyDataSetChanged();
+    }
+
     public void addAll (ArrayList<ParseUser> list) {
         mUsers.addAll(list);
         notifyDataSetChanged();
@@ -44,10 +49,10 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ParseUser user = mUsers.get(position);
-        Integer userPts = user.getInt("checkincount") + user.getInt("pincount");
         holder.tvPosition.setText(String.valueOf(position + 1));
         holder.tvUserLeaderbaord.setText(user.getUsername());
-        holder.tvPts.setText(String.valueOf(userPts));
+        holder.tvPts.setText(String.valueOf(user.getInt("points")) + " points");
+        if (user.getInt("points") == 1) holder.tvPts.setText(String.valueOf(user.getInt("points")) + " point");
 
         //Glide.with(context).load(user.getParseFile("image").getUrl()).into(holder.ivUserImg);
     }
