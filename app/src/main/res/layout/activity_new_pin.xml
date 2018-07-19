@@ -70,18 +70,19 @@
             android:text="Bike Racks" />
 
         <RadioButton
+            android:id="@+id/rb_discount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Coffee shop with discount" />
+
+        <RadioButton
             android:id="@+id/rb_battery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Batteries / Electronic Waste" />
 
-        <RadioButton
-            android:id="@+id/rb_discount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Coffee shop with discount" />
     </RadioGroup>
 
     <TextView

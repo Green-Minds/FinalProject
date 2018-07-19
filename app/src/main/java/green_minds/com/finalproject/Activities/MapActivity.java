@@ -54,6 +54,7 @@ import com.parse.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,6 +79,8 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     @BindView(R.id.fab4) public FloatingActionButton fab4;
 
 
+    private final int REQUEST_CODE = 20;
+    final public static String PIN_KEY = "pin";
     private Pin.Query pinQuery;
     ArrayList<Pin> pins;
     private SupportMapFragment mapFragment;
@@ -150,7 +153,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                     Log.d("MapActivity", "Pin at " + mCurrentLocation.getLatitude());
                     intent.putExtra("latitude", mCurrentLocation.getLatitude());
                     intent.putExtra("longitude", mCurrentLocation.getLongitude());
-                    startActivity(intent);
+                    startActivityForResult(intent, REQUEST_CODE);
                 }
             });
 
@@ -255,10 +258,222 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 }
             });
 
+            fab0.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 0);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.recycling_bin);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            fab1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 1);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.drop);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            fab2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 2);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.bicycle);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            fab3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 3);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.growth);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            fab4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.clear();
+                    pinQuery = new Pin.Query();
+                    pins = new ArrayList<>();
+                    pinQuery.whereEqualTo("category", 4);
+                    pinQuery.findInBackground(new FindCallback<Pin>() {
+                        @Override
+                        public void done(List<Pin> objects, ParseException e) {
+                            if (e==null){
+                                for (int i = objects.size()-1; i >= 0; i--) {
+
+                                    if (objects.get(i).has("latlng"))  {
+                                        lat = objects.get(i).getLatLng().getLatitude();
+                                        lon = objects.get(i).getLatLng().getLongitude();
+                                        type = objects.get(i).getCategory();
+
+                                        Pin pin = objects.get(i);
+                                        pins.add(pin);
+                                        BitmapDescriptor customMarker =
+                                                BitmapDescriptorFactory.fromResource(R.drawable.battery);
+
+                                        LatLng listingPosition = new LatLng(lat, lon);
+                                        // Create the marker on the fragment
+                                        Marker mapMarker = map.addMarker(new MarkerOptions()
+                                                .position(listingPosition)
+                                                .title("checkins: " + objects.get(i).getCheckincount())
+                                                .snippet(objects.get(i).getComment())
+                                                .icon(customMarker));
+                                    }
+
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -479,7 +694,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
         // Handler allows us to repeat a code block after a specified delay
         final android.os.Handler handler = new android.os.Handler();
         final long start = SystemClock.uptimeMillis();
-        final long duration = 1500;
+        final long duration = 4500;
 
         // Use the bounce interpolator
         final android.view.animation.Interpolator interpolator =
@@ -499,7 +714,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
                 if (t > 0.0) {
                     // Post this event again 15ms from now.
-                    handler.postDelayed(this, 15);
+                    handler.postDelayed(this, 150);
                 } else { // done elapsing, show window
                     marker.showInfoWindow();
                 }
@@ -516,5 +731,91 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // check request code and result code first
+
+
+        if (resultCode == RESULT_OK) {
+            data.getExtras();
+
+            // Use data parameter
+
+            String id = data.getStringExtra("id");
+            Log.d("MapActivity", "new pin id " + id);
+
+            pinQuery = new Pin.Query();
+            pins = new ArrayList<>();
+            pinQuery.whereEqualTo("objectId", id);
+            pinQuery.findInBackground(new FindCallback<Pin>() {
+                @Override
+                public void done(List<Pin> objects, ParseException e) {
+                    if (e==null){
+                        for (int i = objects.size()-1; i >= 0; i--) {
+
+                            Pin pin = objects.get(0);
+
+                            if (pin.has("latlng"))  {
+                                Log.d("MapActivity", "new pin exists?" + (pin != null));
+                                lat = pin.getLatLng().getLatitude();
+                                lon = pin.getLatLng().getLongitude();
+                                type = pin.getCategory();
+                                pins.add(pin);
+                                Log.d("MapActivity", "added new Pin at " + lat);
+
+                                int drawableId = getIcon(type);
+                                BitmapDescriptor customMarker =
+                                        BitmapDescriptorFactory.fromResource(drawableId);
+
+                                LatLng listingPosition = new LatLng(lat, lon);
+                                // Create the marker on the fragment
+                                Marker marker = map.addMarker(new MarkerOptions()
+                                        .position(listingPosition)
+                                        .title("checkins: " + pin.getCheckincount())
+                                        .snippet(objects.get(i).getComment())
+                                        .icon(customMarker));
+
+                                // Toast.makeText(this, "new pin complete!", Toast.LENGTH_LONG).show();
+                                dropPinEffect(marker);
+
+                            }
+                        }
+                    } else {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    }
+
+    private int getIcon(int type) {
+        String imageName = "drop";
+        switch (type) {
+            case 0:
+                imageName = "recycling_bin";
+                break;
+
+            case 1:
+                imageName = "drop";
+                break;
+            case 2:
+                imageName = "bicycle";
+                break;
+            case 3:
+                imageName = "growth";
+                break;
+            case 4:
+                imageName = "battery";
+                break;
+        }
+        int drawableId = getResources().getIdentifier(imageName, "drawable", getPackageName());
+        return drawableId;
+
+    };
+
+
 
 }

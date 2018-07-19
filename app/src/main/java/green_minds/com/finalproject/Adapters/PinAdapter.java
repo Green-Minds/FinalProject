@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.text.DecimalFormat;
@@ -30,10 +31,13 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
     ArrayList<RelativePositionPin> mPins;
     // context
     Context context;
+    ParseUser user;
 
     // initialize with list
     public PinAdapter(ArrayList<RelativePositionPin> pins) {
+
         this.mPins = pins;
+        this.user = ParseUser.getCurrentUser();
     }
 
     // creates and inflates a new view
@@ -76,6 +80,13 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
                         Toast.makeText(context, "Checked in!", Toast.LENGTH_LONG).show();
                         int numtimes  = pin.getCheckincount();
                         checkin.setText("Visited " + numtimes + " times.");
+
+                        user.put("points", user.getInt("points") + 1);
+
+                        String cat_key = PinCategoryHelper.getTypeKey(pin.getCategory());
+                        user.put(cat_key, user.getInt(cat_key) + 1);
+
+                        user.saveInBackground();
                     }
                 });
             }
