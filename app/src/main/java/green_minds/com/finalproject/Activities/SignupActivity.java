@@ -109,10 +109,4 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void gotoLogin(View v) {
-        final Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
-    }
 }

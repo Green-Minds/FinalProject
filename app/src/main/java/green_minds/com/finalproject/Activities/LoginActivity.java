@@ -27,6 +27,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        if (ParseUser.getCurrentUser() != null) {
+            startActivity(new Intent(this, MapActivity.class));
+            finish();
+        }
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,9 +55,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 else {
                     Log.e("LoginActivity", "Login Failure");
-                    e.printStackTrace();;
+                    e.printStackTrace();
                 }
             }
         });
+    }
+
+    public void gotoSignup(View v) {
+        final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

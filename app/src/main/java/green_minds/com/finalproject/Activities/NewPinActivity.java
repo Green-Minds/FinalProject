@@ -51,6 +51,8 @@ public class NewPinActivity extends AppCompatActivity {
     private File current_file;
     private Context context;
 
+    final public static String PIN_KEY = "pin";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +108,7 @@ public class NewPinActivity extends AppCompatActivity {
             Toast.makeText(this,"Please check a category first!", Toast.LENGTH_LONG).show();
             return;
         }
-        Pin pin = new Pin();
+        final Pin pin = new Pin();
 
         int radioButtonID = rb_categories.getCheckedRadioButtonId();
         View radioButton = rb_categories.findViewById(radioButtonID);
@@ -129,9 +131,12 @@ public class NewPinActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if(e!=null) e.printStackTrace();
                 Toast.makeText(context, "new pin complete!", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(context, NewPinActivity.class);
+                intent.putExtra(PIN_KEY, pin);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
-
 
     }
 
