@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
@@ -52,6 +53,7 @@ public class NewPinActivity extends AppCompatActivity {
 
     private File current_file;
     private Context context;
+    private ParseUser current_user;
 
     final public static String PIN_KEY = "pin";
 
@@ -77,6 +79,12 @@ public class NewPinActivity extends AppCompatActivity {
                 uploadPin();
             }
         });
+
+        if( ParseUser.getCurrentUser() == null){
+            redirectToLogin();
+        } else{
+            current_user = ParseUser.getCurrentUser();
+        }
     }
 
     @Override
@@ -114,7 +122,7 @@ public class NewPinActivity extends AppCompatActivity {
 
         int radioButtonID = rb_categories.getCheckedRadioButtonId();
         View radioButton = rb_categories.findViewById(radioButtonID);
-        int idx = rb_categories.indexOfChild(radioButton);
+        final int idx = rb_categories.indexOfChild(radioButton);
         Log.i("IDX", idx + "");
 
         String comment = et_comment.getText().toString();
@@ -132,6 +140,11 @@ public class NewPinActivity extends AppCompatActivity {
             @Override
             public void done(ParseException e) {
                 if(e!=null) e.printStackTrace();
+                int curr_pintcount = current_user.getInt("pincount");
+                current_user.put("pincount", curr_pintcount + 1);
+                current_user.put("points", curr_pintcount * 10);
+                current_user.saveInBackground();
+
                 Toast.makeText(context, "new pin complete!", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent();
                 intent.putExtra("id", pin.getObjectId());
@@ -146,5 +159,10 @@ public class NewPinActivity extends AppCompatActivity {
     private void loadCamera(){
         Intent i = new Intent(this, CameraActivity.class);
         startActivityForResult(i, 30);
+    }
+
+    private void redirectToLogin(){
+        Intent i = new Intent(this, UserInfoActivity.class);
+        startActivity(i);
     }
 }
