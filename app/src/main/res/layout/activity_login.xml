@@ -51,12 +51,18 @@
         android:layout_marginBottom="115dp"
         android:text="Log in " />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/go_to_signup_container"
+        android:background="@drawable/border"/>
+
     <LinearLayout
         android:id="@+id/go_to_signup_container"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/border"
+        android:layout_alignParentStart="true"
         android:clickable="true"
         android:onClick="gotoSignup">
 
@@ -82,4 +88,15 @@
             android:textColor="@android:color/black"
             android:textStyle="bold" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvIncorrectInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="175dp"
+        android:text="TextView"
+        android:textColor="@android:color/holo_red_light"
+        android:visibility="gone" />
 </RelativeLayout>

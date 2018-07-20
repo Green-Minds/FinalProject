@@ -1,5 +1,8 @@
 package green_minds.com.finalproject.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -9,13 +12,14 @@ import com.parse.ParseUser;
 
 
 @ParseClassName("Pin")
-public class Pin extends ParseObject{
+public class Pin extends ParseObject {
     private static final String KEY_LATLNG = "latlng";
     private static final String KEY_USER = "user";
     private static final String KEY_COMMENT = "comment";
     private static final String KEY_CATEGORY = "category";
     private static final String KEY_CHECKINCOUNT = "checkincount";
     private static final String KEY_PHOTO = "photo";
+
 
     public ParseGeoPoint getLatLng() { return getParseGeoPoint(KEY_LATLNG);}
 

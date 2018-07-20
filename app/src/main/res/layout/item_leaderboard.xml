@@ -10,10 +10,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="12dp"
         android:layout_marginRight="35dp"
         android:layout_marginTop="28dp"
         android:text="TextView"
+        android:textColor="@android:color/black"
         android:textStyle="bold" />
 
     <ImageView
@@ -30,8 +31,11 @@
         android:id="@+id/tvUserLeaderboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="24dp"
+        android:layout_toRightOf="@+id/ivUserImg"
         android:text="TextView"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -39,8 +43,16 @@
         android:id="@+id/tvPts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="70dp"
-        android:layout_toEndOf="@+id/tvUserLeaderboard"
-        android:text="TextView" />
+        android:layout_marginRight="30dp"
+        android:text="TextView"
+        android:textColor="@android:color/black" />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_below="@+id/ivUserImg"
+        android:background="@drawable/border" />
+
 </RelativeLayout>

@@ -22,6 +22,8 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.parceler.Parcels;
+
 import java.io.File;
 
 import butterknife.BindView;
@@ -144,8 +146,9 @@ public class NewPinActivity extends AppCompatActivity {
                 current_user.saveInBackground();
 
                 Toast.makeText(context, "new pin complete!", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(context, NewPinActivity.class);
-                intent.putExtra(PIN_KEY, pin);
+                Intent intent = new Intent();
+                intent.putExtra("id", pin.getObjectId());
+                Log.d("NewPinActivity", "new pin id " + (String) pin.getObjectId());
                 setResult(RESULT_OK, intent);
                 finish();
             }
