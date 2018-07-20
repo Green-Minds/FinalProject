@@ -99,6 +99,7 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //TODO - make this... better... somehow the path i get from the URI is bad
+        ///ADFKASHFKASDHF
         if (data != null) {
             Uri photoUri = data.getData();
             Bitmap selectedImage = null;
