@@ -10,11 +10,11 @@ import com.google.android.gms.maps.model.Marker;
 
 import green_minds.com.finalproject.R;
 
-public class InfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private Context context;
 
-    public InfoWindowAdapter(Context ctx){
+    public MyInfoWindowAdapter(Context ctx){
         context = ctx;
     }
 

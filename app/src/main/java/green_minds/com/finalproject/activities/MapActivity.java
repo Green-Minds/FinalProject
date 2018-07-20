@@ -59,7 +59,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import green_minds.com.finalproject.adapters.InfoWindowAdapter;
 import green_minds.com.finalproject.model.MyItem;
 import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.R;
@@ -70,7 +69,6 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 
 @RuntimePermissions
 public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLongClickListener{
-
     @BindView(R.id.newPinBtn) public Button newPinBtn;
     @BindView(R.id.checkinBtn) public Button checkinBtn;
     @BindView(R.id.fab) public FloatingActionButton fab;
@@ -80,7 +78,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     @BindView(R.id.fab3) public FloatingActionButton fab3;
     @BindView(R.id.fab4) public FloatingActionButton fab4;
 
-    private ClusterManager<MyItem> mClusterManager;
     private final int REQUEST_CODE = 20;
     final public static String PIN_KEY = "pin";
     private Pin.Query pinQuery;
@@ -128,8 +125,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 public void onMapReady(GoogleMap map) {
                     loadMap(map);
                     map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                    setUpClusterer();
-
 
                 }
             });
@@ -137,48 +132,13 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
             Toast.makeText(this, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
 
-
-    }
-
-    private void setUpClusterer() {
-        // Position the map.
-
-        // private List<MyItem> myItems;
-
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<MyItem>(this, map);
-
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
-        map.setOnCameraIdleListener(mClusterManager);
-        map.setOnMarkerClickListener(mClusterManager);
-
-        // Add cluster items (markers) to the cluster manager.
-        addItems();
-
-    }
-    private void addItems() {
-        // doesn't actually load our items, makes up 10 ten pins
-
-        // Set some lat/lng coordinates to start with.
-        double lat = 37.4219983;
-        double lng = -122.084;
-
-        // Add ten cluster items in close proximity, for purposes of this example.
-        for (int i = 0; i < 10; i++) {
-            double offset = i / 60d;
-            lat = lat + offset;
-            lng = lng + offset;
-            MyItem offsetItem = new MyItem(lat, lng);
-            mClusterManager.addItem(offsetItem);
-        }
     }
 
     protected void loadMap(GoogleMap googleMap) {
         map = googleMap;
         if (map != null) {
             // Map is ready
+
             UiSettings mapUiSettings = map.getUiSettings();
             mapUiSettings.setZoomControlsEnabled(true);
 
@@ -258,26 +218,17 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
                                 Pin pin = objects.get(i);
                                 pins.add(pin);
-
                                 int drawableId = getIcon(type);
                                 BitmapDescriptor customMarker =
                                         BitmapDescriptorFactory.fromResource(drawableId);
 
                                 LatLng listingPosition = new LatLng(lat, lon);
                                 // Create the marker on the fragment
-
-                                MarkerOptions markerOptions = new MarkerOptions();
-                                markerOptions.position(listingPosition)
+                                Marker mapMarker = map.addMarker(new MarkerOptions()
+                                        .position(listingPosition)
                                         .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
-                                        .icon(customMarker);
-
-                                InfoWindowAdapter customInfoWindow = new InfoWindowAdapter(getParent());
-                                map.setInfoWindowAdapter(customInfoWindow);
-                                Marker m = map.addMarker(markerOptions);
-                                // m.setTag(info);
-                                m.showInfoWindow();
-
+                                        .icon(customMarker));
                             }
 
                         }
@@ -324,7 +275,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     }
 
 
-     // Called when the Activity becomes visible.
+    // Called when the Activity becomes visible.
 
     @Override
     protected void onStart() {
@@ -695,11 +646,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
         });
     }
 }
-
 /* TODO: add multiple categories at the same time functionality
  * buttons have pressed and unpressed state
  * coming back from filter to all categories view
  * distance to a pin
  * pin pic
  * add marker clusterization
+ *
+ * only download closer based on disctantce
  */

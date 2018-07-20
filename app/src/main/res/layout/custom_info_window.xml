@@ -9,15 +9,16 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="title"
         android:textColor="#ff669900"
-        android:textStyle="bold"
-        android:singleLine="true" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ff0099cc"
-        android:text="Hours" />
+        android:text="description"
+        android:textColor="#ff0099cc" />
 
 </LinearLayout>
