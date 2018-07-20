@@ -11,8 +11,11 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
@@ -32,6 +35,7 @@ public class SignupActivity extends AppCompatActivity {
     @BindView(R.id.rbWork) public RadioButton rbWork;
     @BindView(R.id.schoolList) public Spinner schoolList;
     @BindView(R.id.etCompany) public EditText etCompany;
+    @BindView(R.id.tvUsernameTaken) public TextView tvUsernameTaken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +71,28 @@ public class SignupActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = etUsernameInput.getText().toString();
-                String password = etPasswordInput.getText().toString();
-                String connection = schoolList.getSelectedItem().toString();
-                if (rbWork.isChecked()) connection = etCompany.getText().toString();
-                signUp (username, password, connection);
+                ParseQuery query = ParseUser.getQuery();
+                query.whereEqualTo("username", etUsernameInput.getText().toString()).findInBackground(new FindCallback<ParseUser>() {
+                    @Override
+                    public void done(List<ParseUser> objects, ParseException e) {
+                        if (e == null) {
+                            if(objects.size() == 0){
+                                tvUsernameTaken.setVisibility(View.GONE);
+                                String username = etUsernameInput.getText().toString();
+                                String password = etPasswordInput.getText().toString();
+                                String connection = schoolList.getSelectedItem().toString();
+                                if (rbWork.isChecked()) connection = etCompany.getText().toString();
+                                signUp (username, password, connection);
+                            } else {
+                                tvUsernameTaken.setText("Username already taken.");
+                                tvUsernameTaken.setVisibility(View.VISIBLE);
+                                return;
+                            }
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         });
     }

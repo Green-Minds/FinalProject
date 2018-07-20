@@ -88,4 +88,15 @@
             android:textColor="@android:color/black"
             android:textStyle="bold" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvIncorrectInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="175dp"
+        android:text="TextView"
+        android:textColor="@android:color/holo_red_light"
+        android:visibility="gone" />
 </RelativeLayout>

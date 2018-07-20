@@ -3,10 +3,12 @@ package green_minds.com.finalproject.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -20,6 +22,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.etUsernameLogin) public EditText etUsernameLogin;
     @BindView(R.id.etPasswordLogin) public EditText etPasswordLogin;
     @BindView(R.id.btnLogin) public Button btnLogin;
+    @BindView(R.id.tvIncorrectInfo) public TextView tvIncorrectInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +50,17 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
-                    Log.d("LoginActivity", "Login Successful");
-
+                    tvIncorrectInfo.setVisibility(View.GONE);
                     final Intent intent = new Intent(LoginActivity.this, MapActivity.class);
                     startActivity(intent);
                     finish();
                 }
                 else {
-                    Log.e("LoginActivity", "Login Failure");
+                    etPasswordLogin.startAnimation(invalidCredentials());
+                    tvIncorrectInfo.setText(e.getMessage().toString());
+                    tvIncorrectInfo.setVisibility(View.VISIBLE);
                     e.printStackTrace();
+                    return;
                 }
             }
         });
@@ -65,5 +70,12 @@ public class LoginActivity extends AppCompatActivity {
         final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public TranslateAnimation invalidCredentials() {
+        TranslateAnimation shake = new TranslateAnimation(0, 10, 0, 0);
+        shake.setDuration(500);
+        shake.setInterpolator(new CycleInterpolator(7));
+        return shake;
     }
 }
