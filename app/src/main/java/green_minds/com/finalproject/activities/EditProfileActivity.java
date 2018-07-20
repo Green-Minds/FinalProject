@@ -22,15 +22,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -109,20 +107,33 @@ public class EditProfileActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Bitmap circular_bitmap = getCroppedBitmap(selectedImage);
+            imgProfPic.setImageBitmap(circular_bitmap);
+            ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
+            selectedImage.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
+            byte[] imageByte = byteArrayOutputStream.toByteArray();
+            ParseFile file = new ParseFile(getFileName(), imageByte);
+            user.put("photo", file);
+            user.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if(e != null) e.printStackTrace();
+                }
+            });
 
-            File file = getOutputMediaFile();
-            OutputStream os = null;
-            try {
-                //TODO - need to add permissions to write
-                os = new BufferedOutputStream(new FileOutputStream(file));
-                selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                os.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            onImgReturned(file.getAbsolutePath());
+//            File file = getOutputMediaFile();
+//            OutputStream os = null;
+//            try {
+//                //TODO - need to add permissions to write
+//                os = new BufferedOutputStream(new FileOutputStream(file));
+//                selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
+//                os.close();
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+            //onImgReturned(file.getAbsolutePath());
         }
     }
 
@@ -173,5 +184,11 @@ public class EditProfileActivity extends AppCompatActivity {
         mediaFile = new File(mediaStorageDir.getPath() + File.separator
                 + "IMG_" + timeStamp + ".jpg");
         return mediaFile;
+    }
+
+    private String getFileName() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+                .format(new Date());
+        return "IMG_" + timeStamp + ".jpg";
     }
 }

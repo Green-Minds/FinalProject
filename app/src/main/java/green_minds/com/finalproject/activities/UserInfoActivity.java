@@ -51,19 +51,22 @@ public class UserInfoActivity extends AppCompatActivity {
         if(curr_user == null){
             redirectToLogin();
         }
-        try {
-            tvName.setText(curr_user.fetchIfNeeded().getUsername());
-            tvPin.setText(curr_user.fetchIfNeeded().getInt("pincount") + "");
-            tvBottle.setText(curr_user.fetchIfNeeded().getInt("bottlecount") + "");
-            tvWater.setText(curr_user.fetchIfNeeded().getInt("watercount")+ "");
-            tvBike.setText(curr_user.fetchIfNeeded().getInt("bikecount")+ "");
-            tvBattery.setText(curr_user.fetchIfNeeded().getInt("batterycount")+ "");
-            tvShop.setText(curr_user.fetchIfNeeded().getInt("coffeecount")+ "");
-            tvScore.setText("Score: " + curr_user.fetchIfNeeded().getInt("points"));
+        else {
+            try {
+                tvName.setText(curr_user.fetchIfNeeded().getUsername());
+                tvPin.setText(curr_user.fetchIfNeeded().getInt("pincount") + "");
+                tvBottle.setText(curr_user.fetchIfNeeded().getInt("bottlecount") + "");
+                tvWater.setText(curr_user.fetchIfNeeded().getInt("watercount")+ "");
+                tvBike.setText(curr_user.fetchIfNeeded().getInt("bikecount")+ "");
+                tvBattery.setText(curr_user.fetchIfNeeded().getInt("batterycount")+ "");
+                tvShop.setText(curr_user.fetchIfNeeded().getInt("coffeecount")+ "");
+                tvScore.setText("Score: " + curr_user.fetchIfNeeded().getInt("points"));
 
-        } catch (ParseException e) {
-            e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
+
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,11 +74,10 @@ public class UserInfoActivity extends AppCompatActivity {
                 startActivityForResult(i, 30);
             }
         });
-
     }
 
     private void redirectToLogin(){
-        Intent i = new Intent(this, UserInfoActivity.class);
+        Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
     }
 }
