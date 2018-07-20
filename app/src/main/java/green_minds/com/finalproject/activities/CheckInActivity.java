@@ -11,6 +11,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -22,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.PinAdapter;
 import green_minds.com.finalproject.model.Pin;
@@ -35,6 +41,8 @@ public class CheckInActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private Location lastLocation;
 
+    @BindView(R.id.btn_reload)
+    ImageView btnReload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,7 @@ public class CheckInActivity extends AppCompatActivity {
         rvPins.setLayoutManager(new LinearLayoutManager(this));
         rvPins.setAdapter(adapter);
         getListOfPins();
+        ButterKnife.bind(this);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -56,19 +65,28 @@ public class CheckInActivity extends AppCompatActivity {
         }
     }
 
+    @OnClick({R.id.btn_reload})
+    public void reloadNearbyPins(){
+        lastLocation = getLocationWithCheck();
+        getListOfPins();
+        Animation rotation = AnimationUtils.loadAnimation(this, R.anim.reload_item_spinning);
+        rotation.setRepeatCount(Animation.INFINITE);
+        btnReload.startAnimation(rotation);
+    }
+
+    //checks if permission granted
+    private Location getLocationWithCheck(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        } else {
+            Toast.makeText(this, "Enable location permissions for this to work.", Toast.LENGTH_LONG).show();
+            return null;
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                } else {
-                    Toast.makeText(this, "Please enable permissions for this to work.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                return;
-            }
-        }
+        lastLocation = getLocationWithCheck();
     }
 
     private void getListOfPins(){
@@ -91,6 +109,7 @@ public class CheckInActivity extends AppCompatActivity {
                         mPins.clear();
                         mPins.addAll(rpList);
                         adapter.notifyDataSetChanged();
+                        btnReload.clearAnimation();
                     } else {
                         e.printStackTrace();
                     }

@@ -14,10 +14,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -31,6 +31,7 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 
 public class EditProfileActivity extends AppCompatActivity {
@@ -62,33 +63,23 @@ public class EditProfileActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         etUsername.setText(user.getUsername());
-        btnEditPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onPickPhoto();
-            }
-        });
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                save();
-            }
-        });
-
     }
 
-    private void save(){
+    @OnClick({R.id.btn_save})
+    public void save(){
         user.setUsername(etUsername.getText().toString());
         if(newPic != null ) user.put("photo", newPic);
         user.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                //Toast.makeText(context, "updated info!", Toast.LENGTH_SHORT).show();
+                if(e!=null) e.printStackTrace();
+                Toast.makeText(context, "Updated info!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void onPickPhoto() {
+    @OnClick({R.id.btn_edit_pic})
+    public void onPickPhoto() {
         Intent intent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
