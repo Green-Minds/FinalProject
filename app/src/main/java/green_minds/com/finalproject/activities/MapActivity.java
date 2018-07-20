@@ -59,16 +59,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-<<<<<<< HEAD:app/src/main/java/green_minds/com/finalproject/Activities/MapActivity.java
-import green_minds.com.finalproject.Activities.CheckInActivity;
-import green_minds.com.finalproject.Activities.NewPinActivity;
-import green_minds.com.finalproject.Adapters.InfoWindowAdapter;
-import green_minds.com.finalproject.Model.MyItem;
-import green_minds.com.finalproject.Model.Pin;
-=======
->>>>>>> origin/master:app/src/main/java/green_minds/com/finalproject/activities/MapActivity.java
-import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.adapters.InfoWindowAdapter;
+import green_minds.com.finalproject.model.MyItem;
 import green_minds.com.finalproject.model.Pin;
+import green_minds.com.finalproject.R;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
