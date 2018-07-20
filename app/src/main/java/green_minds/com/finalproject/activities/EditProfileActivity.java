@@ -2,19 +2,18 @@ package green_minds.com.finalproject.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +26,6 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,7 +37,7 @@ import green_minds.com.finalproject.R;
 public class EditProfileActivity extends AppCompatActivity {
     // PICK_PHOTO_CODE is a constant integer
     public final static int PICK_PHOTO_CODE = 1046;
-    private File newPic;
+    private ParseFile newPic;
     private ParseUser user;
     private Context context;
 
@@ -61,6 +59,7 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
         newPic = null;
         user = ParseUser.getCurrentUser();
+
         ButterKnife.bind(this);
 
         etUsername.setText(user.getUsername());
@@ -76,6 +75,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 save();
             }
         });
+
     }
 
     private void save(){
@@ -98,8 +98,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //TODO - make this... better... somehow the path i get from the URI is bad
-        ///ADFKASHFKASDHF
         if (data != null) {
             Uri photoUri = data.getData();
             Bitmap selectedImage = null;
@@ -108,41 +106,21 @@ public class EditProfileActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Bitmap circular_bitmap = getCroppedBitmap(selectedImage);
-            imgProfPic.setImageBitmap(circular_bitmap);
-            ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-            selectedImage.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
-            byte[] imageByte = byteArrayOutputStream.toByteArray();
-            ParseFile file = new ParseFile(getFileName(), imageByte);
-            user.put("photo", file);
-            user.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if(e != null) e.printStackTrace();
-                }
-            });
+            int rotation = getRotationFromMediaStore(this, photoUri);
 
-//            File file = getOutputMediaFile();
-//            OutputStream os = null;
-//            try {
-//                //TODO - need to add permissions to write
-//                os = new BufferedOutputStream(new FileOutputStream(file));
-//                selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
-//                os.close();
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-            //onImgReturned(file.getAbsolutePath());
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotation);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.getWidth(), selectedImage.getHeight(), matrix, true);
+
+            Bitmap circular_bitmap = getCroppedBitmap(rotatedBitmap);
+            imgProfPic.setImageBitmap(circular_bitmap);
+
+            ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
+            rotatedBitmap.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
+            byte[] imageByte = byteArrayOutputStream.toByteArray();
+            newPic = new ParseFile(getFileName(), imageByte);
         }
     }
-
-    private void onImgReturned(String path){
-        newPic = new File(path);
-        Bitmap myBitmap = BitmapFactory.decodeFile(path);
-        Bitmap circular_bitmap = getCroppedBitmap(myBitmap);
-        imgProfPic.setImageBitmap(circular_bitmap);}
 
     public Bitmap getCroppedBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
@@ -156,40 +134,30 @@ public class EditProfileActivity extends AppCompatActivity {
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
         canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
                 bitmap.getWidth() / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-        //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
-        //return _bmp;
+        //maybe use this later if i want scaling
+        //Bitmap bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
         return output;
-    }
-
-    private File getOutputMediaFile() {
-
-        File mediaStorageDir = new File(
-                Environment
-                        .getExternalStorageDirectory(),
-                "ParsaHam");
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.d("MyCameraApp", "failed to create directory");
-                return null;
-            }
-        }
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-                .format(new Date());
-        File mediaFile;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                + "IMG_" + timeStamp + ".jpg");
-        return mediaFile;
     }
 
     private String getFileName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
                 .format(new Date());
         return "IMG_" + timeStamp + ".jpg";
+    }
+
+    //https://stackoverflow.com/questions/21085105/get-orientation-of-image-from-mediastore-images-media-data/30572852
+    public static int getRotationFromMediaStore(Context context, Uri imageUri) {
+        String[] columns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media.ORIENTATION};
+        Cursor cursor = context.getContentResolver().query(imageUri, columns, null, null, null);
+        if (cursor == null) return 0;
+
+        cursor.moveToFirst();
+
+        int orientationColumnIndex = cursor.getColumnIndex(columns[1]);
+        return cursor.getInt(orientationColumnIndex);
     }
 }

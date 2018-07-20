@@ -67,15 +67,13 @@ public class CameraActivity extends AppCompatActivity {
 
         if ((ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
                 || (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                || (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED))
-        {
+                || (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
             Log.i("permissions_camera", Manifest.permission.CAMERA);
             Log.i("permissions_read", Manifest.permission.READ_EXTERNAL_STORAGE);
             Log.i("permissions_write", Manifest.permission.WRITE_EXTERNAL_STORAGE);
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        }
-        else{
+        } else {
             completeSetup();
         }
 
@@ -86,8 +84,7 @@ public class CameraActivity extends AppCompatActivity {
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     completeSetup();
                 } else {
                     Toast.makeText(context, "Please enable permissions for this to work.", Toast.LENGTH_LONG).show();

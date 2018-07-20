@@ -89,22 +89,17 @@ public class NewPinActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bmp = null;
         String filepath = data.getStringExtra("image");
-        try {
-            bmp = BitmapFactory.decodeFile(filepath);
-            int wid = bmp.getWidth();
-            int hei = bmp.getHeight();
+        bmp = BitmapFactory.decodeFile(filepath);
+        int wid = bmp.getWidth();
+        int hei = bmp.getHeight();
 
-            ivPreview.requestLayout();
-            wid = ivPreview.getLayoutParams().width * wid/hei;
-            ivPreview.getLayoutParams().width = wid;
-            ivPreview.setImageBitmap(bmp);
+        ivPreview.requestLayout();
+        wid = ivPreview.getLayoutParams().width * wid/hei;
+        ivPreview.getLayoutParams().width = wid;
+        ivPreview.setImageBitmap(bmp);
 
-            currentFile = new File(filepath);
-            tvUpload.setVisibility(View.GONE);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        currentFile = new File(filepath);
+        tvUpload.setVisibility(View.GONE);
     }
 
     private void uploadPin(){
