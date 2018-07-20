@@ -155,12 +155,12 @@ public class NewPinActivity extends AppCompatActivity {
     }
 
     private void loadCamera(){
-        Intent i = new Intent(this, CameraActivity.class);
+        Intent i = new Intent(this, green_minds.com.finalproject.activities.CameraActivity.class);
         startActivityForResult(i, 30);
     }
 
     private void redirectToLogin(){
-        Intent i = new Intent(this, UserInfoActivity.class);
+        Intent i = new Intent(this, green_minds.com.finalproject.activities.UserInfoActivity.class);
         startActivity(i);
     }
 }
