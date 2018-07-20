@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -84,7 +83,7 @@ public class EditProfileActivity extends AppCompatActivity {
         user.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                Toast.makeText(context, "updated info!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "updated info!", Toast.LENGTH_SHORT).show();
             }
         });
     }
