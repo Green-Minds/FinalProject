@@ -28,7 +28,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -56,17 +55,20 @@ import com.parse.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+<<<<<<< HEAD:app/src/main/java/green_minds/com/finalproject/Activities/MapActivity.java
 import green_minds.com.finalproject.Activities.CheckInActivity;
 import green_minds.com.finalproject.Activities.NewPinActivity;
 import green_minds.com.finalproject.Adapters.InfoWindowAdapter;
 import green_minds.com.finalproject.Model.MyItem;
 import green_minds.com.finalproject.Model.Pin;
+=======
+>>>>>>> origin/master:app/src/main/java/green_minds/com/finalproject/activities/MapActivity.java
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.Pin;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 

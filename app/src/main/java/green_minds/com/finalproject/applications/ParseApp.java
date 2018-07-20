@@ -1,14 +1,11 @@
-package green_minds.com.finalproject.Applications;
+package green_minds.com.finalproject.applications;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.parse.Parse;
-import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.SaveCallback;
 
-import green_minds.com.finalproject.Model.Pin;
+import green_minds.com.finalproject.model.Pin;
 
 public class ParseApp extends Application{
     @Override

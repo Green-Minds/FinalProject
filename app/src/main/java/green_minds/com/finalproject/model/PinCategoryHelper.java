@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Model;
+package green_minds.com.finalproject.model;
 
 public class PinCategoryHelper {
     public static String getPinIdentifier(int i){

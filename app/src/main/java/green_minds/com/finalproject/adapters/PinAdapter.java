@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Adapters;
+package green_minds.com.finalproject.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -21,10 +21,10 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import green_minds.com.finalproject.Model.GlideApp;
-import green_minds.com.finalproject.Model.Pin;
-import green_minds.com.finalproject.Model.PinCategoryHelper;
-import green_minds.com.finalproject.Model.RelativePositionPin;
+import green_minds.com.finalproject.model.GlideApp;
+import green_minds.com.finalproject.model.Pin;
+import green_minds.com.finalproject.model.PinCategoryHelper;
+import green_minds.com.finalproject.model.RelativePositionPin;
 import green_minds.com.finalproject.R;
 
 public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.SignupActivity">
+    tools:context=".activities.SignupActivity">
 
     <TextView
         android:id="@+id/tvRegister"
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="84dp"
         android:text="REGISTER"
         android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
@@ -101,5 +101,16 @@
         android:hint="Name of Company"
         android:inputType="textPersonName"
         android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvUsernameTaken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="126dp"
+        android:text="TextView"
+        android:textColor="@android:color/holo_red_light"
+        android:visibility="gone" />
 
 </RelativeLayout>

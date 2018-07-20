@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Activities;
+package green_minds.com.finalproject.activities;
 
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,7 +16,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import green_minds.com.finalproject.Adapters.LeaderboardAdapter;
+import green_minds.com.finalproject.adapters.LeaderboardAdapter;
 import green_minds.com.finalproject.R;
 
 public class LeaderboardActivity extends AppCompatActivity {

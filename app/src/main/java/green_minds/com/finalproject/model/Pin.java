@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Model;
+package green_minds.com.finalproject.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Activities;
+package green_minds.com.finalproject.activities;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -15,14 +15,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import green_minds.com.finalproject.Adapters.PinAdapter;
-import green_minds.com.finalproject.Model.Pin;
-import green_minds.com.finalproject.Model.RelativePositionPin;
+import green_minds.com.finalproject.adapters.PinAdapter;
+import green_minds.com.finalproject.model.Pin;
+import green_minds.com.finalproject.model.RelativePositionPin;
 import green_minds.com.finalproject.R;
 
 public class CheckInActivity extends AppCompatActivity {
 
-    private Location curr_location;
+    private Location currLocation;
     private ArrayList<RelativePositionPin> mPins;
     private PinAdapter adapter;
     private RecyclerView rvPins;
@@ -32,7 +32,7 @@ public class CheckInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
-        curr_location = getCurrentLocation();
+        currLocation = getCurrentLocation();
         rvPins = findViewById(R.id.rv_pins);
         mPins = new ArrayList<>();
         adapter = new PinAdapter(mPins);
@@ -50,14 +50,16 @@ public class CheckInActivity extends AppCompatActivity {
                     public void done(List<Pin> objects, ParseException e) {
 
                         if (e == null) {
-                            ArrayList<RelativePositionPin> rp_list = new ArrayList<>();
+                            ArrayList<RelativePositionPin> rpList = new ArrayList<>();
                             for(Pin pin: objects){
-                                RelativePositionPin rp_pin = (convert(pin, curr_location));
-                                if(rp_pin.getDistanceAwayinMiles() < 0.5) rp_list.add(rp_pin);
+                                RelativePositionPin rpPin = (convert(pin, currLocation));
+                                Location pinLoc = getLocationFromPin(pin);
+                                rpPin.setDistanceAway((double)currLocation.distanceTo(pinLoc));
+                                if(rpPin.getDistanceAwayinMiles() < 0.5) rpList.add(rpPin);
                             }
-                            Collections.sort(rp_list);
+                            Collections.sort(rpList);
                             mPins.clear();
-                            mPins.addAll(rp_list);
+                            mPins.addAll(rpList);
                             adapter.notifyDataSetChanged();
                         } else {
                             e.printStackTrace();
@@ -66,27 +68,27 @@ public class CheckInActivity extends AppCompatActivity {
                 });
     }
 
-    private RelativePositionPin convert(Pin pin, Location curr_location){
+    private RelativePositionPin convert(Pin pin, Location currLocation){
         RelativePositionPin rp = new RelativePositionPin(pin);
-        Location pin_loc = getLocationFromPin(pin);
-        rp.setDistanceAway((double)curr_location.distanceTo(pin_loc));
+        Location pinLoc = getLocationFromPin(pin);
+        rp.setDistanceAway((double)currLocation.distanceTo(pinLoc));
         return rp;
     }
 
     private Location getLocationFromPin(Pin pin){
         ParseGeoPoint gp = pin.getLatLng();
-        Location res_loc = new Location("");
-        res_loc.setLatitude(gp.getLatitude());
-        res_loc.setLongitude(gp.getLongitude());
-        return res_loc;
+        Location resLoc = new Location("");
+        resLoc.setLatitude(gp.getLatitude());
+        resLoc.setLongitude(gp.getLongitude());
+        return resLoc;
     }
 
     private Location getCurrentLocation(){
         Double lat = getIntent().getDoubleExtra("latitude", 0.0);
         Double lon = getIntent().getDoubleExtra("longitude", 0.0);
-        Location res_loc = new Location("");
-        res_loc.setLatitude(lat);
-        res_loc.setLongitude(lon);
-        return res_loc;
+        Location resLoc = new Location("");
+        resLoc.setLatitude(lat);
+        resLoc.setLongitude(lon);
+        return resLoc;
     }
 }

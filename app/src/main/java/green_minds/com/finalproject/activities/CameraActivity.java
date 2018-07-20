@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Activities;
+package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -38,24 +38,24 @@ public class CameraActivity extends AppCompatActivity {
     CameraKitView camera;
 
     @BindView(R.id.btn_takepic)
-    Button btn_takepic;
+    Button btnTakepic;
 
     @BindView(R.id.underlay)
-    FrameLayout camera_underlay;
+    FrameLayout cameraUnderlay;
 
     @BindView(R.id.iv_preview)
-    ImageView iv_preview;
+    ImageView ivPreview;
 
     @BindView(R.id.overlay)
-    RelativeLayout preview_overlay;
+    RelativeLayout previewOverlay;
 
     @BindView(R.id.btn_newpic)
-    Button btn_newpic;
+    Button btnNewpic;
 
     @BindView(R.id.btn_upload)
-    Button btn_upload;
+    Button btnUpload;
 
-    private byte[] current_bytes;
+    private byte[] currentBytes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +100,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void completeSetup(){
-        btn_takepic.setOnClickListener(new View.OnClickListener() {
+        btnTakepic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 camera.captureImage(new CameraKitView.ImageCallback() {
@@ -111,29 +111,23 @@ public class CameraActivity extends AppCompatActivity {
                 });
             }
         });
-        btn_newpic.setOnClickListener(new View.OnClickListener() {
+        btnNewpic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchCamera();
             }
         });
-        btn_upload.setOnClickListener(new View.OnClickListener() {
+        btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
                     //Write file
                     File output = getOutputMediaFile();
-                    //FileOutputStream stream = context.openFileOutput(output, Context.MODE_PRIVATE);
-                    //current_picture.compress(Bitmap.CompressFormat.PNG, 100, stream);
-
-                    //Cleanup
-                    //stream.close();
-                    //current_picture.recycle();
 
                     OutputStream outputStream = null;
                     try {
                         outputStream = new FileOutputStream(output);
-                        outputStream.write(current_bytes);
+                        outputStream.write(currentBytes);
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
@@ -160,10 +154,10 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void launchCamera(){
-        current_bytes = null;
+        currentBytes = null;
         camera.onResume();
-        preview_overlay.setVisibility(View.GONE);
-        camera_underlay.setVisibility(View.VISIBLE);
+        previewOverlay.setVisibility(View.GONE);
+        cameraUnderlay.setVisibility(View.VISIBLE);
     }
 
     private void launchPreview(final CameraKitView cameraKitView, byte[] bytes){
@@ -171,14 +165,14 @@ public class CameraActivity extends AppCompatActivity {
         camera.onPause();
 
         final Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        current_bytes= bytes;
+        currentBytes= bytes;
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                iv_preview.setImageBitmap(bm);
-                camera_underlay.setVisibility(View.GONE);
-                preview_overlay.setVisibility(View.VISIBLE);
+                ivPreview.setImageBitmap(bm);
+                cameraUnderlay.setVisibility(View.GONE);
+                previewOverlay.setVisibility(View.VISIBLE);
             }
         });
     }

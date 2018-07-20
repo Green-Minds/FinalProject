@@ -1,6 +1,7 @@
-package green_minds.com.finalproject.Adapters;
+package green_minds.com.finalproject.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -53,6 +54,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         holder.tvUserLeaderbaord.setText(user.getUsername());
         holder.tvPts.setText(String.valueOf(user.getInt("points")) + " points");
         if (user.getInt("points") == 1) holder.tvPts.setText(String.valueOf(user.getInt("points")) + " point");
+        if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername()))
+            holder.itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
 
         //Glide.with(context).load(user.getParseFile("image").getUrl()).into(holder.ivUserImg);
     }

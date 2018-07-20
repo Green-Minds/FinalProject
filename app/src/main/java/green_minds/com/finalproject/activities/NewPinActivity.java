@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Activities;
+package green_minds.com.finalproject.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,38 +22,36 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.parceler.Parcels;
-
 import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import green_minds.com.finalproject.Model.Pin;
+import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.R;
 
 public class NewPinActivity extends AppCompatActivity {
 
     @BindView(R.id.btn_camera)
-    ImageButton btn_camera;
+    ImageButton btnCamera;
 
     @BindView(R.id.btn_pin)
-    Button btn_pin;
+    Button btnPin;
 
     @BindView(R.id.et_comment)
-    EditText et_comment;
+    EditText etComment;
 
     @BindView(R.id.iv_preview)
-    ImageView iv_preview;
+    ImageView ivPreview;
 
     @BindView(R.id.tv_upload)
-    TextView tv_upload;
+    TextView tvUpload;
 
     @BindView(R.id.rb_categories)
-    RadioGroup rb_categories;
+    RadioGroup rbCategories;
 
-    private File current_file;
+    private File currentFile;
     private Context context;
-    private ParseUser current_user;
+    private ParseUser currentUser;
 
     final public static String PIN_KEY = "pin";
 
@@ -63,17 +61,17 @@ public class NewPinActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_pin);
         ButterKnife.bind(this);
-        current_file = null;
+        currentFile = null;
         context = this;
 
-        btn_camera.setOnClickListener(new View.OnClickListener() {
+        btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadCamera();
             }
         });
 
-        btn_pin.setOnClickListener(new View.OnClickListener() {
+        btnPin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 uploadPin();
@@ -83,7 +81,7 @@ public class NewPinActivity extends AppCompatActivity {
         if( ParseUser.getCurrentUser() == null){
             redirectToLogin();
         } else{
-            current_user = ParseUser.getCurrentUser();
+            currentUser = ParseUser.getCurrentUser();
         }
     }
 
@@ -96,13 +94,13 @@ public class NewPinActivity extends AppCompatActivity {
             int wid = bmp.getWidth();
             int hei = bmp.getHeight();
 
-            iv_preview.requestLayout();
-            wid = iv_preview.getLayoutParams().width * wid/hei;
-            iv_preview.getLayoutParams().width = wid;
-            iv_preview.setImageBitmap(bmp);
+            ivPreview.requestLayout();
+            wid = ivPreview.getLayoutParams().width * wid/hei;
+            ivPreview.getLayoutParams().width = wid;
+            ivPreview.setImageBitmap(bmp);
 
-            current_file = new File(filepath);
-            tv_upload.setVisibility(View.GONE);
+            currentFile = new File(filepath);
+            tvUpload.setVisibility(View.GONE);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,22 +108,22 @@ public class NewPinActivity extends AppCompatActivity {
     }
 
     private void uploadPin(){
-        if(current_file == null){
+        if(currentFile == null){
             Toast.makeText(this,"Please upload an image first!", Toast.LENGTH_LONG).show();
             return;
         }
-        if(rb_categories.getCheckedRadioButtonId() == -1){
+        if(rbCategories.getCheckedRadioButtonId() == -1){
             Toast.makeText(this,"Please check a category first!", Toast.LENGTH_LONG).show();
             return;
         }
         final Pin pin = new Pin();
 
-        int radioButtonID = rb_categories.getCheckedRadioButtonId();
-        View radioButton = rb_categories.findViewById(radioButtonID);
-        final int idx = rb_categories.indexOfChild(radioButton);
+        int radioButtonID = rbCategories.getCheckedRadioButtonId();
+        View radioButton = rbCategories.findViewById(radioButtonID);
+        final int idx = rbCategories.indexOfChild(radioButton);
         Log.i("IDX", idx + "");
 
-        String comment = et_comment.getText().toString();
+        String comment = etComment.getText().toString();
         pin.setCategory(idx);
         pin.setComment(comment);
         pin.setCheckincount(0);
@@ -134,16 +132,16 @@ public class NewPinActivity extends AppCompatActivity {
         Double lon = getIntent().getDoubleExtra("longitude", 0.0);
         pin.setLatLng(new ParseGeoPoint(lat, lon));
 
-        pin.setPhoto(new ParseFile(current_file));
+        pin.setPhoto(new ParseFile(currentFile));
 
         pin.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if(e!=null) e.printStackTrace();
-                int curr_pintcount = current_user.getInt("pincount");
-                current_user.put("pincount", curr_pintcount + 1);
-                current_user.put("points", curr_pintcount * 10);
-                current_user.saveInBackground();
+                int currPintcount = currentUser.getInt("pincount");
+                currentUser.put("pincount", currPintcount + 1);
+                currentUser.put("points", currPintcount * 10);
+                currentUser.saveInBackground();
 
                 Toast.makeText(context, "new pin complete!", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent();
