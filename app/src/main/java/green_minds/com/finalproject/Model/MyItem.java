@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Model;
+package green_minds.com.finalproject.model;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
