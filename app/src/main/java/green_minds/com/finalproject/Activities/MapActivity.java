@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Activities;
+package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -42,6 +42,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -49,6 +50,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.maps.android.clustering.ClusterManager;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 
@@ -59,6 +61,10 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import green_minds.com.finalproject.Activities.CheckInActivity;
+import green_minds.com.finalproject.Activities.NewPinActivity;
+import green_minds.com.finalproject.Adapters.InfoWindowAdapter;
+import green_minds.com.finalproject.Model.MyItem;
 import green_minds.com.finalproject.Model.Pin;
 import green_minds.com.finalproject.R;
 import permissions.dispatcher.NeedsPermission;
@@ -78,6 +84,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     @BindView(R.id.fab3) public FloatingActionButton fab3;
     @BindView(R.id.fab4) public FloatingActionButton fab4;
 
+    private ClusterManager<MyItem> mClusterManager;
     private final int REQUEST_CODE = 20;
     final public static String PIN_KEY = "pin";
     private Pin.Query pinQuery;
@@ -125,6 +132,8 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 public void onMapReady(GoogleMap map) {
                     loadMap(map);
                     map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                    setUpClusterer();
+
 
                 }
             });
@@ -132,12 +141,50 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
             Toast.makeText(this, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
 
+
     }
 
-     protected void loadMap(GoogleMap googleMap) {
+    private void setUpClusterer() {
+        // Position the map.
+
+        // private List<MyItem> myItems;
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<MyItem>(this, map);
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        map.setOnCameraIdleListener(mClusterManager);
+        map.setOnMarkerClickListener(mClusterManager);
+
+        // Add cluster items (markers) to the cluster manager.
+        addItems();
+
+    }
+    private void addItems() {
+        // doesn't actually load our items, makes up 10 ten pins
+
+        // Set some lat/lng coordinates to start with.
+        double lat = 37.4219983;
+        double lng = -122.084;
+
+        // Add ten cluster items in close proximity, for purposes of this example.
+        for (int i = 0; i < 10; i++) {
+            double offset = i / 60d;
+            lat = lat + offset;
+            lng = lng + offset;
+            MyItem offsetItem = new MyItem(lat, lng);
+            mClusterManager.addItem(offsetItem);
+        }
+    }
+
+    protected void loadMap(GoogleMap googleMap) {
         map = googleMap;
         if (map != null) {
             // Map is ready
+            UiSettings mapUiSettings = map.getUiSettings();
+            mapUiSettings.setZoomControlsEnabled(true);
 
             Toast.makeText(this, "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
             MapActivityPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
@@ -222,11 +269,19 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
                                 LatLng listingPosition = new LatLng(lat, lon);
                                 // Create the marker on the fragment
-                                Marker mapMarker = map.addMarker(new MarkerOptions()
-                                        .position(listingPosition)
+
+                                MarkerOptions markerOptions = new MarkerOptions();
+                                markerOptions.position(listingPosition)
                                         .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
-                                        .icon(customMarker));
+                                        .icon(customMarker);
+
+                                InfoWindowAdapter customInfoWindow = new InfoWindowAdapter(getParent());
+                                map.setInfoWindowAdapter(customInfoWindow);
+                                Marker m = map.addMarker(markerOptions);
+                                // m.setTag(info);
+                                m.showInfoWindow();
+
                             }
 
                         }
@@ -650,5 +705,5 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
  * coming back from filter to all categories view
  * distance to a pin
  * pin pic
- *
+ * add marker clusterization
  */
