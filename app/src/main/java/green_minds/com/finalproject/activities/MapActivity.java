@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -52,6 +53,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.clustering.ClusterManager;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +72,7 @@ import permissions.dispatcher.RuntimePermissions;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 @RuntimePermissions
-public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLongClickListener{
+public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener {
     @BindView(R.id.newPinBtn) public Button newPinBtn;
     @BindView(R.id.checkinBtn) public Button checkinBtn;
     @BindView(R.id.fab) public FloatingActionButton fab;
@@ -92,6 +96,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     private double lon = 0;
     private int type = 0;
     private boolean isFABOpen = false;
+    ParseUser user;
 
     private final static String KEY_LOCATION = "location";
 
@@ -201,6 +206,13 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 }
             });
 
+            getMyLocation();
+            if (mCurrentLocation != null) {
+                Toast.makeText(this, "GPS location was found!", Toast.LENGTH_SHORT).show();
+                LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+                map.animateCamera(cameraUpdate);
+            }
 
             pinQuery = new Pin.Query();
             pins = new ArrayList<>();
@@ -238,6 +250,8 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 }
             });
 
+
+
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
@@ -254,6 +268,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     void getMyLocation() {
         map.setMyLocationEnabled(true);
+        map.setOnMyLocationButtonClickListener(this);
 
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
         locationClient.getLastLocation()
@@ -374,14 +389,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    @Override
-    public void onMapLongClick(final LatLng point) {
-        Toast.makeText(this, "Long Press", Toast.LENGTH_LONG).show();
-        showAlertDialogForPoint(point);
-    }
-
-
-
     // Display the alert that adds the marker
     private void showAlertDialogForPoint(final LatLng point) {
         // inflate message_item.xml view
@@ -427,6 +434,27 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
         // Display the dialog
         alertDialog.show();
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        final ParseUser user;
+        user = ParseUser.getCurrentUser();
+
+        if (mCurrentLocation != null && user != null) {
+            final ParseGeoPoint location = new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            user.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    user.put("location", location);
+                    user.saveInBackground();
+                }
+            });
+        } else {
+            Log.d("MapActivity", "Current location is null");
+        }
+        onResume();
+        return true;
     }
 
 
