@@ -382,6 +382,20 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         // Report to the UI that the location was updated
 
         mCurrentLocation = location;
+        final ParseUser user;
+        user = ParseUser.getCurrentUser();
+        if (user != null) {
+            final ParseGeoPoint newlocation = new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            user.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    user.put("location", newlocation);
+                    user.saveInBackground();
+                    Log.d("MapActivity", "user location updated to " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
+                }
+            });
+        }
+
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
