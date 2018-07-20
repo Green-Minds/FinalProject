@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Activities;
+package green_minds.com.finalproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

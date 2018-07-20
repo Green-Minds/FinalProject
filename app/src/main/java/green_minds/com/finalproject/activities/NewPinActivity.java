@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Activities;
+package green_minds.com.finalproject.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +26,7 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import green_minds.com.finalproject.Model.Pin;
+import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.R;
 
 public class NewPinActivity extends AppCompatActivity {

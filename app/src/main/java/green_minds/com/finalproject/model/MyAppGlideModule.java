@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Model;
+package green_minds.com.finalproject.model;
 
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;

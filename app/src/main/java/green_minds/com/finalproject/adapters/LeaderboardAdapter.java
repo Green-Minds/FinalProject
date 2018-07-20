@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Adapters;
+package green_minds.com.finalproject.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

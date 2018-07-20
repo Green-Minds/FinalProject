@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Activities;
+package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -28,7 +28,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -57,7 +56,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import green_minds.com.finalproject.Model.Pin;
+import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.R;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;

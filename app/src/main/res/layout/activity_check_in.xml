@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.CheckInActivity">
+    tools:context=".activities.CheckInActivity">
 
     <Button
         android:id="@+id/btn_map"

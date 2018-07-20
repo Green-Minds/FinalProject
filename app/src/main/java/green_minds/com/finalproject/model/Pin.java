@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Model;
+package green_minds.com.finalproject.model;
 
 import com.parse.ParseClassName;
 import com.parse.ParseFile;

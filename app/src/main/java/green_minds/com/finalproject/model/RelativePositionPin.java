@@ -1,4 +1,4 @@
-package green_minds.com.finalproject.Model;
+package green_minds.com.finalproject.model;
 
 
 import android.support.annotation.NonNull;
@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 public class RelativePositionPin implements Comparable<RelativePositionPin>{
 
     private Double distanceAwayFromCurrent; //in meters
-    //won't let me extend pin for some reason :(
     private Pin pin;
 
     public RelativePositionPin(Pin pin){
