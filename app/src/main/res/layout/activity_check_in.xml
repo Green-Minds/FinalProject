@@ -31,11 +31,21 @@
         android:layout_toEndOf="@+id/btn_checkin"
         android:text="stats" />
 
+    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/btn_reload"
+        style="@android:style/Widget.ActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_reload" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_pins"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_above="@id/btn_stats"
-        android:layout_alignParentTop="true" />
+        android:layout_below="@id/btn_reload"
+        android:layout_above="@id/btn_stats"/>
 </RelativeLayout>

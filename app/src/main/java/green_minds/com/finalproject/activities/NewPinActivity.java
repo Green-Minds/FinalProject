@@ -26,8 +26,9 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import green_minds.com.finalproject.model.Pin;
+import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.Pin;
 
 public class NewPinActivity extends AppCompatActivity {
 
@@ -49,7 +50,7 @@ public class NewPinActivity extends AppCompatActivity {
     @BindView(R.id.rb_categories)
     RadioGroup rbCategories;
 
-    private File currentFile;
+    private File currentfile;
     private Context context;
     private ParseUser currentUser;
 
@@ -61,26 +62,12 @@ public class NewPinActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_pin);
         ButterKnife.bind(this);
-        currentFile = null;
+        currentfile = null;
         context = this;
 
-        btnCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadCamera();
-            }
-        });
-
-        btnPin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadPin();
-            }
-        });
-
-        if( ParseUser.getCurrentUser() == null){
+        if (ParseUser.getCurrentUser() == null) {
             redirectToLogin();
-        } else{
+        } else {
             currentUser = ParseUser.getCurrentUser();
         }
     }
@@ -89,33 +76,37 @@ public class NewPinActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bmp = null;
         String filepath = data.getStringExtra("image");
-        try {
-            bmp = BitmapFactory.decodeFile(filepath);
-            int wid = bmp.getWidth();
-            int hei = bmp.getHeight();
+        bmp = BitmapFactory.decodeFile(filepath);
+        int wid = bmp.getWidth();
+        int hei = bmp.getHeight();
 
-            ivPreview.requestLayout();
-            wid = ivPreview.getLayoutParams().width * wid/hei;
-            ivPreview.getLayoutParams().width = wid;
-            ivPreview.setImageBitmap(bmp);
+        ivPreview.requestLayout();
+        wid = ivPreview.getLayoutParams().width * wid/hei;
+        ivPreview.getLayoutParams().width = wid;
+        ivPreview.setImageBitmap(bmp);
 
-            currentFile = new File(filepath);
-            tvUpload.setVisibility(View.GONE);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        currentfile = new File(filepath);
+        tvUpload.setVisibility(View.GONE);
     }
 
-    private void uploadPin(){
-        if(currentFile == null){
-            Toast.makeText(this,"Please upload an image first!", Toast.LENGTH_LONG).show();
+    @OnClick(R.id.btn_pin)
+    public void uploadPin() {
+        if (currentfile == null) {
+            Toast.makeText(this, "Please upload an image first!", Toast.LENGTH_LONG).show();
             return;
         }
-        if(rbCategories.getCheckedRadioButtonId() == -1){
-            Toast.makeText(this,"Please check a category first!", Toast.LENGTH_LONG).show();
+        if (rbCategories.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, "Please check a category first!", Toast.LENGTH_LONG).show();
             return;
         }
+
+        Double lat = getIntent().getDoubleExtra("latitude", 0.0);
+        Double lon = getIntent().getDoubleExtra("longitude", 0.0);
+        ParseGeoPoint location = new ParseGeoPoint(lat, lon);
+        savePin(location);
+    }
+
+    private void savePin(ParseGeoPoint location){
         final Pin pin = new Pin();
 
         int radioButtonID = rbCategories.getCheckedRadioButtonId();
@@ -128,11 +119,9 @@ public class NewPinActivity extends AppCompatActivity {
         pin.setComment(comment);
         pin.setCheckincount(0);
 
-        Double lat = getIntent().getDoubleExtra("latitude", 0.0);
-        Double lon = getIntent().getDoubleExtra("longitude", 0.0);
-        pin.setLatLng(new ParseGeoPoint(lat, lon));
+        pin.setLatLng(location);
 
-        pin.setPhoto(new ParseFile(currentFile));
+        pin.setPhoto(new ParseFile(currentfile));
 
         pin.saveInBackground(new SaveCallback() {
             @Override
@@ -151,10 +140,10 @@ public class NewPinActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
-    private void loadCamera(){
+    @OnClick(R.id.btn_camera)
+    public void loadCamera(){
         Intent i = new Intent(this, green_minds.com.finalproject.activities.CameraActivity.class);
         startActivityForResult(i, 30);
     }

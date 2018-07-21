@@ -29,7 +29,6 @@ import green_minds.com.finalproject.R;
 
 public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
     ArrayList<RelativePositionPin> mPins;
-    // context
     Context context;
     ParseUser user;
 

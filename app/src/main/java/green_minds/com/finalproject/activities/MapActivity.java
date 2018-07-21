@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -52,6 +53,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.clustering.ClusterManager;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +63,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import green_minds.com.finalproject.adapters.InfoWindowAdapter;
 import green_minds.com.finalproject.model.MyItem;
 import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.R;
@@ -69,8 +72,7 @@ import permissions.dispatcher.RuntimePermissions;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 @RuntimePermissions
-public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLongClickListener{
-
+public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener {
     @BindView(R.id.newPinBtn) public Button newPinBtn;
     @BindView(R.id.checkinBtn) public Button checkinBtn;
     @BindView(R.id.fab) public FloatingActionButton fab;
@@ -80,7 +82,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     @BindView(R.id.fab3) public FloatingActionButton fab3;
     @BindView(R.id.fab4) public FloatingActionButton fab4;
 
-    private ClusterManager<MyItem> mClusterManager;
     private final int REQUEST_CODE = 20;
     final public static String PIN_KEY = "pin";
     private Pin.Query pinQuery;
@@ -95,6 +96,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     private double lon = 0;
     private int type = 0;
     private boolean isFABOpen = false;
+    ParseUser user;
 
     private final static String KEY_LOCATION = "location";
 
@@ -128,8 +130,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 public void onMapReady(GoogleMap map) {
                     loadMap(map);
                     map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                    setUpClusterer();
-
 
                 }
             });
@@ -137,48 +137,13 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
             Toast.makeText(this, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
 
-
-    }
-
-    private void setUpClusterer() {
-        // Position the map.
-
-        // private List<MyItem> myItems;
-
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<MyItem>(this, map);
-
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
-        map.setOnCameraIdleListener(mClusterManager);
-        map.setOnMarkerClickListener(mClusterManager);
-
-        // Add cluster items (markers) to the cluster manager.
-        addItems();
-
-    }
-    private void addItems() {
-        // doesn't actually load our items, makes up 10 ten pins
-
-        // Set some lat/lng coordinates to start with.
-        double lat = 37.4219983;
-        double lng = -122.084;
-
-        // Add ten cluster items in close proximity, for purposes of this example.
-        for (int i = 0; i < 10; i++) {
-            double offset = i / 60d;
-            lat = lat + offset;
-            lng = lng + offset;
-            MyItem offsetItem = new MyItem(lat, lng);
-            mClusterManager.addItem(offsetItem);
-        }
     }
 
     protected void loadMap(GoogleMap googleMap) {
         map = googleMap;
         if (map != null) {
             // Map is ready
+
             UiSettings mapUiSettings = map.getUiSettings();
             mapUiSettings.setZoomControlsEnabled(true);
 
@@ -241,6 +206,13 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                 }
             });
 
+            getMyLocation();
+            if (mCurrentLocation != null) {
+                Toast.makeText(this, "GPS location was found!", Toast.LENGTH_SHORT).show();
+                LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+                map.animateCamera(cameraUpdate);
+            }
 
             pinQuery = new Pin.Query();
             pins = new ArrayList<>();
@@ -258,26 +230,17 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
                                 Pin pin = objects.get(i);
                                 pins.add(pin);
-
                                 int drawableId = getIcon(type);
                                 BitmapDescriptor customMarker =
                                         BitmapDescriptorFactory.fromResource(drawableId);
 
                                 LatLng listingPosition = new LatLng(lat, lon);
                                 // Create the marker on the fragment
-
-                                MarkerOptions markerOptions = new MarkerOptions();
-                                markerOptions.position(listingPosition)
+                                Marker mapMarker = map.addMarker(new MarkerOptions()
+                                        .position(listingPosition)
                                         .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
-                                        .icon(customMarker);
-
-                                InfoWindowAdapter customInfoWindow = new InfoWindowAdapter(getParent());
-                                map.setInfoWindowAdapter(customInfoWindow);
-                                Marker m = map.addMarker(markerOptions);
-                                // m.setTag(info);
-                                m.showInfoWindow();
-
+                                        .icon(customMarker));
                             }
 
                         }
@@ -286,6 +249,8 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
                     }
                 }
             });
+
+
 
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
@@ -303,6 +268,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     void getMyLocation() {
         map.setMyLocationEnabled(true);
+        map.setOnMyLocationButtonClickListener(this);
 
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
         locationClient.getLastLocation()
@@ -324,7 +290,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
     }
 
 
-     // Called when the Activity becomes visible.
+    // Called when the Activity becomes visible.
 
     @Override
     protected void onStart() {
@@ -416,20 +382,26 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
         // Report to the UI that the location was updated
 
         mCurrentLocation = location;
+        final ParseUser user;
+        user = ParseUser.getCurrentUser();
+        if (user != null) {
+            final ParseGeoPoint newlocation = new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            user.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    user.put("location", newlocation);
+                    user.saveInBackground();
+                    Log.d("MapActivity", "user location updated to " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
+                }
+            });
+        }
+
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         super.onSaveInstanceState(savedInstanceState);
     }
-
-    @Override
-    public void onMapLongClick(final LatLng point) {
-        Toast.makeText(this, "Long Press", Toast.LENGTH_LONG).show();
-        showAlertDialogForPoint(point);
-    }
-
-
 
     // Display the alert that adds the marker
     private void showAlertDialogForPoint(final LatLng point) {
@@ -476,6 +448,27 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
 
         // Display the dialog
         alertDialog.show();
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        final ParseUser user;
+        user = ParseUser.getCurrentUser();
+
+        if (mCurrentLocation != null && user != null) {
+            final ParseGeoPoint location = new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            user.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    user.put("location", location);
+                    user.saveInBackground();
+                }
+            });
+        } else {
+            Log.d("MapActivity", "Current location is null");
+        }
+        onResume();
+        return true;
     }
 
 
@@ -695,11 +688,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapLon
         });
     }
 }
-
 /* TODO: add multiple categories at the same time functionality
  * buttons have pressed and unpressed state
  * coming back from filter to all categories view
  * distance to a pin
  * pin pic
  * add marker clusterization
+ *
+ * only download closer based on disctantce
  */

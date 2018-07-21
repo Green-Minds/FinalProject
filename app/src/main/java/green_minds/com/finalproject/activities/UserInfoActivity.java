@@ -3,7 +3,6 @@ package green_minds.com.finalproject.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.TextView;
 
 import com.parse.ParseException;
@@ -11,6 +10,7 @@ import com.parse.ParseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 
 public class UserInfoActivity extends AppCompatActivity {
@@ -66,14 +66,12 @@ public class UserInfoActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
 
-        btnEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
-                startActivityForResult(i, 30);
-            }
-        });
+    @OnClick(R.id.btn_edit)
+    public void finish(){
+        Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
+        startActivityForResult(i, 30);
     }
 
     private void redirectToLogin(){
