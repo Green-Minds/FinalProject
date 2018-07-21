@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FinalProject</string>
     <string name="google_maps_api_key">AIzaSyBSWcSCCMS25OGqlgajFJUgxGHq4BX25tI</string>
+    <string name="school_list_api_key">onmVfOR9DHDoq6ByqCCkPJ9qrurnpMTTPR8mkR5C</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

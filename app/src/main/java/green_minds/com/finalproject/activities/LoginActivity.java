@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
 
 public class LoginActivity extends AppCompatActivity {
+
     @BindView(R.id.etUsernameLogin) public EditText etUsernameLogin;
     @BindView(R.id.etPasswordLogin) public EditText etPasswordLogin;
     @BindView(R.id.btnLogin) public Button btnLogin;
@@ -54,8 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                     final Intent intent = new Intent(LoginActivity.this, MapActivity.class);
                     startActivity(intent);
                     finish();
-                }
-                else {
+                } else {
                     etPasswordLogin.startAnimation(invalidCredentials());
                     tvIncorrectInfo.setText(e.getMessage().toString());
                     tvIncorrectInfo.setVisibility(View.VISIBLE);
@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public TranslateAnimation invalidCredentials() {
+    private TranslateAnimation invalidCredentials() {
         TranslateAnimation shake = new TranslateAnimation(0, 10, 0, 0);
         shake.setDuration(500);
         shake.setInterpolator(new CycleInterpolator(7));
