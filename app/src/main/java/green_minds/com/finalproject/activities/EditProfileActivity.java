@@ -59,6 +59,7 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
         newPic = null;
         user = ParseUser.getCurrentUser();
+        context = this;
 
         ButterKnife.bind(this);
 

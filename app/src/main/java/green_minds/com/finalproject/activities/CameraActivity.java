@@ -56,8 +56,11 @@ public class CameraActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]
+                    {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
     }
 
@@ -105,7 +108,7 @@ public class CameraActivity extends AppCompatActivity {
         Intent intent = new Intent(context, NewPinActivity.class);
         intent.putExtra("image", output.getAbsolutePath());
         setResult(RESULT_OK, intent);
-        finish();;
+        finish();
     }
 
     @OnClick(R.id.btn_newpic)
