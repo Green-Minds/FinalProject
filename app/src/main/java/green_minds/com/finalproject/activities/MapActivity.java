@@ -1,5 +1,7 @@
 package green_minds.com.finalproject.activities;
 
+
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -60,9 +62,15 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import green_minds.com.finalproject.adapters.MyInfoWindowAdapter;
+import green_minds.com.finalproject.model.InfoWindowData;
 import green_minds.com.finalproject.model.MyItem;
 import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.R;
@@ -219,7 +227,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             }
 
             user = ParseUser.getCurrentUser();
-            ParseGeoPoint loc = user.getParseGeoPoint("location");
+            final ParseGeoPoint loc = user.getParseGeoPoint("location");
             pinQuery = new Pin.Query();
             pins = new ArrayList<>();
             pinQuery.getTop();
@@ -248,6 +256,14 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                                         .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
                                         .icon(customMarker));
+
+                                InfoWindowData info = new InfoWindowData();
+                                info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                                map.setInfoWindowAdapter(adapter);
+                                mapMarker.setTag(info);
+
+                                mapMarker.showInfoWindow();
                             }
 
                         }
@@ -664,7 +680,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
         pinQuery.whereEqualTo("category", type);
-        ParseGeoPoint loc = user.getParseGeoPoint("location");
+        final ParseGeoPoint loc = user.getParseGeoPoint("location");
         pinQuery.whereWithinMiles("latlng", loc, 20);
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
@@ -690,6 +706,14 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                                     .title("checkins: " + objects.get(i).getCheckincount())
                                     .snippet(objects.get(i).getComment())
                                     .icon(customMarker));
+
+
+                            InfoWindowData info = new InfoWindowData();
+                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                            MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                            map.setInfoWindowAdapter(adapter);
+                            mapMarker.setTag(info);
+                            mapMarker.showInfoWindow();
                         }
 
                     }
@@ -708,6 +732,15 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         Intent i = new Intent(MapActivity.this, LoginActivity.class);
         startActivity(i);
 
+    }
+
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 }

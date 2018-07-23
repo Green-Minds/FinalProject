@@ -9,6 +9,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.InfoWindowData;
 
 public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
@@ -30,12 +31,15 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         TextView title = view.findViewById(R.id.title);
         TextView description = view.findViewById(R.id.description);
+        TextView distance = view.findViewById(R.id.distance);
 
 
         title.setText(marker.getTitle());
         description.setText(marker.getSnippet());
 
-        // InfoWindowData infoWindowData = (InfoWindowData) marker.getTag();
+
+        InfoWindowData infoWindowData = (InfoWindowData) marker.getTag();
+        distance.setText("distance: " + infoWindowData.getDistance());
 
 
         return view;
