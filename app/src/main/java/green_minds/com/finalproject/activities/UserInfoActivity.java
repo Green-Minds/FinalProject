@@ -74,6 +74,12 @@ public class UserInfoActivity extends AppCompatActivity {
         startActivityForResult(i, 30);
     }
 
+    @OnClick(R.id.btn_goals)
+    public void goToGoals(){
+        Intent i = new Intent(UserInfoActivity.this, GoalActivity.class);
+        startActivityForResult(i, 31);
+    }
+
     private void redirectToLogin(){
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
