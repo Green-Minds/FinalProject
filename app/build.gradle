@@ -60,4 +60,5 @@ dependencies {
     implementation 'org.parceler:parceler-api:1.1.6'
     annotationProcessor 'org.parceler:parceler:1.1.6'
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
+    implementation 'com.loopj.android:android-async-http:1.4.9'
 }

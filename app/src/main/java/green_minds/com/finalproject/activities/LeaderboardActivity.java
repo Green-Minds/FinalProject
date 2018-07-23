@@ -20,6 +20,7 @@ import green_minds.com.finalproject.adapters.LeaderboardAdapter;
 import green_minds.com.finalproject.R;
 
 public class LeaderboardActivity extends AppCompatActivity {
+
     @BindView(R.id.swipe_container) public SwipeRefreshLayout swipeContainer;
     @BindView(R.id.rvUsers) public RecyclerView rvUsers;
     private ParseUser newUser;
@@ -59,8 +60,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                         users.add(user);
                         leaderboardAdapter.notifyItemChanged(users.size() - 1);
                     }
-                }
-                else {
+                } else {
                     e.printStackTrace();
                 }
             }
@@ -80,15 +80,14 @@ public class LeaderboardActivity extends AppCompatActivity {
                         user = objects.get(i);
                         temp_users.add(user);
                     }
-                }
-                else {
+                } else {
                     e.printStackTrace();
                 }
+
                 leaderboardAdapter.addAll(temp_users);
                 leaderboardAdapter.notifyDataSetChanged();
                 swipeContainer.setRefreshing(false);
             }
-
         });
     }
 }

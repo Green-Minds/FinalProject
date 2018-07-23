@@ -1,5 +1,7 @@
 package green_minds.com.finalproject.activities;
 
+
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -60,9 +62,15 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import green_minds.com.finalproject.adapters.MyInfoWindowAdapter;
+import green_minds.com.finalproject.model.InfoWindowData;
 import green_minds.com.finalproject.model.MyItem;
 import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.R;
@@ -81,6 +89,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
     @BindView(R.id.fab2) public FloatingActionButton fab2;
     @BindView(R.id.fab3) public FloatingActionButton fab3;
     @BindView(R.id.fab4) public FloatingActionButton fab4;
+    @BindView(R.id.logoutBtn) public FloatingActionButton logoutBtn;
 
     private final int REQUEST_CODE = 20;
     final public static String PIN_KEY = "pin";
@@ -112,6 +121,8 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         setContentView(R.layout.activity_map);
 
         ButterKnife.bind(this);
+        // fab0.setSelected(false);
+        // fab0.setPressed(false);
 
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_api_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
@@ -146,12 +157,13 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 
             UiSettings mapUiSettings = map.getUiSettings();
             mapUiSettings.setZoomControlsEnabled(true);
+            map.setMinZoomPreference(6.0f);
 
             Toast.makeText(this, "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
             MapActivityPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapActivityPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
 
-
+            getMyLocation();
 
             newPinBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -214,9 +226,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                 map.animateCamera(cameraUpdate);
             }
 
+            user = ParseUser.getCurrentUser();
+            final ParseGeoPoint loc = user.getParseGeoPoint("location");
             pinQuery = new Pin.Query();
             pins = new ArrayList<>();
             pinQuery.getTop();
+            pinQuery.whereWithinMiles("latlng", loc, 20);
             pinQuery.findInBackground(new FindCallback<Pin>() {
                 @Override
                 public void done(List<Pin> objects, ParseException e) {
@@ -241,6 +256,14 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                                         .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
                                         .icon(customMarker));
+
+                                InfoWindowData info = new InfoWindowData();
+                                info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                                map.setInfoWindowAdapter(adapter);
+                                mapMarker.setTag(info);
+
+                                mapMarker.showInfoWindow();
                             }
 
                         }
@@ -625,6 +648,8 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
     @OnClick(R.id.fab0)
     protected void onFab0() {
         onFab(0);
+        fab0.setSelected(true);
+
     }
 
 
@@ -651,9 +676,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 
     protected void onFab(final int type) {
         map.clear();
+        user = ParseUser.getCurrentUser();
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
         pinQuery.whereEqualTo("category", type);
+        final ParseGeoPoint loc = user.getParseGeoPoint("location");
+        pinQuery.whereWithinMiles("latlng", loc, 20);
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
@@ -678,6 +706,14 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                                     .title("checkins: " + objects.get(i).getCheckincount())
                                     .snippet(objects.get(i).getComment())
                                     .icon(customMarker));
+
+
+                            InfoWindowData info = new InfoWindowData();
+                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                            MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                            map.setInfoWindowAdapter(adapter);
+                            mapMarker.setTag(info);
+                            mapMarker.showInfoWindow();
                         }
 
                     }
@@ -687,6 +723,26 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             }
         });
     }
+
+    @OnClick(R.id.logoutBtn)
+    protected void logout() {
+
+        ParseUser.logOut();
+        ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
+        Intent i = new Intent(MapActivity.this, LoginActivity.class);
+        startActivity(i);
+
+    }
+
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
 }
 /* TODO: add multiple categories at the same time functionality
  * buttons have pressed and unpressed state

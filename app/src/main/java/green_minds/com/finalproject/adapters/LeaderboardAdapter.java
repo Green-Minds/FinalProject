@@ -22,7 +22,7 @@ import green_minds.com.finalproject.R;
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
 
     private List<ParseUser> mUsers;
-    Context context;
+    private Context context;
 
     public LeaderboardAdapter(List<ParseUser> users) {mUsers = users;}
 
@@ -39,6 +39,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -49,6 +50,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
         ParseUser user = mUsers.get(position);
         holder.tvPosition.setText(String.valueOf(position + 1));
         holder.tvUserLeaderbaord.setText(user.getUsername());
@@ -65,6 +67,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+
         @BindView(R.id.tvPostion) TextView tvPosition;
         @BindView(R.id.ivUserImg) ImageView ivUserImg;
         @BindView(R.id.tvUserLeaderboard) TextView tvUserLeaderbaord;

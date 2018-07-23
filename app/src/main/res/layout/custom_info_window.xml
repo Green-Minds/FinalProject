@@ -21,4 +21,14 @@
         android:text="description"
         android:textColor="#ff0099cc" />
 
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Distance"
+        android:textColor="#c2185b" />
+
+
+
 </LinearLayout>
