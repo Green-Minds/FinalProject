@@ -11,7 +11,9 @@
         android:id="@+id/map"
         class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
     <Button
         android:id="@+id/newPinBtn"
@@ -81,10 +83,10 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_alignStart="@+id/fab"
+        android:layout_alignTop="@+id/fab"
         android:layout_gravity="bottom|end"
         app:backgroundTint="@android:color/background_light"
-        app:rippleColor="@android:color/transparent"
-        android:layout_alignTop="@+id/fab"
+        app:rippleColor="@android:color/background_light"
         app:srcCompat="@drawable/recycling_bin" />
 
     <android.support.design.widget.FloatingActionButton
@@ -101,6 +103,16 @@
         app:rippleColor="@android:color/transparent"
         app:srcCompat="@drawable/menu_black" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/logoutBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="57dp"
+        android:clickable="true"
+        app:backgroundTint="@android:color/background_dark"
+        app:srcCompat="@drawable/logout" />
 
 
 </RelativeLayout>

@@ -1,20 +1,17 @@
 package green_minds.com.finalproject.model;
 
 public class PinCategoryHelper {
+
+    public static String[] listOfCategories = {
+            "Bottles / Cans",
+            "Water Fountain",
+            "Bike Rack",
+            "Coffee shop with discount",
+            "Batteries / Electronic Waste"
+    };
+
     public static String getPinIdentifier(int i){
-        switch (i){
-            case 0:
-                return "Bottles / Cans";
-            case 1:
-                return "Water Fountain";
-            case 2:
-                return "Bike Rack";
-            case 3:
-                return "Coffee shop with discount";
-            case 4:
-                return "Batteries / Electronic Waste";
-        }
-        return "error getting category";
+        return listOfCategories[i];
     }
     //for the database
     public static String getTypeKey(int i){

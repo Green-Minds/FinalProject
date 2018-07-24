@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:srcCompat="@color/colorPrimaryDark" />
 
     <TextView
         android:id="@+id/title"
@@ -20,5 +27,15 @@
         android:layout_height="wrap_content"
         android:text="description"
         android:textColor="#ff0099cc" />
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Distance"
+        android:textColor="#c2185b" />
+
+
 
 </LinearLayout>
