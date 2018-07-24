@@ -83,15 +83,6 @@
             android:text="Work" />
     </RadioGroup>
 
-    <Spinner
-        android:id="@+id/schoolList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="140dp"
-        android:visibility="gone" />
-
     <EditText
         android:id="@+id/etCompany"
         android:layout_width="wrap_content"
@@ -115,14 +106,31 @@
         android:textColor="@android:color/holo_red_light"
         android:visibility="gone" />
 
-    <AutoCompleteTextView
-        android:id="@+id/atvSchoolName"
-        android:layout_width="269dp"
+    <FrameLayout
+        android:layout_width="wrap_content"
         android:layout_height="35dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="141dp"
-        android:background="@drawable/text_input_border"
-        android:hint="Enter school name " />
+        android:layout_marginBottom="134dp">
+
+        <green_minds.com.finalproject.model.DelayAutoCompleteTextView
+            android:id="@+id/atvSchoolName"
+            android:layout_width="269dp"
+            android:layout_height="35dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="141dp"
+            android:background="@drawable/text_input_border"
+            android:hint="Enter school name " />
+
+        <ProgressBar
+            android:id="@+id/pb_loading_indicator"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
 </RelativeLayout>
