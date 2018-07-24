@@ -125,6 +125,10 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        user = ParseUser.getCurrentUser();
+        if (user == null) {
+            Intent log = new Intent(MapActivity.this, LoginActivity.class);
+        }
         ButterKnife.bind(this);
         fab0.setSelected(false);
         fab0.setPressed(false);
@@ -174,6 +178,11 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             newPinBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    user = ParseUser.getCurrentUser();
+                    if (user == null) {
+                        Intent log = new Intent(MapActivity.this, LoginActivity.class);
+                    }
                     Intent intent = new Intent(MapActivity.this, NewPinActivity.class);
                     Log.d("MapActivity", "Pin at " + mCurrentLocation.getLatitude());
                     intent.putExtra("latitude", mCurrentLocation.getLatitude());
@@ -185,6 +194,10 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             checkinBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    user = ParseUser.getCurrentUser();
+                    if (user == null) {
+                        Intent log = new Intent(MapActivity.this, LoginActivity.class);
+                    }
                     Intent intent = new Intent(MapActivity.this, CheckInActivity.class);
                     Log.d("MapActivity", "Pin at " + mCurrentLocation.getLatitude());
                     intent.putExtra("latitude", mCurrentLocation.getLatitude());
@@ -232,67 +245,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                 map.animateCamera(cameraUpdate);
             }
 
-            user = ParseUser.getCurrentUser();
-            final ParseGeoPoint loc = user.getParseGeoPoint("location");
-            pinQuery = new Pin.Query();
-            pins = new ArrayList<>();
-            pinQuery.getTop();
-            pinQuery.whereWithinMiles("latlng", loc, 20);
-            pinQuery.findInBackground(new FindCallback<Pin>() {
-                @Override
-                public void done(List<Pin> objects, ParseException e) {
-                    if (e==null){
-                        for (int i = objects.size()-1; i >= 0; i--) {
-
-                            if (objects.get(i).has("latlng"))  {
-                                lat = objects.get(i).getLatLng().getLatitude();
-                                lon = objects.get(i).getLatLng().getLongitude();
-                                type = objects.get(i).getCategory();
-
-                                Pin pin = objects.get(i);
-                                pins.add(pin);
-                                int drawableId = getIcon(type);
-                                BitmapDescriptor customMarker =
-                                        BitmapDescriptorFactory.fromResource(drawableId);
-
-                                LatLng listingPosition = new LatLng(lat, lon);
-                                // Create the marker on the fragment
-                                final Marker mapMarker = map.addMarker(new MarkerOptions()
-                                        .position(listingPosition)
-                                        .title("checkins: " + objects.get(i).getCheckincount())
-                                        .snippet(objects.get(i).getComment())
-                                        .icon(customMarker));
-
-                                ParseFile photo = pin.getPhoto();
-                                if(photo != null){
-                                    image = photo.getUrl();
-                                }
-
-                                InfoWindowData info = new InfoWindowData();
-                                info.setImage(image);
-                                info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
-                                MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
-                                map.setInfoWindowAdapter(adapter);
-                                mapMarker.setTag(info);
-
-                                mapMarker.showInfoWindow();
-
-                                final Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mapMarker.showInfoWindow();
-
-                                    }
-                                }, 200);
-                            }
-
-                        }
-                    } else {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            showAll();
 
 
 
@@ -702,14 +655,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             fab0.setSelected(true);
             fab0.setBackgroundTintList(ColorStateList.valueOf(-16777216));
             onFab(0);
+            unselectOthers(0);
         }
         else if (fab0.isSelected()) {
             fab0.setSelected(false);
             fab0.setBackgroundTintList(ColorStateList.valueOf(-1));
-            onFab(1);
-            onFab(2);
-            onFab(3);
-            onFab(4);
+            showAll();
          }
 
     }
@@ -722,14 +673,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             fab1.setSelected(true);
             fab1.setBackgroundTintList(ColorStateList.valueOf(-16777216));
             onFab(1);
+            unselectOthers(1);
         }
         else if (fab1.isSelected()) {
             fab1.setSelected(false);
             fab1.setBackgroundTintList(ColorStateList.valueOf(-1));
-            onFab(0);
-            onFab(2);
-            onFab(3);
-            onFab(4);
+            showAll();
         }
     }
 
@@ -740,14 +689,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             fab2.setSelected(true);
             fab2.setBackgroundTintList(ColorStateList.valueOf(-16777216));
             onFab(2);
+            unselectOthers(2);
         }
         else if (fab2.isSelected()) {
             fab2.setSelected(false);
             fab2.setBackgroundTintList(ColorStateList.valueOf(-1));
-            onFab(1);
-            onFab(0);
-            onFab(3);
-            onFab(4);
+            showAll();
         }
     }
 
@@ -757,14 +704,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             fab3.setSelected(true);
             fab3.setBackgroundTintList(ColorStateList.valueOf(-16777216));
             onFab(3);
+            unselectOthers(3);
         }
         else if (fab3.isSelected()) {
             fab3.setSelected(false);
             fab3.setBackgroundTintList(ColorStateList.valueOf(-1));
-            onFab(1);
-            onFab(2);
-            onFab(0);
-            onFab(4);
+            showAll();
         }
     }
 
@@ -774,14 +719,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             fab4.setSelected(true);
             fab4.setBackgroundTintList(ColorStateList.valueOf(-16777216));
             onFab(4);
+            unselectOthers(4);
         }
         else if (fab4.isSelected()) {
             fab4.setSelected(false);
             fab4.setBackgroundTintList(ColorStateList.valueOf(-1));
-            onFab(1);
-            onFab(2);
-            onFab(3);
-            onFab(0);
+            showAll();
         }
     }
 
@@ -831,16 +774,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                             MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
                             map.setInfoWindowAdapter(adapter);
                             mapMarker.setTag(info);
-                            mapMarker.showInfoWindow();
 
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mapMarker.showInfoWindow();
-
-                                }
-                            }, 200);
                         }
 
                     }
@@ -870,13 +804,91 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         return bd.doubleValue();
     }
 
+
+    protected void unselectOthers(int n) {
+        if (n != 0) {
+            fab0.setSelected(false);
+            fab0.setBackgroundTintList(ColorStateList.valueOf(-1));
+        }
+        if (n != 1) {
+            fab1.setSelected(false);
+            fab1.setBackgroundTintList(ColorStateList.valueOf(-1));
+        }
+
+        if (n != 2) {
+            fab2.setSelected(false);
+            fab2.setBackgroundTintList(ColorStateList.valueOf(-1));
+        }
+        if (n != 3) {
+            fab3.setSelected(false);
+            fab3.setBackgroundTintList(ColorStateList.valueOf(-1));
+        }
+        if (n != 4) {
+            fab4.setSelected(false);
+            fab4.setBackgroundTintList(ColorStateList.valueOf(-1));
+        }
+
+
+    };
+    protected void showAll() {
+        user = ParseUser.getCurrentUser();
+        final ParseGeoPoint loc = user.getParseGeoPoint("location");
+        pinQuery = new Pin.Query();
+        pins = new ArrayList<>();
+        pinQuery.getTop();
+        pinQuery.whereWithinMiles("latlng", loc, 20);
+        pinQuery.findInBackground(new FindCallback<Pin>() {
+            @Override
+            public void done(List<Pin> objects, ParseException e) {
+                if (e==null){
+                    for (int i = objects.size()-1; i >= 0; i--) {
+
+                        if (objects.get(i).has("latlng"))  {
+                            lat = objects.get(i).getLatLng().getLatitude();
+                            lon = objects.get(i).getLatLng().getLongitude();
+                            type = objects.get(i).getCategory();
+
+                            Pin pin = objects.get(i);
+                            pins.add(pin);
+                            int drawableId = getIcon(type);
+                            BitmapDescriptor customMarker =
+                                    BitmapDescriptorFactory.fromResource(drawableId);
+
+                            LatLng listingPosition = new LatLng(lat, lon);
+                            // Create the marker on the fragment
+                            final Marker mapMarker = map.addMarker(new MarkerOptions()
+                                    .position(listingPosition)
+                                    .title("checkins: " + objects.get(i).getCheckincount())
+                                    .snippet(objects.get(i).getComment())
+                                    .icon(customMarker));
+
+                            ParseFile photo = pin.getPhoto();
+                            if(photo != null){
+                                image = photo.getUrl();
+                            }
+
+                            InfoWindowData info = new InfoWindowData();
+                            info.setImage(image);
+                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                            MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                            map.setInfoWindowAdapter(adapter);
+                            mapMarker.setTag(info);
+                            mapMarker.showInfoWindow();
+                            mapMarker.hideInfoWindow();
+
+                        }
+
+                    }
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
 }
 /* TODO: add multiple categories at the same time functionality
- * buttons have pressed and unpressed state
- * coming back from filter to all categories view
- * distance to a pin
- * pin pic
  * add marker clusterization
  *
- * only download closer based on disctantce
  */
