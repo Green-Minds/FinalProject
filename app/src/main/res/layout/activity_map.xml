@@ -85,8 +85,8 @@
         android:layout_alignStart="@+id/fab"
         android:layout_alignTop="@+id/fab"
         android:layout_gravity="bottom|end"
-        android:background="@drawable/fab0custom"
-        app:rippleColor="@android:color/transparent"
+        app:backgroundTint="@android:color/background_light"
+        app:rippleColor="@android:color/background_light"
         app:srcCompat="@drawable/recycling_bin" />
 
     <android.support.design.widget.FloatingActionButton

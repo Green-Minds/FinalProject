@@ -8,11 +8,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -55,6 +57,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.clustering.ClusterManager;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -70,6 +73,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.adapters.MyInfoWindowAdapter;
+import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.InfoWindowData;
 import green_minds.com.finalproject.model.MyItem;
 import green_minds.com.finalproject.model.Pin;
@@ -106,6 +110,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
     private int type = 0;
     private boolean isFABOpen = false;
     ParseUser user;
+    String image;
 
     private final static String KEY_LOCATION = "location";
 
@@ -121,9 +126,10 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         setContentView(R.layout.activity_map);
 
         ButterKnife.bind(this);
-        // fab0.setSelected(false);
-        // fab0.setPressed(false);
-
+        fab0.setSelected(false);
+        fab0.setPressed(false);
+        Log.d("MapAcgtivity", " fa0 selected " + fab0.isSelected());
+        Log.d("MapAcgtivity", " fa0 pressed " + fab0.isPressed());
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_api_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
         }
@@ -140,7 +146,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                 @Override
                 public void onMapReady(GoogleMap map) {
                     loadMap(map);
-                    map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
                 }
             });
@@ -251,19 +257,34 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 
                                 LatLng listingPosition = new LatLng(lat, lon);
                                 // Create the marker on the fragment
-                                Marker mapMarker = map.addMarker(new MarkerOptions()
+                                final Marker mapMarker = map.addMarker(new MarkerOptions()
                                         .position(listingPosition)
                                         .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
                                         .icon(customMarker));
 
+                                ParseFile photo = pin.getPhoto();
+                                if(photo != null){
+                                    image = photo.getUrl();
+                                }
+
                                 InfoWindowData info = new InfoWindowData();
+                                info.setImage(image);
                                 info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
                                 MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
                                 map.setInfoWindowAdapter(adapter);
                                 mapMarker.setTag(info);
 
                                 mapMarker.showInfoWindow();
+
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mapMarker.showInfoWindow();
+
+                                    }
+                                }, 200);
                             }
 
                         }
@@ -577,6 +598,9 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             String id = data.getStringExtra("id");
             Log.d("MapActivity", "new pin id " + id);
 
+
+            user = ParseUser.getCurrentUser();
+            final ParseGeoPoint loc = user.getParseGeoPoint("location");
             pinQuery = new Pin.Query();
             pins = new ArrayList<>();
             pinQuery.whereEqualTo("objectId", id);
@@ -596,19 +620,45 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                                 pins.add(pin);
                                 Log.d("MapActivity", "added new Pin at " + lat);
 
+
+                                ParseFile photo = pin.getPhoto();
+                                if(photo != null){
+                                    image = photo.getUrl();
+                                }
+
+
+
                                 int drawableId = getIcon(type);
                                 BitmapDescriptor customMarker =
                                         BitmapDescriptorFactory.fromResource(drawableId);
 
                                 LatLng listingPosition = new LatLng(lat, lon);
                                 // Create the marker on the fragment
-                                Marker marker = map.addMarker(new MarkerOptions()
+                                final Marker mapMarker = map.addMarker(new MarkerOptions()
                                         .position(listingPosition)
-                                        .title("checkins: " + pin.getCheckincount())
+                                        .title("checkins: " + objects.get(i).getCheckincount())
                                         .snippet(objects.get(i).getComment())
                                         .icon(customMarker));
 
-                                dropPinEffect(marker);
+                                dropPinEffect(mapMarker);
+
+
+                                InfoWindowData info = new InfoWindowData();
+                                info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                info.setImage(image);
+                                MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                                map.setInfoWindowAdapter(adapter);
+                                mapMarker.setTag(info);
+                                mapMarker.showInfoWindow();
+
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mapMarker.showInfoWindow();
+
+                                    }
+                                }, 200);
 
                             }
                         }
@@ -647,31 +697,92 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 
     @OnClick(R.id.fab0)
     protected void onFab0() {
-        onFab(0);
-        fab0.setSelected(true);
+        Log.d("MapAcgtivity", "after click fab0 selected " + fab0.isSelected());
+        if (!fab0.isSelected()) {
+            fab0.setSelected(true);
+            fab0.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            onFab(0);
+        }
+        else if (fab0.isSelected()) {
+            fab0.setSelected(false);
+            fab0.setBackgroundTintList(ColorStateList.valueOf(-1));
+            onFab(1);
+            onFab(2);
+            onFab(3);
+            onFab(4);
+         }
 
     }
 
 
     @OnClick(R.id.fab1)
     protected void onFab1() {
-        onFab(1);
+
+        if (!fab1.isSelected()) {
+            fab1.setSelected(true);
+            fab1.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            onFab(1);
+        }
+        else if (fab1.isSelected()) {
+            fab1.setSelected(false);
+            fab1.setBackgroundTintList(ColorStateList.valueOf(-1));
+            onFab(0);
+            onFab(2);
+            onFab(3);
+            onFab(4);
+        }
     }
 
 
     @OnClick(R.id.fab2)
     protected void onFab2() {
-        onFab(2);
+        if (!fab2.isSelected()) {
+            fab2.setSelected(true);
+            fab2.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            onFab(2);
+        }
+        else if (fab2.isSelected()) {
+            fab2.setSelected(false);
+            fab2.setBackgroundTintList(ColorStateList.valueOf(-1));
+            onFab(1);
+            onFab(0);
+            onFab(3);
+            onFab(4);
+        }
     }
 
     @OnClick(R.id.fab3)
     protected void onFab3() {
-        onFab(3);
+        if (!fab3.isSelected()) {
+            fab3.setSelected(true);
+            fab3.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            onFab(3);
+        }
+        else if (fab3.isSelected()) {
+            fab3.setSelected(false);
+            fab3.setBackgroundTintList(ColorStateList.valueOf(-1));
+            onFab(1);
+            onFab(2);
+            onFab(0);
+            onFab(4);
+        }
     }
 
     @OnClick(R.id.fab4)
     protected void onFab4() {
-        onFab(4);
+        if (!fab4.isSelected()) {
+            fab4.setSelected(true);
+            fab4.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            onFab(4);
+        }
+        else if (fab4.isSelected()) {
+            fab4.setSelected(false);
+            fab4.setBackgroundTintList(ColorStateList.valueOf(-1));
+            onFab(1);
+            onFab(2);
+            onFab(3);
+            onFab(0);
+        }
     }
 
     protected void onFab(final int type) {
@@ -694,6 +805,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                             Pin pin = objects.get(i);
                             pins.add(pin);
 
+                            ParseFile photo = pin.getPhoto();
+                            if(photo != null){
+                                image = photo.getUrl();
+                            }
+
+
 
                             int drawableId = getIcon(type);
                             BitmapDescriptor customMarker =
@@ -701,7 +818,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 
                             LatLng listingPosition = new LatLng(lat, lon);
                             // Create the marker on the fragment
-                            Marker mapMarker = map.addMarker(new MarkerOptions()
+                            final Marker mapMarker = map.addMarker(new MarkerOptions()
                                     .position(listingPosition)
                                     .title("checkins: " + objects.get(i).getCheckincount())
                                     .snippet(objects.get(i).getComment())
@@ -710,10 +827,20 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 
                             InfoWindowData info = new InfoWindowData();
                             info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                            info.setImage(image);
                             MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
                             map.setInfoWindowAdapter(adapter);
                             mapMarker.setTag(info);
                             mapMarker.showInfoWindow();
+
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mapMarker.showInfoWindow();
+
+                                }
+                            }, 200);
                         }
 
                     }
