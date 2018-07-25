@@ -47,16 +47,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="27dp"
         android:text="Sign Up" />
 
     <TextView
         android:id="@+id/tvConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/etPasswordInput"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="232dp"
+        android:layout_marginTop="24dp"
         android:text="Connect through: "
         android:textColor="@android:color/black" />
 
@@ -64,9 +64,10 @@
         android:id="@+id/rgSelection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/tvConnect"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="191dp"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -82,15 +83,6 @@
             android:layout_height="wrap_content"
             android:text="Work" />
     </RadioGroup>
-
-    <Spinner
-        android:id="@+id/schoolList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="140dp"
-        android:visibility="gone" />
 
     <EditText
         android:id="@+id/etCompany"
@@ -115,14 +107,61 @@
         android:textColor="@android:color/holo_red_light"
         android:visibility="gone" />
 
-    <AutoCompleteTextView
-        android:id="@+id/atvSchoolName"
-        android:layout_width="269dp"
+    <FrameLayout
+        android:id="@+id/autocomplete_container"
+        android:layout_width="wrap_content"
         android:layout_height="35dp"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/rgSelection"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp">
+
+        <green_minds.com.finalproject.model.DelayAutoCompleteTextView
+            android:id="@+id/atvSchoolName"
+            android:layout_width="269dp"
+            android:layout_height="35dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="141dp"
+            android:background="@drawable/text_input_border"
+            android:hint="Enter school name " />
+
+        <ProgressBar
+            android:id="@+id/pb_loading_indicator"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/add_img_container"
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnSignup"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="141dp"
-        android:background="@drawable/text_input_border"
-        android:hint="Enter school name " />
+        android:layout_marginBottom="93dp"
+        android:clickable="true">
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="34dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@+id/rgSelection"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/camera" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Add a profile image"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+    </FrameLayout>
 
 </RelativeLayout>

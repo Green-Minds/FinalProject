@@ -58,7 +58,8 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".activities.EditProfileActivity" />
-        <activity android:name=".activities.GoalActivity"></activity>
+        <activity android:name=".activities.GoalActivity" />
+        <activity android:name=".activities.ClusteringActivity" />
     </application>
 
 </manifest>

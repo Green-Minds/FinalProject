@@ -1,57 +1,44 @@
 package green_minds.com.finalproject.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cz.msebera.android.httpclient.Header;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.adapters.SchoolAutoCompleteAdapter;
+import green_minds.com.finalproject.model.DelayAutoCompleteTextView;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private final static String API_BASE_URL = "https://api.data.gov/ed/collegescorecard/";
-    private AsyncHttpClient client;
-    private List<String> schools;
-    private ArrayAdapter<String> schoolsAdapter;
-
+    //public final static int RESULT_LOAD_IMAGE = 1;
     @BindView(R.id.etUsernameInput) public EditText etUsernameInput;
     @BindView(R.id.etPasswordInput) public EditText etPasswordInput;
     @BindView(R.id.btnSignup) public Button btnSignup;
     @BindView(R.id.rgSelection) public RadioGroup rgSelection;
     @BindView(R.id.rbWork) public RadioButton rbWork;
-    @BindView(R.id.schoolList) public Spinner schoolList;
     @BindView(R.id.etCompany) public EditText etCompany;
     @BindView(R.id.tvUsernameTaken) public TextView tvUsernameTaken;
-    @BindView(R.id.atvSchoolName) public AutoCompleteTextView atvSchoolName;
+    @BindView(R.id.atvSchoolName) public DelayAutoCompleteTextView atvSchoolName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,27 +46,19 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
 
-        client = new AsyncHttpClient();
-        schools = new ArrayList<String>();
-        schoolsAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, schools);
         atvSchoolName.setThreshold(2);
-        atvSchoolName.addTextChangedListener(new TextWatcher() {
+        atvSchoolName.setAdapter(new SchoolAutoCompleteAdapter(this));
+        atvSchoolName.setLoadingIndicator(
+                (android.widget.ProgressBar) findViewById(R.id.pb_loading_indicator));
+        atvSchoolName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                getSchoolList();
-                schoolsAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+                String school = (String) parent.getItemAtPosition(position);
+                atvSchoolName.setText(school);
             }
         });
-        //getSchoolList();
 
 
         rgSelection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -91,7 +70,6 @@ public class SignupActivity extends AppCompatActivity {
                 } else {
                     atvSchoolName.setVisibility(View.VISIBLE);
                     etCompany.setVisibility(View.GONE);
-                    //getSchoolList();
                 }
             }
         });
@@ -99,6 +77,7 @@ public class SignupActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 ParseQuery query = ParseUser.getQuery();
                 query.whereEqualTo("username", etUsernameInput.getText().toString()).findInBackground(new FindCallback<ParseUser>() {
                     @Override
@@ -108,11 +87,13 @@ public class SignupActivity extends AppCompatActivity {
                                 tvUsernameTaken.setVisibility(View.GONE);
                                 String username = etUsernameInput.getText().toString();
                                 String password = etPasswordInput.getText().toString();
-                                String connection = schoolList.getSelectedItem().toString();
+                                String connection = atvSchoolName.getText().toString();
                                 if (rbWork.isChecked()) connection = etCompany.getText().toString();
+                                btnSignup.setEnabled(false);
+                                Toast.makeText(getApplicationContext(),"Creating user", Toast.LENGTH_SHORT).show();
                                 signUp (username, password, connection);
                             } else {
-                                tvUsernameTaken.setText("Username already taken.");
+                                tvUsernameTaken.setText("Username already exists.");
                                 tvUsernameTaken.setVisibility(View.VISIBLE);
                                 return;
                             }
@@ -121,35 +102,6 @@ public class SignupActivity extends AppCompatActivity {
                         }
                     }
                 });
-            }
-        });
-    }
-
-    private void getSchoolList() {
-        String url = API_BASE_URL + "v1/schools";
-        RequestParams params = new RequestParams();
-        params.put("api_key", getString(R.string.school_list_api_key));
-        params.put("fields", "school.name");
-        params.put("page", "5");
-        params.put("school.name", atvSchoolName.getText().toString());
-        client.get(url, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONArray results = response.getJSONArray("results");
-                    for (int i = 0; i < results.length(); i++) {
-                        String schoolName = results.getJSONObject(i).getString("school.name");
-                        schools.add(schoolName);
-                        //notify adapter that a row was added
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
     }
@@ -173,4 +125,11 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
+//
+//    public void addImage(View v) {
+//        Intent i = new Intent(
+//                Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//        startActivityForResult(i, RESULT_LOAD_IMAGE);
+//    }
 }

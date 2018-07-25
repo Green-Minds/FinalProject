@@ -9,6 +9,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -41,6 +42,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String username = etUsernameLogin.getText().toString();
                 String password = etPasswordLogin.getText().toString();
+                btnLogin.setEnabled(false);
+                Toast.makeText(getApplicationContext(),"Logging you in", Toast.LENGTH_SHORT).show();
                 login(username, password);
             }
         });
