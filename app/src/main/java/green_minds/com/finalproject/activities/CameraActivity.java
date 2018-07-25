@@ -47,12 +47,33 @@ public class CameraActivity extends AppCompatActivity {
     RelativeLayout previewOverlay;
 
     private byte[] currentBytes;
+    private int requestCode;
+    private Class parentActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         context = this;
+        requestCode = getIntent().getIntExtra("REQUEST_CODE", 0);
+        try{
+            switch(requestCode){
+                case 3:
+                    parentActivity = LoginActivity.class;
+                    break;
+                case 31:
+                    parentActivity = NewPinActivity.class;
+                    break;
+                case 32:
+                    parentActivity = EditProfileActivity.class;
+                    break;
+                default:
+                    parentActivity = null;
+                    throw new Exception("invalid request code.");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         ButterKnife.bind(this);
 
@@ -105,7 +126,7 @@ public class CameraActivity extends AppCompatActivity {
             }
         }
 
-        Intent intent = new Intent(context, NewPinActivity.class);
+        Intent intent = new Intent(context, parentActivity);
         intent.putExtra("image", output.getAbsolutePath());
         setResult(RESULT_OK, intent);
         finish();
@@ -154,7 +175,7 @@ public class CameraActivity extends AppCompatActivity {
                 Environment.getExternalStorageDirectory(), "ParsaHam");
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d("MyCameraApp", "failed to create directory");
+                Log.d("Green App", "failed to create directory");
                 return null;
             }
         }

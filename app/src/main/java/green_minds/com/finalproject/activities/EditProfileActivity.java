@@ -75,6 +75,7 @@ public class EditProfileActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if(e!=null) e.printStackTrace();
                 Toast.makeText(context, "Updated info!", Toast.LENGTH_SHORT).show();
+                //TODO - go back to profile
             }
         });
     }
