@@ -1,15 +1,18 @@
 package green_minds.com.finalproject.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -27,8 +30,7 @@ import green_minds.com.finalproject.model.DelayAutoCompleteTextView;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private List<String> schools;
-
+    //public final static int RESULT_LOAD_IMAGE = 1;
     @BindView(R.id.etUsernameInput) public EditText etUsernameInput;
     @BindView(R.id.etPasswordInput) public EditText etPasswordInput;
     @BindView(R.id.btnSignup) public Button btnSignup;
@@ -51,6 +53,8 @@ public class SignupActivity extends AppCompatActivity {
         atvSchoolName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
                 String school = (String) parent.getItemAtPosition(position);
                 atvSchoolName.setText(school);
             }
@@ -73,6 +77,7 @@ public class SignupActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 ParseQuery query = ParseUser.getQuery();
                 query.whereEqualTo("username", etUsernameInput.getText().toString()).findInBackground(new FindCallback<ParseUser>() {
                     @Override
@@ -84,9 +89,11 @@ public class SignupActivity extends AppCompatActivity {
                                 String password = etPasswordInput.getText().toString();
                                 String connection = atvSchoolName.getText().toString();
                                 if (rbWork.isChecked()) connection = etCompany.getText().toString();
+                                btnSignup.setEnabled(false);
+                                Toast.makeText(getApplicationContext(),"Creating user", Toast.LENGTH_SHORT).show();
                                 signUp (username, password, connection);
                             } else {
-                                tvUsernameTaken.setText("Username already taken.");
+                                tvUsernameTaken.setText("Username already exists.");
                                 tvUsernameTaken.setVisibility(View.VISIBLE);
                                 return;
                             }
@@ -118,4 +125,11 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
+//
+//    public void addImage(View v) {
+//        Intent i = new Intent(
+//                Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//        startActivityForResult(i, RESULT_LOAD_IMAGE);
+//    }
 }

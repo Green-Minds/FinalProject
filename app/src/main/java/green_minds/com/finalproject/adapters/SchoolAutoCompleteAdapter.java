@@ -9,7 +9,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
@@ -29,7 +28,7 @@ public class SchoolAutoCompleteAdapter extends BaseAdapter implements Filterable
     private Context mContext;
     private List<String> schools = new ArrayList<>();
     private final static String API_BASE_URL = "https://api.data.gov/ed/collegescorecard/";
-    private AsyncHttpClient client;
+    private SyncHttpClient client;
 
     public SchoolAutoCompleteAdapter(Context context) {
         mContext = context;
@@ -63,7 +62,9 @@ public class SchoolAutoCompleteAdapter extends BaseAdapter implements Filterable
 
     @Override
     public Filter getFilter() {
+
         Filter filter = new Filter() {
+
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
@@ -89,6 +90,7 @@ public class SchoolAutoCompleteAdapter extends BaseAdapter implements Filterable
     }
 
     private List<String> findSchools(Context context, String schoolName) {
+
         client = new SyncHttpClient();
         final List<String> resultList = new ArrayList<>();
         String url = API_BASE_URL + "v1/schools";
@@ -97,6 +99,7 @@ public class SchoolAutoCompleteAdapter extends BaseAdapter implements Filterable
         params.put("api_key", context.getString(R.string.school_list_api_key));
         params.put("fields", "school.name");
         params.put("school.name", schoolName);
+        params.put("per_page", 10);
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
