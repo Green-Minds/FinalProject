@@ -49,6 +49,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -84,7 +85,11 @@ import permissions.dispatcher.RuntimePermissions;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 @RuntimePermissions
-public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener {
+public class MapActivity extends AppCompatActivity implements
+        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraMoveCanceledListener,
+        GoogleMap.OnCameraIdleListener {
     @BindView(R.id.newPinBtn) public Button newPinBtn;
     @BindView(R.id.checkinBtn) public Button checkinBtn;
     @BindView(R.id.fab) public FloatingActionButton fab;
@@ -111,8 +116,16 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
     private boolean isFABOpen = false;
     ParseUser user;
     String image;
+    private LatLng currentLoc;
 
     private final static String KEY_LOCATION = "location";
+
+    public static final CameraPosition BONDI =
+            new CameraPosition.Builder().target(new LatLng(-33.891614, 151.276417))
+                    .zoom(15.5f)
+                    .bearing(300)
+                    .tilt(50)
+                    .build();
 
     /*
      * Define a request code to send to Google Play services This code is
@@ -130,8 +143,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             Intent log = new Intent(MapActivity.this, LoginActivity.class);
         }
         ButterKnife.bind(this);
-        fab0.setSelected(false);
-        fab0.setPressed(false);
         Log.d("MapAcgtivity", " fa0 selected " + fab0.isSelected());
         Log.d("MapAcgtivity", " fa0 pressed " + fab0.isPressed());
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_api_key))) {
@@ -165,6 +176,16 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         if (map != null) {
             // Map is ready
 
+            user = ParseUser.getCurrentUser();
+            if (user != null) {
+                ParseGeoPoint loc = user.getParseGeoPoint("location");
+                LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
+                if (loc != null ) {
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
+                    map.animateCamera(cameraUpdate);
+                }
+
+            }
             UiSettings mapUiSettings = map.getUiSettings();
             mapUiSettings.setZoomControlsEnabled(true);
             map.setMinZoomPreference(6.0f);
@@ -174,6 +195,10 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
             MapActivityPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
 
             getMyLocation();
+            map.setOnCameraIdleListener(this);
+            map.setOnCameraMoveStartedListener(this);
+            map.setOnCameraMoveListener(this);
+            map.setOnCameraMoveCanceledListener(this);
 
             newPinBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -392,6 +417,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
                 }
             });
         }
+        // showAll();
 
     }
 
@@ -466,6 +492,70 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
         }
         onResume();
         return true;
+    }
+
+    @Override
+    public void onCameraIdle() {
+        Toast.makeText(this, "The camera has stopped moving.",
+                Toast.LENGTH_SHORT).show();
+
+        // this piece is extra stupid but whatever
+
+        if (fab0.isSelected()) {
+            fab0.setSelected(false);
+            onFab0();
+        }
+        else if (fab1.isSelected()) {
+            fab1.setSelected(false);
+            onFab1();
+        }
+        else if (fab2.isSelected()) {
+            fab2.setSelected(false);
+            onFab2();
+        }
+        else if (fab3.isSelected()) {
+            fab3.setSelected(false);
+            onFab3();
+        }
+        else if (fab4.isSelected()) {
+            fab4.setSelected(false);
+            onFab4();
+        }
+        else {
+            showAll();
+        }
+
+    }
+
+    @Override
+    public void onCameraMoveCanceled() {
+        // Toast.makeText(this, "Camera movement canceled.",
+         //        Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onCameraMove() {
+        // Toast.makeText(this, "The camera is moving.",
+         //        Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCameraMoveStarted(int reason) {
+       /* if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            Toast.makeText(this, "The user gestured on the map.",
+                    Toast.LENGTH_SHORT).show();
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_API_ANIMATION) {
+            Toast.makeText(this, "The user tapped something on the map.",
+                    Toast.LENGTH_SHORT).show();
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_DEVELOPER_ANIMATION) {
+            Toast.makeText(this, "The app moved the camera.",
+                    Toast.LENGTH_SHORT).show();
+        }
+        */
+
     }
 
 
@@ -730,11 +820,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 
     protected void onFab(final int type) {
         map.clear();
-        user = ParseUser.getCurrentUser();
+        CameraPosition currentCameraPosition = map.getCameraPosition();
+        currentLoc = currentCameraPosition.target;
+        final ParseGeoPoint loc = new ParseGeoPoint(currentLoc.latitude, currentLoc.longitude);
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
         pinQuery.whereEqualTo("category", type);
-        final ParseGeoPoint loc = user.getParseGeoPoint("location");
         pinQuery.whereWithinMiles("latlng", loc, 20);
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
@@ -831,12 +922,13 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 
     };
     protected void showAll() {
-        user = ParseUser.getCurrentUser();
-        final ParseGeoPoint loc = user.getParseGeoPoint("location");
+        CameraPosition currentCameraPosition = map.getCameraPosition();
+        currentLoc = currentCameraPosition.target;
+        final ParseGeoPoint loc = new ParseGeoPoint(currentLoc.latitude, currentLoc.longitude);
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
         pinQuery.getTop();
-        pinQuery.whereWithinMiles("latlng", loc, 20);
+        pinQuery.whereWithinMiles("latlng", loc, 1);
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
@@ -891,4 +983,14 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMyLoca
 /* TODO: add multiple categories at the same time functionality
  * add marker clusterization
  *
+ *
+ * add drag pins with new pin
+ *
+ * handler for post delayed
+ * after new pin is added there is a separate map with a pin in the center for the dude to
+ * move the map and have the pin in the center boundaries
+ *
+ * progress indication for everything
+ * placeholder for the pucture
+ * with handler mske code runnable and if there is like a piece in the queue we just remove it
  */
