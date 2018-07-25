@@ -120,6 +120,12 @@ public class MapActivity extends AppCompatActivity implements
 
     private final static String KEY_LOCATION = "location";
 
+
+    // the reaspm for this variable's existance is that a tap on the marker is considered a map move
+    // event, so i tap on a marker and want an infowindow to appear, but it appears and dissapears
+    // because a tap is a map event so sad
+    private static boolean tapEvent = false;
+
     public static final CameraPosition BONDI =
             new CameraPosition.Builder().target(new LatLng(-33.891614, 151.276417))
                     .zoom(15.5f)
@@ -501,28 +507,30 @@ public class MapActivity extends AppCompatActivity implements
 
         // this piece is extra stupid but whatever
 
-        if (fab0.isSelected()) {
-            fab0.setSelected(false);
-            onFab0();
+
+        if (tapEvent) {
+            tapEvent = false;
         }
-        else if (fab1.isSelected()) {
-            fab1.setSelected(false);
-            onFab1();
-        }
-        else if (fab2.isSelected()) {
-            fab2.setSelected(false);
-            onFab2();
-        }
-        else if (fab3.isSelected()) {
-            fab3.setSelected(false);
-            onFab3();
-        }
-        else if (fab4.isSelected()) {
-            fab4.setSelected(false);
-            onFab4();
-        }
+
         else {
-            showAll();
+            if (fab0.isSelected()) {
+                fab0.setSelected(false);
+                onFab0();
+            } else if (fab1.isSelected()) {
+                fab1.setSelected(false);
+                onFab1();
+            } else if (fab2.isSelected()) {
+                fab2.setSelected(false);
+                onFab2();
+            } else if (fab3.isSelected()) {
+                fab3.setSelected(false);
+                onFab3();
+            } else if (fab4.isSelected()) {
+                fab4.setSelected(false);
+                onFab4();
+            } else {
+                showAll();
+            }
         }
 
     }
@@ -542,6 +550,13 @@ public class MapActivity extends AppCompatActivity implements
 
     @Override
     public void onCameraMoveStarted(int reason) {
+
+        if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_API_ANIMATION) {
+            Toast.makeText(this, "The user tapped something on the map.",
+                    Toast.LENGTH_SHORT).show();
+            tapEvent = true;
+        }
        /* if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
             Toast.makeText(this, "The user gestured on the map.",
                     Toast.LENGTH_SHORT).show();
