@@ -11,9 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,11 +47,6 @@ public class GoalListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = ParseUser.getCurrentUser();
-        mGoals = (ArrayList<Goal>)user.get("goals");
-        if( mGoals == null){
-            mGoals = new ArrayList<>();
-        }
     }
 
     @Override
@@ -60,10 +59,27 @@ public class GoalListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
-        mAdapter = new GoalAdapter(mGoals, mListener);
-        rvGoals.setLayoutManager(new LinearLayoutManager(mContext));
-        rvGoals.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
+
+        user = ParseUser.getCurrentUser();
+        //need "include goals" query because otherwise before I get anything in a goal obj I need to call "fetchifneeded"
+        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
+        userQuery.include("goals");
+        userQuery.whereEqualTo("objectId", user.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                //TODO - deal with exceptions
+                user = objects.get(0);
+                mGoals = (ArrayList<Goal>)user.get("goals");
+                if( mGoals == null){
+                    mGoals = new ArrayList<>();
+                }
+                mAdapter = new GoalAdapter(mGoals, mListener);
+                rvGoals.setLayoutManager(new LinearLayoutManager(mContext));
+                rvGoals.setAdapter(mAdapter);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     @Override

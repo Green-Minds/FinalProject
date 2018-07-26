@@ -31,7 +31,7 @@
         android:layout_toStartOf="@+id/btn_edit"
         android:text="delete" />
 
-    <ProgressBar
+    <green_minds.com.finalproject.model.CustomProgressBar
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="249dp"

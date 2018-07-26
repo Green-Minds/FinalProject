@@ -60,6 +60,7 @@
         <activity android:name=".activities.EditProfileActivity" />
         <activity android:name=".activities.GoalActivity" />
         <activity android:name=".activities.ClusteringActivity" />
+        <activity android:name=".activities.GoalDetailActivity"></activity>
     </application>
 
 </manifest>

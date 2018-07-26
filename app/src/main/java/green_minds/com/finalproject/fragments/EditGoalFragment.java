@@ -20,6 +20,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -27,6 +29,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -100,10 +103,21 @@ public class EditGoalFragment extends Fragment {
             goals = getArguments().getParcelableArrayList(ARG_PARAM2);
         }
         else {
-            goals = (ArrayList<Goal>)user.get("goals");
-            if( goals == null){
-                goals = new ArrayList<>();
-            }
+            //have to do this weird "include goals" query because otherwise before I get anything in a goal obj I need to call "fetchifneeded"
+            ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
+            userQuery.include("goals");
+            userQuery.whereEqualTo("objectId", user.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, com.parse.ParseException e) {
+                    //TODO - deal with exceptions
+                    Toast.makeText(context, "done", Toast.LENGTH_SHORT).show();
+                    user = objects.get(0);
+                    goals = (ArrayList<Goal>)user.get("goals");
+                    if( goals == null){
+                        goals = new ArrayList<>();
+                    }
+                }
+            });
         }
     }
 
@@ -121,16 +135,11 @@ public class EditGoalFragment extends Fragment {
         selectedDate = new Date(calendar.getDate());
         int initialPosition = 0;
         if(currentGoal != null){
-            try {
-                initialPosition = currentGoal.getType();
-                numberOf.setText(currentGoal.getGoal() + "");
-                selectedDate = currentGoal.getDeadline();
-                calendar.setDate(selectedDate.getTime());
-                btnSave.setText("Save changes!");
-
-            } catch (com.parse.ParseException e) {
-                e.printStackTrace();
-            }
+            initialPosition = currentGoal.getType();
+            numberOf.setText(currentGoal.getGoal() + "");
+            selectedDate = currentGoal.getDeadline();
+            calendar.setDate(selectedDate.getTime());
+            btnSave.setText("Save changes!");
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, PinCategoryHelper.listOfCategories);
