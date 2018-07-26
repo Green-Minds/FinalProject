@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseFile;
@@ -64,13 +65,22 @@ public class UserInfoActivity extends AppCompatActivity {
         mContext = this;
         ParseFile photo = mUser.getParseFile("photo");
         String url = photo.getUrl();
-        GlideApp.with(mContext).load(url).circleCrop().into(ivProfPic);
+        GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.q_mark).into(ivProfPic);
         ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
         userQuery.include("goals");
         userQuery.whereEqualTo("objectId", mUser.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, com.parse.ParseException e) {
-                //TODO - deal with exceptions
+                if(e != null){
+                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    return;
+                }
+                if(objects.size() < 1){
+                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 mUser = objects.get(0);
                 mGoals = (ArrayList<Goal>)mUser.get("goals");
                 if( mGoals == null){

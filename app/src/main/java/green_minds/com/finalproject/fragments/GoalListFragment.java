@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -74,7 +75,15 @@ public class GoalListFragment extends Fragment {
         userQuery.whereEqualTo("objectId", user.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
-                //TODO - deal with exceptions
+                if(e != null){
+                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    return;
+                }
+                if(objects.size() < 1){
+                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 user = objects.get(0);
                 mGoals = (ArrayList<Goal>)user.get("goals");
                 if( mGoals == null){

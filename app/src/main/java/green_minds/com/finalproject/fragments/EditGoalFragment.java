@@ -112,7 +112,15 @@ public class EditGoalFragment extends Fragment {
             userQuery.whereEqualTo("objectId", user.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, com.parse.ParseException e) {
-                    //TODO - deal with exceptions
+                    if(e != null){
+                        Toast.makeText(context, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                        return;
+                    }
+                    if(objects.size() < 1){
+                        Toast.makeText(context, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     user = objects.get(0);
                     goals = (ArrayList<Goal>)user.get("goals");
                     if( goals == null){
