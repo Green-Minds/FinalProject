@@ -61,5 +61,6 @@ dependencies {
     annotationProcessor 'org.parceler:parceler:1.1.6'
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
     implementation 'com.loopj.android:android-async-http:1.4.9'
-
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+    implementation'com.parse:parsefacebookutils-v4-android:1.10.7'
 }
