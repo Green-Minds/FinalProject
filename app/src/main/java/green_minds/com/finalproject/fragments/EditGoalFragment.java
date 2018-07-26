@@ -43,6 +43,8 @@ public class EditGoalFragment extends Fragment {
 
     public interface OnEditGoalListener {
         void onNewGoal(Goal goal);
+        void showProgressBar();
+        void hideProgressBar();
     }
 
     private OnEditGoalListener mListener;
@@ -94,6 +96,7 @@ public class EditGoalFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mListener.showProgressBar();
         user = ParseUser.getCurrentUser();
         currentGoal = null;
         beingEdited = false;
@@ -110,7 +113,6 @@ public class EditGoalFragment extends Fragment {
                 @Override
                 public void done(List<ParseUser> objects, com.parse.ParseException e) {
                     //TODO - deal with exceptions
-                    Toast.makeText(context, "done", Toast.LENGTH_SHORT).show();
                     user = objects.get(0);
                     goals = (ArrayList<Goal>)user.get("goals");
                     if( goals == null){
@@ -166,6 +168,7 @@ public class EditGoalFragment extends Fragment {
                 selectedDate = new Date(c.getTimeInMillis()); //this is what you want to use later
             }
         });
+        mListener.hideProgressBar();
     }
 
     @Override
@@ -206,6 +209,7 @@ public class EditGoalFragment extends Fragment {
 
     @OnClick(R.id.btn_save)
     public void save(){
+        mListener.showProgressBar();
         try {
             doFieldChecks();
         } catch (Exception e) {
@@ -266,6 +270,7 @@ public class EditGoalFragment extends Fragment {
         user.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
+                mListener.hideProgressBar();
                 if(e != null){
                     e.printStackTrace();
                 } else{

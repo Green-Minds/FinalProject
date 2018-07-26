@@ -3,9 +3,13 @@ package green_minds.com.finalproject.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
@@ -39,12 +43,17 @@ public class UserInfoActivity extends AppCompatActivity {
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
     private Context mContext;
+    private MenuItem miActionProgressItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
         ButterKnife.bind(this);
+    }
+
+    private void setupUserInfo(){
+        showProgressBar();
         mUser = ParseUser.getCurrentUser();
         if(mUser == null){
             redirectToLogin();
@@ -71,13 +80,26 @@ public class UserInfoActivity extends AppCompatActivity {
                 ScoreAdapter adapter = new ScoreAdapter(mContext, PinCategoryHelper.getCategoriesArrayList(), mGoals);
                 ListView listview = findViewById(R.id.listView);
                 listview.setAdapter(adapter);
+                hideProgressBar();
             }
         });
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        setupUserInfo();
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @OnClick(R.id.btn_edit)
-    public void finish(){
+    public void goToEdit(){
         Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
         startActivityForResult(i, 30);
     }
@@ -91,5 +113,15 @@ public class UserInfoActivity extends AppCompatActivity {
     private void redirectToLogin(){
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
+    }
+
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }

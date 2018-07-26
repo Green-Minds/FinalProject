@@ -13,10 +13,14 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.parse.ParseException;
@@ -53,6 +57,8 @@ public class EditProfileActivity extends AppCompatActivity {
     @BindView(R.id.btn_save)
     Button btnSave;
 
+    private MenuItem miActionProgressItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +72,22 @@ public class EditProfileActivity extends AppCompatActivity {
         etUsername.setText(user.getUsername());
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     @OnClick({R.id.btn_save})
     public void save(){
+        showProgressBar();
         user.setUsername(etUsername.getText().toString());
         if(newPic != null ) user.put("photo", newPic);
         user.saveInBackground(new SaveCallback() {
@@ -75,7 +95,7 @@ public class EditProfileActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if(e!=null) e.printStackTrace();
                 Toast.makeText(context, "Updated info!", Toast.LENGTH_SHORT).show();
-                //TODO - go back to profile
+                hideProgressBar();
             }
         });
     }
@@ -151,5 +171,15 @@ public class EditProfileActivity extends AppCompatActivity {
 
         int orientationColumnIndex = cursor.getColumnIndex(columns[1]);
         return cursor.getInt(orientationColumnIndex);
+    }
+
+    private void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    private void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }

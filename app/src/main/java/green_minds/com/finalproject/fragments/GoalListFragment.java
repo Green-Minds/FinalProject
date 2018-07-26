@@ -27,6 +27,12 @@ import green_minds.com.finalproject.model.Goal;
 
 public class GoalListFragment extends Fragment {
 
+    public interface OnGoalListListener {
+        public void openEditFragment(Goal goal, ArrayList<Goal> goals);
+        public void showProgressBar();
+        public void hideProgressBar();
+    }
+
     private OnGoalListListener mListener;
     private ArrayList<Goal> mGoals;
     private ParseUser user;
@@ -59,6 +65,7 @@ public class GoalListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
+        mListener.showProgressBar();
 
         user = ParseUser.getCurrentUser();
         //need "include goals" query because otherwise before I get anything in a goal obj I need to call "fetchifneeded"
@@ -77,6 +84,7 @@ public class GoalListFragment extends Fragment {
                 rvGoals.setLayoutManager(new LinearLayoutManager(mContext));
                 rvGoals.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
+                mListener.hideProgressBar();
             }
         });
 
@@ -98,10 +106,6 @@ public class GoalListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public interface OnGoalListListener {
-        public void openEditFragment(Goal goal, ArrayList<Goal> goals);
     }
 
 }
