@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="50dp"
         android:text="REGISTER"
         android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
@@ -23,11 +23,23 @@
         android:layout_height="35dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="112dp"
         android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Username "
         android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etEmailInput"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="162dp"
+        android:background="@drawable/text_input_border"
+        android:ems="10"
+        android:hint=" Email "
+        android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/etPasswordInput"
@@ -47,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="27dp"
+        android:layout_marginBottom="67dp"
         android:text="Sign Up" />
 
     <TextView
@@ -118,13 +130,13 @@
 
         <green_minds.com.finalproject.model.DelayAutoCompleteTextView
             android:id="@+id/atvSchoolName"
-            android:layout_width="269dp"
+            android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="141dp"
             android:background="@drawable/text_input_border"
-            android:hint="Enter school name " />
+            android:hint=" School                                   " />
 
         <ProgressBar
             android:id="@+id/pb_loading_indicator"
@@ -144,7 +156,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="93dp"
-        android:clickable="true">
+        android:clickable="true"
+        android:visibility="gone">
 
         <ImageButton
             android:id="@+id/imageButton"
@@ -163,5 +176,15 @@
             android:textColor="@android:color/black"
             android:textSize="18sp" />
     </FrameLayout>
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="18dp"
+        android:layout_marginEnd="91dp" />
 
 </RelativeLayout>
