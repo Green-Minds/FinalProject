@@ -1,5 +1,7 @@
 package green_minds.com.finalproject.model;
 
+import java.util.ArrayList;
+
 public class PinCategoryHelper {
 
     public static String[] listOfCategories = {
@@ -36,5 +38,11 @@ public class PinCategoryHelper {
             new Category("Coffee shop with discount", 3, "I want to save", "coffee cups"),
             new Category("Batteries / Electronic Waste", 4, "I want to recycle", "batteries/misc")
     };
-
+    public static ArrayList<Category> getCategoriesArrayList(){
+        ArrayList<Category> resArr = new ArrayList<Category>();
+        for(Category c: categories){
+            resArr.add(c);
+        }
+        return resArr;
+    }
 }

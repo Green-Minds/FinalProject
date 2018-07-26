@@ -1,7 +1,6 @@
 package green_minds.com.finalproject.model;
 
 import com.parse.ParseClassName;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 
 import java.util.Date;
@@ -20,18 +19,13 @@ public class Goal extends ParseObject {
 
     public void setGoal(int goal) { put(KEY_GOAL, goal);}
 
-    public int getType() throws ParseException {return fetchIfNeeded().getInt(KEY_TYPE);}
+    public int getType() {return getInt(KEY_TYPE);}
 
     public void setType(int type) {put(KEY_TYPE, type);}
 
     @Override
     public boolean equals(Object obj) {
         Goal g = (Goal)obj;
-        try {
-            return g.getType() == this.getType();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return false;
+        return this.getType() == g.getType();
     }
 }

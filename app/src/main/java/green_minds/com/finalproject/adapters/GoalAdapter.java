@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.fragments.GoalListFragment;
+import green_minds.com.finalproject.model.CustomProgressBar;
 import green_minds.com.finalproject.model.Goal;
 import green_minds.com.finalproject.model.PinCategoryHelper;
 
@@ -60,19 +60,10 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull GoalAdapter.ViewHolder holder, int i) {
         //relative position Goal holds the relative position
         final Goal goal = mGoals.get(i);
-        int checkins = 0;
-        try {
-            holder.tvName.setText(PinCategoryHelper.listOfCategories[goal.getType()]);
-            checkins = mUser.fetchIfNeeded().getInt(PinCategoryHelper.getTypeKey(goal.getType()));
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        int goalNum = goal.getGoal();
-        holder.progressBar.setMax(goalNum);
-        holder.progressBar.setProgress(checkins);
+        holder.tvName.setText(PinCategoryHelper.listOfCategories[goal.getType()]);
 
-
+        holder.progressBar.setGoal(goal);
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
@@ -118,7 +109,7 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder>{
         TextView tvName;
 
         @BindView(R.id.progress)
-        ProgressBar progressBar;
+        CustomProgressBar progressBar;
 
         @BindView(R.id.btn_delete)
         Button btnDelete;

@@ -3,7 +3,11 @@ package green_minds.com.finalproject.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
@@ -18,20 +22,40 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
 
     private EditGoalFragment mEditGoalFragment;
     private GoalListFragment mGoalListFragment;
+    private MenuItem miActionProgressItem;
+
+    private boolean savedInstanceNull;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goal);
         ButterKnife.bind(this);
-        if(savedInstanceState == null){
+        savedInstanceNull = (savedInstanceState == null);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+
+        if(savedInstanceNull){
             mEditGoalFragment = EditGoalFragment.newInstance();
             mGoalListFragment = GoalListFragment.newInstance();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.container, mEditGoalFragment);
             ft.commit();
         }
+
+        return super.onPrepareOptionsMenu(menu);
     }
+
+
     @OnClick(R.id.btn_new)
     public void openNewFragment(){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -63,5 +87,15 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
         mEditGoalFragment = EditGoalFragment.newInstance();
         ft.replace(R.id.container, mGoalListFragment);
         ft.commit();
+    }
+
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }

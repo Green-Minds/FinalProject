@@ -10,10 +10,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,6 +27,12 @@ import green_minds.com.finalproject.adapters.GoalAdapter;
 import green_minds.com.finalproject.model.Goal;
 
 public class GoalListFragment extends Fragment {
+
+    public interface OnGoalListListener {
+        public void openEditFragment(Goal goal, ArrayList<Goal> goals);
+        public void showProgressBar();
+        public void hideProgressBar();
+    }
 
     private OnGoalListListener mListener;
     private ArrayList<Goal> mGoals;
@@ -43,11 +54,6 @@ public class GoalListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = ParseUser.getCurrentUser();
-        mGoals = (ArrayList<Goal>)user.get("goals");
-        if( mGoals == null){
-            mGoals = new ArrayList<>();
-        }
     }
 
     @Override
@@ -60,10 +66,37 @@ public class GoalListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
-        mAdapter = new GoalAdapter(mGoals, mListener);
-        rvGoals.setLayoutManager(new LinearLayoutManager(mContext));
-        rvGoals.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
+        mListener.showProgressBar();
+
+        user = ParseUser.getCurrentUser();
+        //need "include goals" query because otherwise before I get anything in a goal obj I need to call "fetchifneeded"
+        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
+        userQuery.include("goals");
+        userQuery.whereEqualTo("objectId", user.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                if(e != null){
+                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    return;
+                }
+                if(objects.size() < 1){
+                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                user = objects.get(0);
+                mGoals = (ArrayList<Goal>)user.get("goals");
+                if( mGoals == null){
+                    mGoals = new ArrayList<>();
+                }
+                mAdapter = new GoalAdapter(mGoals, mListener);
+                rvGoals.setLayoutManager(new LinearLayoutManager(mContext));
+                rvGoals.setAdapter(mAdapter);
+                mAdapter.notifyDataSetChanged();
+                mListener.hideProgressBar();
+            }
+        });
+
     }
 
     @Override
@@ -82,10 +115,6 @@ public class GoalListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public interface OnGoalListListener {
-        public void openEditFragment(Goal goal, ArrayList<Goal> goals);
     }
 
 }
