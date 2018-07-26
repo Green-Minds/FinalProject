@@ -76,6 +76,8 @@ public class LoginActivity extends AppCompatActivity {
 
                         } else if (!user.isNew()) {
                             Log.d("MyApp", "User logged in through Facebook!");
+                            btnLogin.setEnabled(false);
+                            fbLoginButton.setEnabled(false);
                             getUserDetailsFromParse();
                         }
                     }
@@ -131,6 +133,8 @@ public class LoginActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
                     tvIncorrectInfo.setVisibility(View.GONE);
+                    btnLogin.setEnabled(false);
+                    fbLoginButton.setEnabled(false);
                     final Intent intent = new Intent(LoginActivity.this, MapActivity.class);
                     startActivity(intent);
                     finish();

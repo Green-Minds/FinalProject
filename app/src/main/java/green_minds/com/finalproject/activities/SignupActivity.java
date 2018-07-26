@@ -4,8 +4,12 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -28,6 +33,7 @@ import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -37,6 +43,12 @@ import com.parse.SignUpCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +87,7 @@ public class SignupActivity extends AppCompatActivity {
     public DelayAutoCompleteTextView atvSchoolName;
     @BindView(R.id.fbSignupButton)
     public LoginButton fbSignupButton;
+    @BindView(R.id.ivUserImg) public ImageView ivUserImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +144,6 @@ public class SignupActivity extends AppCompatActivity {
                                 String connection = atvSchoolName.getText().toString();
                                 String email = etEmailInput.getText().toString();
                                 if (rbWork.isChecked()) connection = etCompany.getText().toString();
-                                btnSignup.setEnabled(false);
                                 Toast.makeText(getApplicationContext(), "Creating user", Toast.LENGTH_SHORT).show();
                                 signUp(username, password, connection, email);
 
@@ -178,20 +190,21 @@ public class SignupActivity extends AppCompatActivity {
             public void onCompleted(JSONObject object, GraphResponse response) {
                 try {
                     etUsernameInput.setText(object.getString("name"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                try {
                     etEmailInput.setText(object.getString("email"));
+                    JSONObject picture = response.getJSONObject().getJSONObject("picture");
+                    JSONObject data = picture.getJSONObject("data");
+
+                    String pictureUrl = data.getString("url");
+                    new ProfilePhotoAsync(pictureUrl).execute();
+                    //Glide.with(getApplicationContext()).load(pictureUrl).into(ivUserImg);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                saveNewUser();
             }
         });
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "name,email");
+        parameters.putString("fields", "name,email,picture");
         request.setParameters(parameters);
         request.executeAsync();
     }
@@ -206,13 +219,29 @@ public class SignupActivity extends AppCompatActivity {
         user.put("connection", atvSchoolName.getText().toString());
         user.put("location", getLocation());
 
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Bitmap bitmap = ((BitmapDrawable) ivUserImg.getDrawable()).getBitmap();
+        if (bitmap != null) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+            byte[] data = stream.toByteArray();
+            String name = user.getUsername().replaceAll("\\s+", "");
+            final ParseFile parseFile = new ParseFile(name + "prof_pic.jpg", data);
+            parseFile.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    user.put("photo", parseFile);
+                }
+            });
+        }
+
         user.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    btnSignup.setEnabled(false);
+                    fbSignupButton.setEnabled(false);;
                     authData.put("token", user.getSessionToken());
                     Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
-
                     try {
                         parseUserTask.waitForCompletion();
                         final Intent intent = new Intent(SignupActivity.this, MapActivity.class);
@@ -221,6 +250,8 @@ public class SignupActivity extends AppCompatActivity {
                     } catch (InterruptedException err) {
                         err.printStackTrace();
                     }
+                } else {
+                    e.printStackTrace();
                 }
             }
         });
@@ -253,6 +284,8 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    btnSignup.setEnabled(false);
+                    fbSignupButton.setEnabled(false);
                     Toast.makeText(getApplicationContext(), "Welcome " + etUsernameInput.getText().toString(), Toast.LENGTH_SHORT).show();
                     final Intent intent = new Intent(SignupActivity.this, MapActivity.class);
                     startActivity(intent);
@@ -263,4 +296,46 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
+
+    class ProfilePhotoAsync extends AsyncTask<String, String, String> {
+        public Bitmap bitmap;
+        String url;
+
+        public ProfilePhotoAsync(String url) {
+            this.url = url;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            // Fetching data from URI and storing in bitmap
+            bitmap = DownloadImageBitmap(url);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ivUserImg.setImageBitmap(bitmap);
+            saveNewUser();
+        }
+    }
+
+    public static Bitmap DownloadImageBitmap(String url) {
+        Bitmap bm = null;
+        try {
+            URL aURL = new URL(url);
+            URLConnection conn = aURL.openConnection();
+            conn.connect();
+            InputStream is = conn.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            bm = BitmapFactory.decodeStream(bis);
+            bis.close();
+            is.close();
+        } catch (IOException e) {
+            Log.e("IMAGE", "Error getting bitmap", e);
+        }
+        return bm;
+    }
 }
+
+
