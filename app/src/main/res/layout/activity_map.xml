@@ -114,5 +114,33 @@
         app:backgroundTint="@android:color/background_dark"
         app:srcCompat="@drawable/logout" />
 
+    <ImageView
+        android:id="@+id/ivAdjust"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:srcCompat="@drawable/newpin" />
+
+    <Button
+        android:id="@+id/adjustBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="63dp"
+        android:text="CONFIRM" />
+
+    <TextView
+        android:id="@+id/tvAdjust"
+        android:layout_width="253dp"
+        android:layout_height="34dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="88dp"
+        android:background="@android:color/background_light"
+        android:text="Please adjust the position of your pin!"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark" />
+
 
 </RelativeLayout>

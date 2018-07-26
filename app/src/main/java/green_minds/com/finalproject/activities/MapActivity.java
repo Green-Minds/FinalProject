@@ -29,6 +29,8 @@ import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -79,6 +81,7 @@ import green_minds.com.finalproject.model.InfoWindowData;
 import green_minds.com.finalproject.model.MyItem;
 import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.PinCategoryHelper;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
@@ -99,6 +102,10 @@ public class MapActivity extends AppCompatActivity implements
     @BindView(R.id.fab3) public FloatingActionButton fab3;
     @BindView(R.id.fab4) public FloatingActionButton fab4;
     @BindView(R.id.logoutBtn) public FloatingActionButton logoutBtn;
+    @BindView(R.id.ivAdjust) public ImageView ivAdjust;
+    @BindView(R.id.adjustBtn) public Button adjustBtn;
+    @BindView(R.id.tvAdjust) public TextView tvAdjust;
+
 
     private final int REQUEST_CODE = 20;
     final public static String PIN_KEY = "pin";
@@ -117,8 +124,14 @@ public class MapActivity extends AppCompatActivity implements
     ParseUser user;
     String image;
     private LatLng currentLoc;
-
     private final static String KEY_LOCATION = "location";
+    private float mZoom = 10;
+    private Pin mNewPin;
+
+    // the reaspm for this variable's existance is that a tap on the marker is considered a map move
+    // event, so i tap on a marker and want an infowindow to appear, but it appears and dissapears
+    // because a tap is a map event so sad
+    private static boolean tapEvent = false;
 
     public static final CameraPosition BONDI =
             new CameraPosition.Builder().target(new LatLng(-33.891614, 151.276417))
@@ -127,10 +140,6 @@ public class MapActivity extends AppCompatActivity implements
                     .tilt(50)
                     .build();
 
-    /*
-     * Define a request code to send to Google Play services This code is
-     * returned in Activity.onActivityResult
-     */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     @Override
@@ -143,8 +152,12 @@ public class MapActivity extends AppCompatActivity implements
             Intent log = new Intent(MapActivity.this, LoginActivity.class);
         }
         ButterKnife.bind(this);
-        Log.d("MapAcgtivity", " fa0 selected " + fab0.isSelected());
-        Log.d("MapAcgtivity", " fa0 pressed " + fab0.isPressed());
+        ivAdjust.setVisibility(View.GONE);
+        adjustBtn.setVisibility(View.GONE);
+        tvAdjust.setVisibility(View.GONE);
+
+        Log.d("MapActivity", " fab0 selected " + fab0.isSelected());
+        Log.d("MapActivity", " fab0 pressed " + fab0.isPressed());
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_api_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
         }
@@ -184,7 +197,6 @@ public class MapActivity extends AppCompatActivity implements
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
                     map.animateCamera(cameraUpdate);
                 }
-
             }
             UiSettings mapUiSettings = map.getUiSettings();
             mapUiSettings.setZoomControlsEnabled(true);
@@ -257,8 +269,6 @@ public class MapActivity extends AppCompatActivity implements
                     fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
                     fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_205));
                     fab4.animate().translationY(-getResources().getDimension(R.dimen.standard_255));
-
-
                 }
             });
 
@@ -269,16 +279,11 @@ public class MapActivity extends AppCompatActivity implements
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
                 map.animateCamera(cameraUpdate);
             }
-
             showAll();
-
-
-
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -311,15 +316,11 @@ public class MapActivity extends AppCompatActivity implements
                 });
     }
 
-
-    // Called when the Activity becomes visible.
-
     @Override
     protected void onStart() {
         super.onStart();
     }
 
-    // Called when the Activity is no longer visible.
     @Override
     protected void onStop() {
         super.onStop();
@@ -350,7 +351,6 @@ public class MapActivity extends AppCompatActivity implements
         }
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -367,8 +367,6 @@ public class MapActivity extends AppCompatActivity implements
         }
         MapActivityPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
     }
-
-
 
     @SuppressLint("MissingPermission")
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
@@ -394,15 +392,11 @@ public class MapActivity extends AppCompatActivity implements
                 Looper.myLooper());
     }
 
-
     public void onLocationChanged(Location location) {
         // GPS may be turned off
         if (location == null) {
             return;
         }
-
-        // Report to the UI that the location was updated
-
         mCurrentLocation = location;
         final ParseUser user;
         user = ParseUser.getCurrentUser();
@@ -417,8 +411,6 @@ public class MapActivity extends AppCompatActivity implements
                 }
             });
         }
-        // showAll();
-
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -500,29 +492,28 @@ public class MapActivity extends AppCompatActivity implements
                 Toast.LENGTH_SHORT).show();
 
         // this piece is extra stupid but whatever
-
-        if (fab0.isSelected()) {
-            fab0.setSelected(false);
-            onFab0();
-        }
-        else if (fab1.isSelected()) {
-            fab1.setSelected(false);
-            onFab1();
-        }
-        else if (fab2.isSelected()) {
-            fab2.setSelected(false);
-            onFab2();
-        }
-        else if (fab3.isSelected()) {
-            fab3.setSelected(false);
-            onFab3();
-        }
-        else if (fab4.isSelected()) {
-            fab4.setSelected(false);
-            onFab4();
+        if (tapEvent) {
+            tapEvent = false;
         }
         else {
-            showAll();
+            if (fab0.isSelected()) {
+                fab0.setSelected(false);
+                onFab0();
+            } else if (fab1.isSelected()) {
+                fab1.setSelected(false);
+                onFab1();
+            } else if (fab2.isSelected()) {
+                fab2.setSelected(false);
+                onFab2();
+            } else if (fab3.isSelected()) {
+                fab3.setSelected(false);
+                onFab3();
+            } else if (fab4.isSelected()) {
+                fab4.setSelected(false);
+                onFab4();
+            } else {
+                showAll();
+            }
         }
 
     }
@@ -531,7 +522,6 @@ public class MapActivity extends AppCompatActivity implements
     public void onCameraMoveCanceled() {
         // Toast.makeText(this, "Camera movement canceled.",
          //        Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
@@ -542,6 +532,17 @@ public class MapActivity extends AppCompatActivity implements
 
     @Override
     public void onCameraMoveStarted(int reason) {
+
+        if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_API_ANIMATION) {
+            Toast.makeText(this, "The user tapped something on the map.",
+                    Toast.LENGTH_SHORT).show();
+            tapEvent = true;
+        }
+
+
+        // I leave this junk of code commented out because I might need it here in half an hour
+
        /* if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
             Toast.makeText(this, "The user gestured on the map.",
                     Toast.LENGTH_SHORT).show();
@@ -555,9 +556,7 @@ public class MapActivity extends AppCompatActivity implements
                     Toast.LENGTH_SHORT).show();
         }
         */
-
     }
-
 
     // Define a DialogFragment that displays the error dialog
     public static class ErrorDialogFragment extends android.support.v4.app.DialogFragment {
@@ -582,7 +581,6 @@ public class MapActivity extends AppCompatActivity implements
             return mDialog;
         }
     }
-
 
     private void dropPinEffect(final Marker marker) {
         // Handler allows us to repeat a code block after a specified delay
@@ -626,18 +624,10 @@ public class MapActivity extends AppCompatActivity implements
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        // check request code and result code first
-
-
         if (resultCode == RESULT_OK) {
             data.getExtras();
-
-            // Use data parameter
-
             String id = data.getStringExtra("id");
             Log.d("MapActivity", "new pin id " + id);
 
@@ -651,60 +641,100 @@ public class MapActivity extends AppCompatActivity implements
                 @Override
                 public void done(List<Pin> objects, ParseException e) {
                     if (e==null){
-                        for (int i = objects.size()-1; i >= 0; i--) {
+                        mNewPin = objects.get(0);
 
-                            Pin pin = objects.get(0);
-
-                            if (pin.has("latlng"))  {
-                                Log.d("MapActivity", "new pin exists?" + (pin != null));
-                                lat = pin.getLatLng().getLatitude();
-                                lon = pin.getLatLng().getLongitude();
-                                type = pin.getCategory();
-                                pins.add(pin);
-                                Log.d("MapActivity", "added new Pin at " + lat);
+                        if (mNewPin.has("latlng"))  {
+                            Log.d("MapActivity", "new pin exists?" + (mNewPin != null));
+                            lat = mNewPin.getLatLng().getLatitude();
+                            lon = mNewPin.getLatLng().getLongitude();
+                            type = mNewPin.getCategory();
+                            pins.add(mNewPin);
 
 
-                                ParseFile photo = pin.getPhoto();
-                                if(photo != null){
-                                    image = photo.getUrl();
-                                }
+                            // new cool map view with adjusting the pin position
+                            CameraUpdate cameraNewPin = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 17);
+                            map.animateCamera(cameraNewPin);
+                            ivAdjust.setVisibility(View.VISIBLE);
+                            adjustBtn.setVisibility(View.VISIBLE);
+                            tvAdjust.setVisibility(View.VISIBLE);
+                            newPinBtn.setVisibility(View.GONE);
+                            checkinBtn.setVisibility(View.GONE);
+                            fab.setVisibility(View.GONE);
+                            fab0.setVisibility(View.GONE);
+                            fab1.setVisibility(View.GONE);
+                            fab2.setVisibility(View.GONE);
+                            fab3.setVisibility(View.GONE);
+                            fab4.setVisibility(View.GONE);
 
+                            adjustBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    CameraPosition currentCameraPosition = map.getCameraPosition();
+                                    currentLoc = currentCameraPosition.target;
+                                    lat = currentLoc.latitude;
+                                    lon = currentLoc.longitude;
 
+                                    Log.d("MapActivity", "added new Pin at " + lat);
+                                    mNewPin.setLatLng(new ParseGeoPoint(lat, lon));
 
-                                int drawableId = getIcon(type);
-                                BitmapDescriptor customMarker =
-                                        BitmapDescriptorFactory.fromResource(drawableId);
-
-                                LatLng listingPosition = new LatLng(lat, lon);
-                                // Create the marker on the fragment
-                                final Marker mapMarker = map.addMarker(new MarkerOptions()
-                                        .position(listingPosition)
-                                        .title("checkins: " + objects.get(i).getCheckincount())
-                                        .snippet(objects.get(i).getComment())
-                                        .icon(customMarker));
-
-                                dropPinEffect(mapMarker);
-
-
-                                InfoWindowData info = new InfoWindowData();
-                                info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
-                                info.setImage(image);
-                                MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
-                                map.setInfoWindowAdapter(adapter);
-                                mapMarker.setTag(info);
-                                mapMarker.showInfoWindow();
-
-                                final Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mapMarker.showInfoWindow();
-
+                                    ParseFile photo = mNewPin.getPhoto();
+                                    if(photo != null){
+                                        image = photo.getUrl();
                                     }
-                                }, 200);
+                                    int drawableId = getIcon(mNewPin.getCategory());
+                                    BitmapDescriptor customMarker =
+                                            BitmapDescriptorFactory.fromResource(drawableId);
 
-                            }
+                                    LatLng listingPosition = new LatLng(lat, lon);
+                                    // Create the marker on the fragment
+                                    final Marker mapMarker = map.addMarker(new MarkerOptions()
+                                            .position(listingPosition)
+                                            .title("checkins: " + mNewPin.getCheckincount())
+                                            .snippet(mNewPin.getComment())
+                                            .icon(customMarker));
+
+                                    dropPinEffect(mapMarker);
+
+                                    InfoWindowData info = new InfoWindowData();
+                                    info.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                    info.setImage(image);
+                                    MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                                    map.setInfoWindowAdapter(adapter);
+                                    mapMarker.setTag(info);
+                                    mapMarker.showInfoWindow();
+
+                                    final Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mapMarker.showInfoWindow();
+
+                                        }
+                                    }, 200);
+
+                                    adjustBtn.setVisibility(View.GONE);
+                                    ivAdjust.setVisibility(View.GONE);
+                                    tvAdjust.setVisibility(View.GONE);
+                                    newPinBtn.setVisibility(View.VISIBLE);
+                                    checkinBtn.setVisibility(View.VISIBLE);
+                                    fab.setVisibility(View.VISIBLE);
+                                    fab0.setVisibility(View.VISIBLE);
+                                    fab1.setVisibility(View.VISIBLE);
+                                    fab2.setVisibility(View.VISIBLE);
+                                    fab3.setVisibility(View.VISIBLE);
+                                    fab4.setVisibility(View.VISIBLE);
+
+                                    mNewPin.saveInBackground(new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                        }
+                                    });
+
+                                }
+                            });
+
                         }
+
                     } else {
                         e.printStackTrace();
                     }
@@ -754,7 +784,6 @@ public class MapActivity extends AppCompatActivity implements
          }
 
     }
-
 
     @OnClick(R.id.fab1)
     protected void onFab1() {
@@ -822,11 +851,12 @@ public class MapActivity extends AppCompatActivity implements
         map.clear();
         CameraPosition currentCameraPosition = map.getCameraPosition();
         currentLoc = currentCameraPosition.target;
+        mZoom = currentCameraPosition.zoom;
         final ParseGeoPoint loc = new ParseGeoPoint(currentLoc.latitude, currentLoc.longitude);
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
         pinQuery.whereEqualTo("category", type);
-        pinQuery.whereWithinMiles("latlng", loc, 20);
+        pinQuery.whereWithinMiles("latlng", loc, radius(mZoom));
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
@@ -844,8 +874,6 @@ public class MapActivity extends AppCompatActivity implements
                                 image = photo.getUrl();
                             }
 
-
-
                             int drawableId = getIcon(type);
                             BitmapDescriptor customMarker =
                                     BitmapDescriptorFactory.fromResource(drawableId);
@@ -858,9 +886,10 @@ public class MapActivity extends AppCompatActivity implements
                                     .snippet(objects.get(i).getComment())
                                     .icon(customMarker));
 
-
+                            user = ParseUser.getCurrentUser();
+                            final ParseGeoPoint userloc = user.getParseGeoPoint("location");
                             InfoWindowData info = new InfoWindowData();
-                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
                             info.setImage(image);
                             MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
                             map.setInfoWindowAdapter(adapter);
@@ -878,29 +907,27 @@ public class MapActivity extends AppCompatActivity implements
 
     @OnClick(R.id.logoutBtn)
     protected void logout() {
-
         ParseUser.logOut();
         ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
         Intent i = new Intent(MapActivity.this, LoginActivity.class);
         startActivity(i);
-
     }
 
 
     private static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
+        if (places < 0)
+            throw new IllegalArgumentException();
         BigDecimal bd = new BigDecimal(Double.toString(value));
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
 
     protected void unselectOthers(int n) {
         if (n != 0) {
             fab0.setSelected(false);
             fab0.setBackgroundTintList(ColorStateList.valueOf(-1));
         }
+
         if (n != 1) {
             fab1.setSelected(false);
             fab1.setBackgroundTintList(ColorStateList.valueOf(-1));
@@ -918,17 +945,17 @@ public class MapActivity extends AppCompatActivity implements
             fab4.setSelected(false);
             fab4.setBackgroundTintList(ColorStateList.valueOf(-1));
         }
-
-
-    };
+    }
     protected void showAll() {
         CameraPosition currentCameraPosition = map.getCameraPosition();
         currentLoc = currentCameraPosition.target;
+        mZoom = currentCameraPosition.zoom;
+
         final ParseGeoPoint loc = new ParseGeoPoint(currentLoc.latitude, currentLoc.longitude);
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
         pinQuery.getTop();
-        pinQuery.whereWithinMiles("latlng", loc, 1);
+        pinQuery.whereWithinMiles("latlng", loc, radius(mZoom));
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
@@ -961,24 +988,42 @@ public class MapActivity extends AppCompatActivity implements
 
                             InfoWindowData info = new InfoWindowData();
                             info.setImage(image);
-                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                            user = ParseUser.getCurrentUser();
+                            final ParseGeoPoint userloc = user.getParseGeoPoint("location");
+                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
                             MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
                             map.setInfoWindowAdapter(adapter);
                             mapMarker.setTag(info);
                             mapMarker.showInfoWindow();
                             mapMarker.hideInfoWindow();
-
                         }
-
                     }
                 } else {
                     e.printStackTrace();
                 }
             }
         });
-
     }
 
+
+    private int radius(float zoom) {
+        // the zoom units are obscure, 5 is whole japan, 20 is houses
+        // the limit is set to 6 so let's say if zoom < 10 show radius of 500 miles
+        // if 10 < zoom < 15 50 miles, > 15 5 miles
+
+        int r = 10;
+
+        if (zoom < 10) {
+            r = 500;
+        }
+        else if (zoom < 15) {
+            r = 50;
+        }
+        else {
+            r = 10;
+        }
+        return r;
+    }
 }
 /* TODO: add multiple categories at the same time functionality
  * add marker clusterization
@@ -987,6 +1032,7 @@ public class MapActivity extends AppCompatActivity implements
  * add drag pins with new pin
  *
  * handler for post delayed
+ *
  * after new pin is added there is a separate map with a pin in the center for the dude to
  * move the map and have the pin in the center boundaries
  *

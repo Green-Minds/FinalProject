@@ -37,11 +37,10 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="467dp"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="61dp">
+        android:layout_below="@+id/btn_return">
 
     </FrameLayout>
 </RelativeLayout>

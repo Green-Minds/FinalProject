@@ -29,4 +29,12 @@ public class PinCategoryHelper {
         }
         return "error getting category";
     }
+    public static Category[] categories = {
+            new Category("Bottles / Cans", 0, "I want to save", "bottles"),
+            new Category("Water Fountain", 1, "I want to refill", "bottles"),
+            new Category("Bike Rack", 2, "I want to bike", "times"),
+            new Category("Coffee shop with discount", 3, "I want to save", "coffee cups"),
+            new Category("Batteries / Electronic Waste", 4, "I want to recycle", "batteries/misc")
+    };
+
 }

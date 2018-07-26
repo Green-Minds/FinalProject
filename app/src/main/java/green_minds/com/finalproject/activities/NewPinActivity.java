@@ -55,6 +55,8 @@ public class NewPinActivity extends AppCompatActivity {
     private ParseUser currentUser;
 
     final public static String PIN_KEY = "pin";
+    final public static String CODE_KEY ="REQUEST_CODE";
+    final public static int REQUEST_CODE = 31;
 
 
     @Override
@@ -145,7 +147,8 @@ public class NewPinActivity extends AppCompatActivity {
     @OnClick(R.id.btn_camera)
     public void loadCamera(){
         Intent i = new Intent(this, green_minds.com.finalproject.activities.CameraActivity.class);
-        startActivityForResult(i, 30);
+        i.putExtra(CODE_KEY, REQUEST_CODE);
+        startActivityForResult(i, REQUEST_CODE);
     }
 
     private void redirectToLogin(){
