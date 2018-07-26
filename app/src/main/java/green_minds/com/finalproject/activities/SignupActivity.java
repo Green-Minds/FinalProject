@@ -184,7 +184,7 @@ public class SignupActivity extends AppCompatActivity {
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
-    void getUserDetailFromFB() {
+    private void getUserDetailFromFB() {
         GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
@@ -209,7 +209,7 @@ public class SignupActivity extends AppCompatActivity {
         request.executeAsync();
     }
 
-    void saveNewUser() {
+    private void saveNewUser() {
 
         final ParseUser user = ParseUser.getCurrentUser();
         final Map<String, String> authData = new HashMap<>();
@@ -297,7 +297,7 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    class ProfilePhotoAsync extends AsyncTask<String, String, String> {
+    private class ProfilePhotoAsync extends AsyncTask<String, String, String> {
         public Bitmap bitmap;
         String url;
 
@@ -320,7 +320,7 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    public static Bitmap DownloadImageBitmap(String url) {
+    private static Bitmap DownloadImageBitmap(String url) {
         Bitmap bm = null;
         try {
             URL aURL = new URL(url);
