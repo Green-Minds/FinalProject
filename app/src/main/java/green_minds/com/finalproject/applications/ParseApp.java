@@ -3,6 +3,7 @@ package green_minds.com.finalproject.applications;
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 
 import green_minds.com.finalproject.model.Goal;
@@ -23,6 +24,7 @@ public class ParseApp extends Application{
                 .build();
 
         Parse.initialize(configuration);
+        ParseFacebookUtils.initialize(this);
 
 
     }

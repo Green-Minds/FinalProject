@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="131dp"
+        android:layout_marginTop="126dp"
         android:text="LOG IN"
         android:textColor="@android:color/black"
         android:textSize="18sp"
@@ -24,7 +24,7 @@
         android:layout_height="35dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="210dp"
+        android:layout_marginTop="192dp"
         android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Username"
@@ -34,9 +34,7 @@
         android:id="@+id/etPasswordLogin"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="209dp"
+        android:layout_centerInParent="true"
         android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Password"
@@ -48,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="115dp"
+        android:layout_marginBottom="164dp"
         android:text="Log in " />
 
     <View
@@ -99,4 +97,13 @@
         android:text="TextView"
         android:textColor="@android:color/holo_red_light"
         android:visibility="gone" />
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/fbLoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="83dp" />
 </RelativeLayout>
