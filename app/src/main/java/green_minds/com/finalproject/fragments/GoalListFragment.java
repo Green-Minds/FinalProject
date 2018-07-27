@@ -10,15 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,16 +22,19 @@ import green_minds.com.finalproject.model.Goal;
 public class GoalListFragment extends Fragment {
 
     public interface OnGoalListListener {
-        public void openEditFragment(Goal goal, ArrayList<Goal> goals);
-        public void showProgressBar();
-        public void hideProgressBar();
+
+        void openEditFragment(Goal goal);
+
+        void showProgressBar();
+
+        void hideProgressBar();
     }
 
     private OnGoalListListener mListener;
     private ArrayList<Goal> mGoals;
-    private ParseUser user;
     private Context mContext;
     private GoalAdapter mAdapter;
+    private static final String ARG_PARAM0 = "goals";
 
     @BindView(R.id.rv_goals)
     RecyclerView rvGoals;
@@ -46,57 +42,36 @@ public class GoalListFragment extends Fragment {
     public GoalListFragment() {
     }
 
-    public static GoalListFragment newInstance() {
+    public static GoalListFragment newInstance(ArrayList<Goal> mGoals) {
         GoalListFragment fragment = new GoalListFragment();
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(ARG_PARAM0, mGoals);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mListener.showProgressBar();
+        mGoals = getArguments().getParcelableArrayList(ARG_PARAM0);
+        mAdapter = new GoalAdapter(mGoals, mListener);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_list_goal, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
-        mListener.showProgressBar();
 
-        user = ParseUser.getCurrentUser();
-        //need "include goals" query because otherwise before I get anything in a goal obj I need to call "fetchifneeded"
-        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
-        userQuery.include("goals");
-        userQuery.whereEqualTo("objectId", user.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> objects, ParseException e) {
-                if(e != null){
-                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                    return;
-                }
-                if(objects.size() < 1){
-                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                user = objects.get(0);
-                mGoals = (ArrayList<Goal>)user.get("goals");
-                if( mGoals == null){
-                    mGoals = new ArrayList<>();
-                }
-                mAdapter = new GoalAdapter(mGoals, mListener);
-                rvGoals.setLayoutManager(new LinearLayoutManager(mContext));
-                rvGoals.setAdapter(mAdapter);
-                mAdapter.notifyDataSetChanged();
-                mListener.hideProgressBar();
-            }
-        });
-
+        rvGoals.setLayoutManager(new LinearLayoutManager(mContext));
+        rvGoals.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
+        mListener.hideProgressBar();
     }
 
     @Override
@@ -107,7 +82,7 @@ public class GoalListFragment extends Fragment {
             mListener = (OnGoalListListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnGoalListListener");
         }
     }
 

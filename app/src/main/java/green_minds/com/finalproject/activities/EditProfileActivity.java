@@ -37,13 +37,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.GlideApp;
 
 public class EditProfileActivity extends AppCompatActivity {
-    // PICK_PHOTO_CODE is a constant integer
     public final static int PICK_PHOTO_CODE = 1046;
-    private ParseFile newPic;
-    private ParseUser user;
-    private Context context;
+
+    private ParseFile mNewPic;
+    private ParseFile mSmallerNewPic;
+    private ParseUser mUser;
+    private Context mContext;
+    private MenuItem miActionProgressItem;
 
     @BindView(R.id.tv_username)
     EditText etUsername;
@@ -57,19 +60,18 @@ public class EditProfileActivity extends AppCompatActivity {
     @BindView(R.id.btn_save)
     Button btnSave;
 
-    private MenuItem miActionProgressItem;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        newPic = null;
-        user = ParseUser.getCurrentUser();
-        context = this;
-
+        mNewPic = null;
+        mUser = ParseUser.getCurrentUser();
+        ParseFile current_photo = mUser.getParseFile("photo");
+        String url = current_photo.getUrl();
+        mContext = this;
         ButterKnife.bind(this);
-
-        etUsername.setText(user.getUsername());
+        etUsername.setText(mUser.getUsername());
+        GlideApp.with(mContext).load(url).circleCrop().into(imgProfPic);
     }
 
 
@@ -78,6 +80,7 @@ public class EditProfileActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
@@ -88,13 +91,13 @@ public class EditProfileActivity extends AppCompatActivity {
     @OnClick({R.id.btn_save})
     public void save(){
         showProgressBar();
-        user.setUsername(etUsername.getText().toString());
-        if(newPic != null ) user.put("photo", newPic);
-        user.saveInBackground(new SaveCallback() {
+        mUser.setUsername(etUsername.getText().toString());
+        if(mNewPic != null ) mUser.put("photo", mNewPic);
+        mUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if(e!=null) e.printStackTrace();
-                Toast.makeText(context, "Updated info!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, getString(R.string.updated_alert), Toast.LENGTH_SHORT).show();
                 hideProgressBar();
             }
         });
@@ -104,7 +107,6 @@ public class EditProfileActivity extends AppCompatActivity {
     public void onPickPhoto() {
         Intent intent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
         startActivityForResult(intent, PICK_PHOTO_CODE);
     }
 
@@ -130,7 +132,11 @@ public class EditProfileActivity extends AppCompatActivity {
             ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
             rotatedBitmap.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
             byte[] imageByte = byteArrayOutputStream.toByteArray();
-            newPic = new ParseFile(getFileName(), imageByte);
+
+//            Bitmap smallerBitmap =
+//
+//            mNewPic = new ParseFile(getFileName(), imageByte);
+
         }
     }
 
@@ -150,8 +156,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 bitmap.getWidth() / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-        //maybe use this later if i want scaling
-        //Bitmap bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
+
         return output;
     }
 
@@ -159,6 +164,11 @@ public class EditProfileActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
                 .format(new Date());
         return "IMG_" + timeStamp + ".jpg";
+    }
+    private String getSmallerFileName(){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+                .format(new Date());
+        return "IMG_SMALLER_" + timeStamp + ".jpg";
     }
 
     //https://stackoverflow.com/questions/21085105/get-orientation-of-image-from-mediastore-images-media-data/30572852
@@ -174,12 +184,10 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void showProgressBar() {
-        // Show progress item
         miActionProgressItem.setVisible(true);
     }
 
     private void hideProgressBar() {
-        // Hide progress item
         miActionProgressItem.setVisible(false);
     }
 }

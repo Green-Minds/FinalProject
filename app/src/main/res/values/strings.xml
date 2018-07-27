@@ -4,5 +4,24 @@
     <string name="school_list_api_key">onmVfOR9DHDoq6ByqCCkPJ9qrurnpMTTPR8mkR5C</string>
     <string name="facebook_app_id">1817693664978014</string>
     <string name="fb_login_protocol_scheme">fb1817693664978014</string>
+    <string name="alert_dialog_title">Overwrite</string>
+    <string name="alert_dialog_body">You have already set a goal for this category. Do you want to overwrite your old goal?</string>
+    <string name="network_error">Network Error. Please try again later!</string>
+    <string name="misc_error">Error. Please came back to this page later!</string>
+    <string name="exception_date">Choose a date in the future!</string>
+    <string name="exception_empty_string">Fill out the goal field!</string>
+    <string name="exception_badchar">Invalid characters in number field!</string>
+    <string name="exception_zero">Your number needs to be greater than 0!</string>
+    <string name="save_canceled">Save canceled.</string>
+    <string name="button_save_text">Save changes!</string>
+    <string name="button_new_text">Make New Goal!</string>
+    <string name="new_goal_title">Making New Goal</string>
+    <string name="edit_goal_title">Editing Goal - </string>
+    <string name="goal_details">You have checked in %1$d times out of your goal of %2$d.</string>
+    <string name="wait_content">Please wait for content to load first.</string>
+    <string name="goal_details_estimate">You will need to check in roughly %1$s times per day to reach your goal by your deadline of %2$s.</string>
+    <string name="goal_congrats">You have completed this goal! Congrats!</string>
+    <string name="goal_fail">You\'ve missed the deadline for this goal.</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="updated_alert">Updated info!</string>
 </resources>
