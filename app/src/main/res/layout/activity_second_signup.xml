@@ -70,15 +70,15 @@
     <FrameLayout
         android:id="@+id/autocomplete_container"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/rgSelection"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp">
 
         <green_minds.com.finalproject.model.DelayAutoCompleteTextView
             android:id="@+id/atvSchoolName"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="141dp"
@@ -90,7 +90,9 @@
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right|center"
+            android:layout_gravity="right"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
             android:visibility="gone" />
 
     </FrameLayout>

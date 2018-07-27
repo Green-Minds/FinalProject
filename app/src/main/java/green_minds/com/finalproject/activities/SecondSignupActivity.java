@@ -33,6 +33,7 @@ public class SecondSignupActivity extends AppCompatActivity {
     @BindView(R.id.btnConnectNext)
     public Button btnConnectNext;
     private Intent intent;
+    private String school;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class SecondSignupActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
-                String school = (String) parent.getItemAtPosition(position);
+                school = (String) parent.getItemAtPosition(position);
                 atvSchoolName.setText(school);
             }
         });
@@ -68,7 +69,7 @@ public class SecondSignupActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (atvSchoolName.getText().toString() != null) {
+                if (atvSchoolName.getText().toString().length() > 1 && school != null) {
                     btnConnectNext.setEnabled(true);
                 }
             }
@@ -90,6 +91,7 @@ public class SecondSignupActivity extends AppCompatActivity {
         btnConnectNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnConnectNext.setEnabled(false);
                 String connection = atvSchoolName.getText().toString();
                 if (rbWork.isChecked()) connection = etCompany.getText().toString();
                 gotoThirdScreen(connection);

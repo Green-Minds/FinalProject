@@ -15,6 +15,7 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -54,9 +55,9 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (etUsernameInput.getText().toString() != null
-                        && etPasswordInput.getText().toString() != null
-                        && etEmailInput.getText().toString() != null) {
+                if (etUsernameInput.getText().toString().length() > 1
+                        && etPasswordInput.getText().toString().length() > 1
+                        && etEmailInput.getText().toString().length() > 1) {
                     btnInfoNext.setEnabled(true);
                 }
             }
@@ -73,21 +74,28 @@ public class SignupActivity extends AppCompatActivity {
         btnInfoNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                ParseQuery query = ParseUser.getQuery();
-                query.whereEqualTo("username", etUsernameInput.getText().toString()).findInBackground(new FindCallback<ParseUser>() {
+                btnInfoNext.setEnabled(false);
+                ParseQuery usernameQuery = ParseUser.getQuery();
+                ParseQuery emailQuery = ParseUser.getQuery();
+                usernameQuery.whereEqualTo("username", etUsernameInput.getText().toString());
+                emailQuery.whereEqualTo("email", etEmailInput.getText().toString());
+                List<ParseQuery<ParseUser>> queries = new ArrayList<>();
+                queries.add(usernameQuery);
+                queries.add(emailQuery);
+                ParseQuery<ParseUser> mainQuery = ParseQuery.or(queries);
+                mainQuery.findInBackground(new FindCallback<ParseUser>() {
                     @Override
                     public void done(List<ParseUser> objects, ParseException e) {
                         if (e == null) {
                             if (objects.size() == 0) {
-
                                 tvUsernameTaken.setVisibility(View.GONE);
                                 String username = etUsernameInput.getText().toString();
                                 String password = etPasswordInput.getText().toString();
                                 String email = etEmailInput.getText().toString();
                                 gotoSecondScreen(username, password, email);
                             } else {
-                                tvUsernameTaken.setText("Username already exists.");
+                                btnInfoNext.setEnabled(true);
+                                tvUsernameTaken.setText("Account with username/ email already exists");
                                 tvUsernameTaken.setVisibility(View.VISIBLE);
                                 return;
                             }

@@ -25,7 +25,6 @@
         android:layout_below="@+id/tvImgHeader"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:background="@drawable/placeholder"
         android:clickable="true"
         tools:layout_editor_absoluteX="176dp"
         tools:layout_editor_absoluteY="110dp" />
@@ -40,7 +39,7 @@
         android:layout_marginTop="8dp"
         android:text="TextView"
         android:textColor="@android:color/black"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:visibility="gone" />
 
     <LinearLayout
