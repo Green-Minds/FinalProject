@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -27,14 +28,11 @@ import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.GlideApp;
 
 public class ThirdSignupActivity extends AppCompatActivity {
 
@@ -51,6 +49,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
     private String username;
     private String email;
     private String connection;
+    private Bitmap imageBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +64,16 @@ public class ThirdSignupActivity extends AppCompatActivity {
         connection = intent.getStringExtra("connection");
         tvUser.setText(username);
         tvUser.setVisibility(View.VISIBLE);
+        GlideApp.with(getApplicationContext())
+                .load(R.drawable.placeholder)
+                .apply(RequestOptions.circleCropTransform())
+                .error(R.drawable.placeholder)
+                .into(ivUserPic);
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnSignup.setEnabled(false);
                 signUp();
             }
         });
@@ -76,7 +81,9 @@ public class ThirdSignupActivity extends AppCompatActivity {
         ivUserPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(ThirdSignupActivity.this, CameraActivity.class), 3);
+                startActivityForResult(new Intent(ThirdSignupActivity.this, CameraActivity.class)
+                        .putExtra("REQUEST_CODE", 3), 3);
+
             }
         });
     }
@@ -86,8 +93,14 @@ public class ThirdSignupActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             set_container.setVisibility(View.GONE);
             btnSignup.setEnabled(false);
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = getBitmapFromURL(extras.getString("image"));
+            //Bundle extras = data.getExtras();
+            imageBitmap = BitmapFactory.decodeFile(data.getStringExtra("image"));
+            GlideApp.with(getApplicationContext())
+                    .load(imageBitmap)
+                    .apply(RequestOptions.circleCropTransform())
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder)
+                    .into(ivUserPic);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             if (imageBitmap != null) {
@@ -102,21 +115,6 @@ public class ThirdSignupActivity extends AppCompatActivity {
                     }
                 });
             }
-        }
-    }
-
-    private static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            // Log exception
-            return null;
         }
     }
 

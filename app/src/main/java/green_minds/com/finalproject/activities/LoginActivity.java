@@ -101,7 +101,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String username = etUsernameLogin.getText().toString();
                 String password = etPasswordLogin.getText().toString();
-                btnLogin.setEnabled(false);
                 Toast.makeText(getApplicationContext(),"Logging you in", Toast.LENGTH_SHORT).show();
                 login(username, password);
             }
@@ -226,7 +225,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "name,email,picture");
+        parameters.putString("fields", "name, email, picture");
         request.setParameters(parameters);
         request.executeAsync();
     }
@@ -239,6 +238,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void gotoSignup(View v) {
+        v.setEnabled(false);
         final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
         startActivity(intent);
         finish();
