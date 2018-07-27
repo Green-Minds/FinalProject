@@ -51,7 +51,7 @@ public class ScoreAdapter extends ArrayAdapter<Category> {
         tvIdentifier.setText(CategoryHelper.getPinIdentifier(type));
 
         TextView numberOf = convertView.findViewById(R.id.numberOf);
-        final int checkins = (int)mUser.get(CategoryHelper.getTypeKey(type));
+        final int checkins = mUser.getInt(CategoryHelper.getTypeKey(type));
         numberOf.setText(checkins + "");
 
         Goal goal = null;

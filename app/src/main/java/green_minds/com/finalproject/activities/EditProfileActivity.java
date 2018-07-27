@@ -1,6 +1,7 @@
 package green_minds.com.finalproject.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -11,9 +12,11 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,8 +26,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -32,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +58,7 @@ public class EditProfileActivity extends AppCompatActivity {
     EditText etUsername;
 
     @BindView(R.id.img_prof_pic)
-    ImageView imgProfPic;
+    ImageView ivProfPic;
 
     @BindView(R.id.btn_edit_pic)
     Button btnEditPic;
@@ -66,14 +72,17 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
         mNewPic = null;
         mUser = ParseUser.getCurrentUser();
-        ParseFile current_photo = mUser.getParseFile("photo");
-        String url = current_photo.getUrl();
         mContext = this;
         ButterKnife.bind(this);
         etUsername.setText(mUser.getUsername());
-        GlideApp.with(mContext).load(url).circleCrop().into(imgProfPic);
+        ParseFile photo = mUser.getParseFile("photo");
+        if (photo == null) {
+            GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+        } else {
+            String url = photo.getUrl();
+            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+        }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -84,23 +93,87 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        ProgressBar v = (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
         return super.onPrepareOptionsMenu(menu);
     }
 
     @OnClick({R.id.btn_save})
-    public void save(){
+    public void save() {
         showProgressBar();
-        mUser.setUsername(etUsername.getText().toString());
-        if(mNewPic != null ) mUser.put("photo", mNewPic);
-        mUser.saveInBackground(new SaveCallback() {
+        checkUsernameFirst(etUsername.getText().toString());
+    }
+
+    private void checkUsernameFirst(String username) {
+        ParseQuery query = ParseUser.getQuery();
+        query.whereEqualTo("username", username).findInBackground(new FindCallback<ParseUser>() {
             @Override
-            public void done(ParseException e) {
-                if(e!=null) e.printStackTrace();
-                Toast.makeText(mContext, getString(R.string.updated_alert), Toast.LENGTH_SHORT).show();
+            public void done(List<ParseUser> objects, ParseException e) {
                 hideProgressBar();
+                if (e == null) {
+                    if (objects.size() == 0) {
+                        saveChanges();
+                    } else {
+                        Toast.makeText(mContext, getString(R.string.username_exists), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } else {
+                    Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
         });
+    }
+
+    private void saveChanges() {
+        mUser.setUsername(etUsername.getText().toString());
+        if (mNewPic != null) {
+            mNewPic.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    mUser.put("photo", mNewPic);
+                    mUser.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e != null){
+                                e.printStackTrace();
+                                Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
+                            } else{
+                                Toast.makeText(mContext, getString(R.string.updated_alert), Toast.LENGTH_SHORT).show();
+                                goBackToProfile();
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+
+    @OnClick(R.id.btn_cancel)
+    public void cancel() {
+        if (mNewPic != null || !etUsername.getText().toString().isEmpty()) {
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(mContext);
+            }
+            builder.setTitle(R.string.discard_changes_title).setMessage(R.string.discard_changes_body)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            goBackToProfile();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(mContext, getString(R.string.save_canceled), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } else {
+            goBackToProfile();
+        }
     }
 
     @OnClick({R.id.btn_edit_pic})
@@ -127,11 +200,12 @@ public class EditProfileActivity extends AppCompatActivity {
             Bitmap rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.getWidth(), selectedImage.getHeight(), matrix, true);
 
             Bitmap circular_bitmap = getCroppedBitmap(rotatedBitmap);
-            imgProfPic.setImageBitmap(circular_bitmap);
+            ivProfPic.setImageBitmap(circular_bitmap);
 
-            ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-            rotatedBitmap.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] imageByte = byteArrayOutputStream.toByteArray();
+            mNewPic = new ParseFile(getFileName(), imageByte);
 
 //            Bitmap smallerBitmap =
 //
@@ -165,7 +239,8 @@ public class EditProfileActivity extends AppCompatActivity {
                 .format(new Date());
         return "IMG_" + timeStamp + ".jpg";
     }
-    private String getSmallerFileName(){
+
+    private String getSmallerFileName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
                 .format(new Date());
         return "IMG_SMALLER_" + timeStamp + ".jpg";
@@ -189,5 +264,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void hideProgressBar() {
         miActionProgressItem.setVisible(false);
+    }
+
+    private void goBackToProfile(){
+        Intent i = new Intent(mContext, UserInfoActivity.class);
+        startActivity(i);
+        finish();
     }
 }
