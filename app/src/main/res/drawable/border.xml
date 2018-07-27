@@ -4,6 +4,6 @@
     <!-- View border color and width -->
     <stroke
         android:width="0.5dp"
-        android:color="#000000" >
+        android:color="@color/grey_5" >
     </stroke>
 </shape>

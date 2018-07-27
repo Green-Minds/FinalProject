@@ -3,7 +3,7 @@
     android:shape="rectangle" >
 
     <solid
-        android:color="#000000">
+        android:color="@color/com_facebook_blue">
     </solid>
 
     <!-- View border color and width -->

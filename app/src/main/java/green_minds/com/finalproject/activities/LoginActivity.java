@@ -2,13 +2,20 @@ package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
@@ -18,13 +25,27 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +72,29 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (ParseUser.getCurrentUser() != null) {
-            ParseUser.logOut();
+            alertDisplayer("Login Successful","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
         }
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if ((etUsernameLogin.getText().toString() != null) && (etPasswordLogin.getText().toString() != null)){
+                    btnLogin.setEnabled(true);
+                }
+            }
+        };
+        etUsernameLogin.addTextChangedListener(textWatcher);
+        etPasswordLogin.addTextChangedListener(textWatcher);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,11 +114,15 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void done(ParseUser user, ParseException e) {
                         if (user == null) {
-                            Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
 
                         } else if (!user.isNew()) {
-                            Log.d("MyApp", "User logged in through Facebook!");
+                            btnLogin.setEnabled(false);
+                            fbLoginButton.setEnabled(false);
                             getUserDetailsFromParse();
+                        } else if (user.isNew()) {
+                            btnLogin.setEnabled(false);
+                            fbLoginButton.setEnabled(false);
+                            getUserDetailFromFB();
                         }
                     }
                 });
@@ -84,56 +130,15 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void getUserDetailsFromParse() {
-        ParseUser user = ParseUser.getCurrentUser();
-        Map<String, String> authData = new HashMap<>();
-        authData.put("token", user.getSessionToken());
-        user.put("location", getLocation());
-        user.saveInBackground();
-
-        etUsernameLogin.setText(user.getUsername());
-        Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
-        try {
-            parseUserTask.waitForCompletion();
-            final Intent intent = new Intent(LoginActivity.this, MapActivity.class);
-            startActivity(intent);
-            finish();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private ParseGeoPoint getLocation() {
-
-        ParseGeoPoint point = null;
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) {
-                double longitude = location.getLongitude();
-                double latitude = location.getLatitude();
-                point = new ParseGeoPoint(latitude, longitude);
-            }
-        }
-        return point;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-    private void login(String username, String password) {
+    private void login(final String username, String password) {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
                     tvIncorrectInfo.setVisibility(View.GONE);
-                    final Intent intent = new Intent(LoginActivity.this, MapActivity.class);
-                    startActivity(intent);
-                    finish();
+                    btnLogin.setEnabled(false);
+                    fbLoginButton.setEnabled(false);
+                    alertDisplayer("Sucessful Login","Welcome back " + username + "!");
                 } else {
                     etPasswordLogin.startAnimation(invalidCredentials());
                     tvIncorrectInfo.setText(e.getMessage().toString());
@@ -145,10 +150,22 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void gotoSignup(View v) {
-        final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-        startActivity(intent);
-        finish();
+    private void alertDisplayer(String title,String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        AlertDialog ok = builder.create();
+        ok.show();
     }
 
     private TranslateAnimation invalidCredentials() {
@@ -156,5 +173,156 @@ public class LoginActivity extends AppCompatActivity {
         shake.setDuration(500);
         shake.setInterpolator(new CycleInterpolator(7));
         return shake;
+    }
+
+    private void getUserDetailsFromParse() {
+        ParseUser user = ParseUser.getCurrentUser();
+        Map<String, String> authData = new HashMap<>();
+        authData.put("token", user.getSessionToken());
+        user.put("location", getLocation());
+        user.saveInBackground();
+        Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
+        try {
+            parseUserTask.waitForCompletion();
+            alertDisplayer("Sucessful Login","Welcome back " + user.getUsername() + "!");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ParseGeoPoint getLocation() {
+
+        ParseGeoPoint point = null;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location != null) {
+                double longitude = location.getLongitude();
+                double latitude = location.getLatitude();
+                point = new ParseGeoPoint(latitude, longitude);
+            }
+        }
+        return point;
+    }
+
+    private void getUserDetailFromFB() {
+        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                try {
+                    JSONObject picture = response.getJSONObject().getJSONObject("picture");
+                    JSONObject data = picture.getJSONObject("data");
+
+                    String pictureUrl = data.getString("url");
+                    new LoginActivity.ProfileAsync(pictureUrl,
+                            object.getString("email"),
+                            object.getString("name")).execute();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "name,email,picture");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+        finishActivity(requestCode);
+    }
+
+    public void gotoSignup(View v) {
+        final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private class ProfileAsync extends AsyncTask<String, String, String> {
+        public Bitmap bitmap;
+        String url, email, username;
+
+        public ProfileAsync(String url, String email, String username) {
+            this.url = url;
+            this.email = email;
+            this.username = username;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            // Fetching data from URI and storing in bitmap
+            bitmap = DownloadImageBitmap(url);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            saveNewUser(bitmap, email, username);
+        }
+    }
+
+    private static Bitmap DownloadImageBitmap(String url) {
+        Bitmap bm = null;
+        try {
+            URL aURL = new URL(url);
+            URLConnection conn = aURL.openConnection();
+            conn.connect();
+            InputStream is = conn.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            bm = BitmapFactory.decodeStream(bis);
+            bis.close();
+            is.close();
+        } catch (IOException e) {
+            Log.e("IMAGE", "Error getting bitmap", e);
+        }
+        return bm;
+    }
+
+    private void saveNewUser(Bitmap image, String email, final String username) {
+
+        final ParseUser user = ParseUser.getCurrentUser();
+        final Map<String, String> authData = new HashMap<>();
+        user.setUsername(username);
+        user.setEmail(email);
+        //user.put("connection", atvSchoolName.getText().toString());
+        user.put("location", getLocation());
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if (image != null) {
+            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] data = stream.toByteArray();
+            String name = user.getUsername().replaceAll("\\s+", "");
+            final ParseFile parseFile = new ParseFile(name + "prof_pic.jpg", data);
+            parseFile.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    user.put("photo", parseFile);
+                    user.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                authData.put("token", user.getSessionToken());
+                                Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
+                                try {
+                                    parseUserTask.waitForCompletion();
+                                    alertDisplayer("Sucessful Login","Welcome back " + username + "!");
+                                } catch (InterruptedException err) {
+                                    err.printStackTrace();
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            });
+        }
     }
 }

@@ -13,17 +13,20 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:text="REGISTER"
+        android:text="Sign Up"
         android:textAllCaps="false"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/etUsernameInput"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/tvRegister"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="65dp"
         android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Username "
@@ -33,9 +36,9 @@
         android:id="@+id/etEmailInput"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/etUsernameInput"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="162dp"
+        android:layout_marginTop="28dp"
         android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Email "
@@ -45,68 +48,25 @@
         android:id="@+id/etPasswordInput"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/etEmailInput"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="210dp"
+        android:layout_marginTop="28dp"
         android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Password"
         android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/btnSignup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="67dp"
-        android:text="Sign Up" />
-
-    <TextView
-        android:id="@+id/tvConnect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/btnInfoNext"
+        android:layout_width="218dp"
+        android:layout_height="33dp"
         android:layout_below="@+id/etPasswordInput"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
-        android:text="Connect through: "
-        android:textColor="@android:color/black" />
-
-    <RadioGroup
-        android:id="@+id/rgSelection"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="false"
-        android:layout_below="@+id/tvConnect"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <RadioButton
-            android:id="@+id/rbSchool"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="School" />
-
-        <RadioButton
-            android:id="@+id/rbWork"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Work" />
-    </RadioGroup>
-
-    <EditText
-        android:id="@+id/etCompany"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/rgSelection"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="-173dp"
-        android:ems="10"
-        android:hint="Name of Company"
-        android:inputType="textPersonName"
-        android:visibility="gone"/>
+        android:layout_marginTop="93dp"
+        android:background="@color/colorPrimary"
+        android:enabled="false"
+        android:text="Next"
+        android:textColor="@android:color/white" />
 
     <TextView
         android:id="@+id/tvUsernameTaken"
@@ -118,73 +78,5 @@
         android:text="TextView"
         android:textColor="@android:color/holo_red_light"
         android:visibility="gone" />
-
-    <FrameLayout
-        android:id="@+id/autocomplete_container"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:layout_alignParentBottom="false"
-        android:layout_below="@+id/rgSelection"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp">
-
-        <green_minds.com.finalproject.model.DelayAutoCompleteTextView
-            android:id="@+id/atvSchoolName"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="141dp"
-            android:background="@drawable/text_input_border"
-            android:hint=" School                                   " />
-
-        <ProgressBar
-            android:id="@+id/pb_loading_indicator"
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|center"
-            android:visibility="gone" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/add_img_container"
-        android:layout_width="190dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btnSignup"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="93dp"
-        android:clickable="true"
-        android:visibility="gone">
-
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="34dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toStartOf="@+id/rgSelection"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/camera" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="Add a profile image"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
-    </FrameLayout>
-
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/fbSignupButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="18dp"
-        android:layout_marginEnd="91dp" />
 
 </RelativeLayout>
