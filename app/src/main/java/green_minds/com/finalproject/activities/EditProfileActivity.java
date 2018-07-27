@@ -104,24 +104,32 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void checkUsernameFirst(String username) {
-        ParseQuery query = ParseUser.getQuery();
-        query.whereEqualTo("username", username).findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> objects, ParseException e) {
-                hideProgressBar();
-                if (e == null) {
-                    if (objects.size() == 0) {
-                        saveChanges();
+
+        if(username.equals(mUser.getUsername())){
+            saveChanges();
+        } else if (etUsername.getText().toString().isEmpty()) {
+            Toast.makeText(mContext, getString(R.string.username_empty), Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+            ParseQuery query = ParseUser.getQuery();
+            query.whereEqualTo("username", username).findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, ParseException e) {
+                    hideProgressBar();
+                    if (e == null) {
+                        if (objects.size() == 0) {
+                            saveChanges();
+                        } else {
+                            Toast.makeText(mContext, getString(R.string.username_exists), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                     } else {
-                        Toast.makeText(mContext, getString(R.string.username_exists), Toast.LENGTH_SHORT).show();
-                        return;
+                        Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
                     }
-                } else {
-                    Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
                 }
-            }
-        });
+            });
+        }
     }
 
     private void saveChanges() {
@@ -131,27 +139,33 @@ public class EditProfileActivity extends AppCompatActivity {
                 @Override
                 public void done(ParseException e) {
                     mUser.put("photo", mNewPic);
-                    mUser.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e != null){
-                                e.printStackTrace();
-                                Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
-                            } else{
-                                Toast.makeText(mContext, getString(R.string.updated_alert), Toast.LENGTH_SHORT).show();
-                                goBackToProfile();
-                            }
-                        }
-                    });
+                    saveUser();
                 }
             });
+        } else {
+            saveUser();
         }
+    }
+
+    private void saveUser(){
+        mUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null){
+                    e.printStackTrace();
+                    Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
+                } else{
+                    Toast.makeText(mContext, getString(R.string.updated_alert), Toast.LENGTH_SHORT).show();
+                    goBackToProfile();
+                }
+            }
+        });
     }
 
 
     @OnClick(R.id.btn_cancel)
     public void cancel() {
-        if (mNewPic != null || !etUsername.getText().toString().isEmpty()) {
+        if (mNewPic != null || !(etUsername.getText().toString().equals(mUser.getUsername()))) {
             AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog_Alert);
@@ -166,7 +180,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(mContext, getString(R.string.save_canceled), Toast.LENGTH_SHORT).show();
+                            return;
                         }
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
