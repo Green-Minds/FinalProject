@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.GlideApp;
 
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
 
@@ -59,7 +61,11 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername()))
             holder.itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
 
-        //Glide.with(context).load(user.getParseFile("image").getUrl()).into(holder.ivUserImg);
+        GlideApp.with(context)
+                .load(user.getParseFile("photo").getUrl())
+                .apply(RequestOptions.circleCropTransform())
+                .error(R.drawable.placeholder)
+                .into(holder.ivUserImg);
     }
 
     @Override

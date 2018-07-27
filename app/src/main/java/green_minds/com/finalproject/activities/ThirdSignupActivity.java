@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -92,7 +93,6 @@ public class ThirdSignupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             set_container.setVisibility(View.GONE);
-            btnSignup.setEnabled(false);
             //Bundle extras = data.getExtras();
             imageBitmap = BitmapFactory.decodeFile(data.getStringExtra("image"));
             GlideApp.with(getApplicationContext())
@@ -101,39 +101,41 @@ public class ThirdSignupActivity extends AppCompatActivity {
                     .placeholder(R.drawable.placeholder)
                     .error(R.drawable.placeholder)
                     .into(ivUserPic);
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            if (imageBitmap != null) {
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                byte[] bytedata = stream.toByteArray();
-                String name = username.replaceAll("\\s+", "");
-                final ParseFile parseFile = new ParseFile(name + "prof_pic.jpg", bytedata);
-                parseFile.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        btnSignup.setEnabled(true);
-                    }
-                });
-            }
         }
     }
 
     private void signUp() {
-        ParseUser user = (ParseUser) ParseUser.create("_User");
-        user.setPassword(password);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.put("connection", connection);
-        user.put("location", getLocation());
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if (imageBitmap == null) {
+            imageBitmap = ((BitmapDrawable) ivUserPic.getDrawable()).getBitmap();
+        }
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] bytedata = stream.toByteArray();
+        String name = username.replaceAll("\\s+", "");
 
-        user.signUpInBackground(new SignUpCallback() {
+        final ParseFile parseFile = new ParseFile(name + "prof_pic.jpg", bytedata);
+        parseFile.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e == null) {
-                    alertDisplayer("Signup Successful","Welcome " + username + "!");
-                } else {
-                    e.printStackTrace();
-                }
+
+                ParseUser user = (ParseUser) ParseUser.create("_User");
+                user.setPassword(password);
+                user.setUsername(username);
+                user.setEmail(email);
+                user.put("connection", connection);
+                user.put("location", getLocation());
+                user.put("photo", parseFile);
+
+                user.signUpInBackground(new SignUpCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            alertDisplayer("Signup Successful","Welcome " + username + "!");
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         });
     }
