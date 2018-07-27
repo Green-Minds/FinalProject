@@ -64,11 +64,18 @@ public class UserInfoActivity extends AppCompatActivity {
             redirectToLogin();
             return;
         }
+
         tvName.setText(mUser.getUsername());
+        int test = mUser.getInt("points");
         tvScore.setText(mUser.getInt("points") + "");
         ParseFile photo = mUser.getParseFile("photo");
-        String url = photo.getUrl();
-        GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.q_mark).into(ivProfPic);
+        if (photo == null) {
+            GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+        } else {
+            String url = photo.getUrl();
+            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+        }
+
         ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
         userQuery.include("goals");
         userQuery.whereEqualTo("objectId", mUser.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
@@ -122,7 +129,7 @@ public class UserInfoActivity extends AppCompatActivity {
     @OnClick(R.id.btn_goals)
     public void goToGoals() {
         Intent i = new Intent(UserInfoActivity.this, GoalActivity.class);
-        if(mGoals == null){
+        if (mGoals == null) {
             Toast.makeText(mContext, getString(R.string.wait_content), Toast.LENGTH_SHORT).show();
             return;
         }
