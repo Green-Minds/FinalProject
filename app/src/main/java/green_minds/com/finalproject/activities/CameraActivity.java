@@ -59,7 +59,7 @@ public class CameraActivity extends AppCompatActivity {
         try{
             switch(requestCode){
                 case 3:
-                    parentActivity = LoginActivity.class;
+                    parentActivity = ThirdSignupActivity.class;
                     break;
                 case 31:
                     parentActivity = NewPinActivity.class;
