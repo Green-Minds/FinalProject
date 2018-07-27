@@ -26,6 +26,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,7 +58,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -127,20 +131,87 @@ public class MapActivity extends AppCompatActivity implements
     private final static String KEY_LOCATION = "location";
     private float mZoom = 10;
     private Pin mNewPin;
+    private ClusterManager<MyItem> mClusterManager;
+    public List <MyItem> items = new ArrayList<MyItem>();
+
+    private Cluster<MyItem> clickedCluster;
+    private MyItem clickedClusterItem;
 
     // the reaspm for this variable's existance is that a tap on the marker is considered a map move
     // event, so i tap on a marker and want an infowindow to appear, but it appears and dissapears
     // because a tap is a map event so sad
     private static boolean tapEvent = false;
 
-    public static final CameraPosition BONDI =
-            new CameraPosition.Builder().target(new LatLng(-33.891614, 151.276417))
-                    .zoom(15.5f)
-                    .bearing(300)
-                    .tilt(50)
-                    .build();
-
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+
+    private class MyItemRenderer extends DefaultClusterRenderer<MyItem> {
+        private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
+        private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
+        // private final ImageView mImageView;
+        // private final ImageView mClusterImageView;
+        // private final int mDimension;
+
+        public MyItemRenderer() {
+            super(MapActivity.this, map, mClusterManager);
+
+            // View multiProfile = getLayoutInflater().inflate(R.layout.custom_icons, null);
+            // mClusterIconGenerator.setContentView(multiProfile);
+            // mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
+
+            // mImageView = new ImageView(getApplicationContext());
+            // mDimension = (int) getResources().getDimension(R.dimen.standard_55);
+            // mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
+            // int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
+            // mImageView.setPadding(padding, padding, padding, padding);
+            // mIconGenerator.setContentView(mImageView);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(MyItem item, MarkerOptions markerOptions) {
+            // Draw a single person.
+            // Set the info window to show their name.
+            // mImageView.setImageResource(item.profilePhoto);
+            // Bitmap icon = mIconGenerator.makeIcon();
+
+            BitmapDescriptor customMarker =
+                    BitmapDescriptorFactory.fromResource(item.profilePhoto);
+            // markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.name);
+            markerOptions.icon(customMarker);
+        }
+
+      /*  @Override
+        protected void onBeforeClusterRendered(Cluster<MyItem> cluster, MarkerOptions markerOptions) {
+            // Draw multiple people.
+            // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
+            List<Drawable> profilePhotos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
+            int width = mDimension;
+            int height = mDimension;
+
+            for (MyItem p : cluster.getItems()) {
+                // Draw 4 at most.
+                if (profilePhotos.size() == 4) break;
+                Drawable drawable = getResources().getDrawable(p.profilePhoto);
+                drawable.setBounds(0, 0, width, height);
+                profilePhotos.add(drawable);
+            }
+            // MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
+            // multiDrawable.setBounds(0, 0, width, height);
+
+            // mClusterImageView.setImageDrawable(multiDrawable);
+            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster cluster) {
+            // Always render clusters.
+            return cluster.getSize() > 1;
+        }
+
+        */
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +246,9 @@ public class MapActivity extends AppCompatActivity implements
                 public void onMapReady(GoogleMap map) {
                     loadMap(map);
                     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    onFab0();
+                    onFab0();
+                    mClusterManager.cluster();
 
                 }
             });
@@ -188,6 +262,46 @@ public class MapActivity extends AppCompatActivity implements
         map = googleMap;
         if (map != null) {
             // Map is ready
+
+            mClusterManager = new ClusterManager<MyItem>(MapActivity.this, map);
+            mClusterManager.setRenderer(new MyItemRenderer());
+            // map.setOnMarkerClickListener(mClusterManager);
+            // map.setInfoWindowAdapter(mClusterManager.getMarkerManager());
+
+
+            // MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this, item);
+            // mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(adapter);
+            // mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
+            //     @Override
+            //     public boolean onClusterItemClick(MyItem item) {
+
+            //         MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this, items);
+            //         mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(adapter);
+            //         return false;
+            //    }
+            // });
+
+            map.setOnInfoWindowClickListener(mClusterManager);
+            map.setInfoWindowAdapter(mClusterManager.getMarkerManager());
+
+            mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(
+                    new MyCustomAdapterForItems());
+
+            map.setOnMarkerClickListener(mClusterManager);
+            // mClusterManager.setOnClusterClickListener((ClusterManager.OnClusterClickListener<MyItem>) MapActivity.this);
+            // mClusterManager.setOnClusterInfoWindowClickListener(this);
+            // mClusterManager.setOnClusterItemClickListener(this);
+            // mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+
+
+            mClusterManager
+                    .setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
+                        @Override
+                        public boolean onClusterItemClick(MyItem item) {
+                            clickedClusterItem = item;
+                            return false;
+                        }
+                    });
 
             user = ParseUser.getCurrentUser();
             if (user != null) {
@@ -207,7 +321,7 @@ public class MapActivity extends AppCompatActivity implements
             MapActivityPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
 
             getMyLocation();
-            map.setOnCameraIdleListener(this);
+            // map.setOnCameraIdleListener(mClusterManager);
             map.setOnCameraMoveStartedListener(this);
             map.setOnCameraMoveListener(this);
             map.setOnCameraMoveCanceledListener(this);
@@ -279,7 +393,20 @@ public class MapActivity extends AppCompatActivity implements
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
                 map.animateCamera(cameraUpdate);
             }
-            showAll();
+
+            onCameraIdle();
+            if (user != null) {
+                ParseGeoPoint loc = user.getParseGeoPoint("location");
+                LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
+                if (loc != null ) {
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
+                    map.animateCamera(cameraUpdate);
+                    showAll();
+                }
+            }
+
+            map.setOnCameraIdleListener(this);
+
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
@@ -494,6 +621,7 @@ public class MapActivity extends AppCompatActivity implements
         // this piece is extra stupid but whatever
         if (tapEvent) {
             tapEvent = false;
+            mClusterManager.cluster();
         }
         else {
             if (fab0.isSelected()) {
@@ -586,7 +714,7 @@ public class MapActivity extends AppCompatActivity implements
         // Handler allows us to repeat a code block after a specified delay
         final android.os.Handler handler = new android.os.Handler();
         final long start = SystemClock.uptimeMillis();
-        final long duration = 1500;
+        final long duration = 5000;
 
         // Use the bounce interpolator
         final android.view.animation.Interpolator interpolator =
@@ -609,6 +737,7 @@ public class MapActivity extends AppCompatActivity implements
                     handler.postDelayed(this, 150);
                 } else { // done elapsing, show window
                     marker.showInfoWindow();
+                    marker.remove();
                 }
             }
         });
@@ -695,22 +824,31 @@ public class MapActivity extends AppCompatActivity implements
 
                                     dropPinEffect(mapMarker);
 
-                                    InfoWindowData info = new InfoWindowData();
-                                    info.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
-                                    info.setImage(image);
-                                    MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
-                                    map.setInfoWindowAdapter(adapter);
-                                    mapMarker.setTag(info);
-                                    mapMarker.showInfoWindow();
+                                    MyItem item = new MyItem(lat, lon, drawableId);
+                                    item.setTitle("checkins: " + mNewPin.getCheckincount());
+                                    item.setSnippet(mNewPin.getComment());
+                                    item.setImage(image);
+                                    item.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                    mClusterManager.addItem(item);
+                                    items.add(item);
+                                    mClusterManager.cluster();
 
-                                    final Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mapMarker.showInfoWindow();
 
-                                        }
-                                    }, 200);
+                                    // InfoWindowData info = new InfoWindowData();
+                                    // info.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                    // info.setImage(image);
+                                    // MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                                    // map.setInfoWindowAdapter(adapter);
+                                    // mapMarker.setTag(info);
+                                    // mapMarker.showInfoWindow();
+
+                                    // final Handler handler = new Handler();
+                                    // handler.postDelayed(new Runnable() {
+                                    // @Override
+                                    //    public void run() {
+                                    //       mapMarker.showInfoWindow();
+                                    //    }
+                                    // }, 200);
 
                                     adjustBtn.setVisibility(View.GONE);
                                     ivAdjust.setVisibility(View.GONE);
@@ -849,6 +987,7 @@ public class MapActivity extends AppCompatActivity implements
 
     protected void onFab(final int type) {
         map.clear();
+        mClusterManager.clearItems();
         CameraPosition currentCameraPosition = map.getCameraPosition();
         currentLoc = currentCameraPosition.target;
         mZoom = currentCameraPosition.zoom;
@@ -880,23 +1019,29 @@ public class MapActivity extends AppCompatActivity implements
 
                             LatLng listingPosition = new LatLng(lat, lon);
                             // Create the marker on the fragment
-                            final Marker mapMarker = map.addMarker(new MarkerOptions()
-                                    .position(listingPosition)
-                                    .title("checkins: " + objects.get(i).getCheckincount())
-                                    .snippet(objects.get(i).getComment())
-                                    .icon(customMarker));
+                            // final Marker mapMarker = map.addMarker(new MarkerOptions()
+                            //         .position(listingPosition)
+                            //         .title("checkins: " + objects.get(i).getCheckincount())
+                            //         .snippet(objects.get(i).getComment())
+                            //         .icon(customMarker));
 
                             user = ParseUser.getCurrentUser();
                             final ParseGeoPoint userloc = user.getParseGeoPoint("location");
                             InfoWindowData info = new InfoWindowData();
                             info.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
-                            info.setImage(image);
-                            MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
-                            map.setInfoWindowAdapter(adapter);
-                            mapMarker.setTag(info);
+                            //info.setImage(image);
+                            // MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
+                            // map.setInfoWindowAdapter(adapter);
+                            //mapMarker.setTag(info);
 
+                            MyItem item = new MyItem(lat, lon, drawableId);
+                            item.setTitle("checkins: " + objects.get(i).getCheckincount());
+                            item.setSnippet(objects.get(i).getComment());
+                            item.setImage(image);
+                            item.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
+                            mClusterManager.addItem(item);
+                            mClusterManager.cluster();
                         }
-
                     }
                 } else {
                     e.printStackTrace();
@@ -951,6 +1096,7 @@ public class MapActivity extends AppCompatActivity implements
         currentLoc = currentCameraPosition.target;
         mZoom = currentCameraPosition.zoom;
 
+        mClusterManager.clearItems();
         final ParseGeoPoint loc = new ParseGeoPoint(currentLoc.latitude, currentLoc.longitude);
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
@@ -975,11 +1121,11 @@ public class MapActivity extends AppCompatActivity implements
 
                             LatLng listingPosition = new LatLng(lat, lon);
                             // Create the marker on the fragment
-                            final Marker mapMarker = map.addMarker(new MarkerOptions()
-                                    .position(listingPosition)
-                                    .title("checkins: " + objects.get(i).getCheckincount())
-                                    .snippet(objects.get(i).getComment())
-                                    .icon(customMarker));
+                            // final Marker mapMarker = map.addMarker(new MarkerOptions()
+                            //         .position(listingPosition)
+                             //        .title("checkins: " + objects.get(i).getCheckincount())
+                             //        .snippet(objects.get(i).getComment())
+                             //        .icon(customMarker));
 
                             ParseFile photo = pin.getPhoto();
                             if(photo != null){
@@ -990,19 +1136,36 @@ public class MapActivity extends AppCompatActivity implements
                             info.setImage(image);
                             user = ParseUser.getCurrentUser();
                             final ParseGeoPoint userloc = user.getParseGeoPoint("location");
-                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
-                            MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
-                            map.setInfoWindowAdapter(adapter);
-                            mapMarker.setTag(info);
-                            mapMarker.showInfoWindow();
-                            mapMarker.hideInfoWindow();
+
+                            // mapMarker.setTag(info);
+                            // mapMarker.showInfoWindow();
+                            // mapMarker.hideInfoWindow();
+
+                            MyItem item = new MyItem(lat, lon, drawableId);
+                            item.setTitle("checkins: " + objects.get(i).getCheckincount());
+                            item.setSnippet(objects.get(i).getComment());
+                            item.setImage(image);
+                            item.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
+                            Log.d("MapActivity", "user location lat: " + userloc.getLatitude() + " pin loc " + pin.getLatLng().getLatitude() + " distance in pin " + item.getDistance());
+                            Log.d("MapActivity", "does cluster item exist? " + (item != null) + " " + item.getTitle());
+                            mClusterManager.addItem(item);
+                            items.add(item);
+                            mClusterManager.cluster();
+
+                            // MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this, items);
+                            // map.setInfoWindowAdapter(adapter);
+                            // mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(adapter);
                         }
+
+
                     }
                 } else {
                     e.printStackTrace();
                 }
             }
         });
+
+
     }
 
 
@@ -1024,17 +1187,52 @@ public class MapActivity extends AppCompatActivity implements
         }
         return r;
     }
+
+
+    public class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter {
+
+        private final View myContentsView;
+
+        MyCustomAdapterForItems() {
+            myContentsView = getLayoutInflater().inflate(
+                    R.layout.custom_info_window, null);
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            // TODO Auto-generated method stub
+
+
+            TextView title = myContentsView.findViewById(R.id.title);
+            TextView description = myContentsView.findViewById(R.id.description);
+            TextView distance = myContentsView.findViewById(R.id.distance);
+            ImageView img = myContentsView.findViewById(R.id.img);
+
+            // tvTitle.setTypeface(mTyFaceKreonBold);
+            // tvSnippet.setTypeface(mTyFaceKreonBold);
+            if (clickedClusterItem != null) {
+                 title.setText(clickedClusterItem.getTitle());
+                 description.setText(clickedClusterItem.getSnippet());
+                 distance.setText("distance: " + clickedClusterItem.getDistance());
+                 GlideApp.with(MapActivity.this).load(clickedClusterItem.getImageUrl()).centerCrop().into(img);
+
+            }
+            return myContentsView;
+        }
+    }
 }
 /* TODO: add multiple categories at the same time functionality
  * add marker clusterization
  *
  *
- * add drag pins with new pin
  *
  * handler for post delayed
  *
- * after new pin is added there is a separate map with a pin in the center for the dude to
- * move the map and have the pin in the center boundaries
  *
  * progress indication for everything
  * placeholder for the pucture

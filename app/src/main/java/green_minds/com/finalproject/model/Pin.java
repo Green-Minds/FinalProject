@@ -57,7 +57,7 @@ public class Pin extends ParseObject {
         }
 
         public Query getTop() {
-            setLimit(50);
+            setLimit(100);
             return this;
         }
 
