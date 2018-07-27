@@ -23,9 +23,9 @@ import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.fragments.GoalListFragment;
 import green_minds.com.finalproject.model.CustomProgressBar;
 import green_minds.com.finalproject.model.Goal;
-import green_minds.com.finalproject.model.PinCategoryHelper;
+import green_minds.com.finalproject.model.CategoryHelper;
 
-public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder>{
+public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder> {
     private ArrayList<Goal> mGoals;
     private Context mContext;
     private ParseUser mUser;
@@ -36,15 +36,6 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder>{
         mListener = listener;
     }
 
-    public void clear () {
-        mGoals.clear();
-    }
-
-    public void addAll (ArrayList<Goal> goal) {
-        mGoals.addAll(goal);
-    }
-
-    // creates and inflates a new view
     @Override
     @NonNull
     public GoalAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -55,56 +46,61 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder>{
         return new GoalAdapter.ViewHolder(goalView);
     }
 
-    // binds an inflated view to a new item
     @Override
     public void onBindViewHolder(@NonNull GoalAdapter.ViewHolder holder, int i) {
-        //relative position Goal holds the relative position
         final Goal goal = mGoals.get(i);
 
-        holder.tvName.setText(PinCategoryHelper.listOfCategories[goal.getType()]);
-
-        holder.progressBar.setGoal(goal);
+        holder.tvName.setText(CategoryHelper.listOfCategories[goal.getType()]);
+        holder.progressBar.setGoal(goal, mUser);
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 mGoals.remove(goal);
-                 mUser.put("goals", mGoals);
-                 mUser.saveInBackground(new SaveCallback() {
-                     @Override
-                     public void done(ParseException e) {
-                         goal.deleteInBackground(new DeleteCallback() {
-                             @Override
-                             public void done(com.parse.ParseException e) {
-                                 if(e != null) e.printStackTrace();
-                                 else{
-                                     Toast.makeText(mContext, "Removed.", Toast.LENGTH_SHORT).show();
-                                     notifyDataSetChanged();
-                                 }
-                             }
-                         });
-                     }
-                 });
-
-             }
-         });
+            @Override
+            public void onClick(View v) {
+                removeGoal(goal);
+            }
+        });
         holder.btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.openEditFragment(goal, mGoals);
+                mListener.openEditFragment(goal);
             }
         });
     }
 
-    // returns the total number of items in the list
     @Override
     public int getItemCount() {
         return mGoals.size();
     }
 
-    // create the viewholder as a static inner class
+    private void removeGoal(final Goal goal) {
+        final ArrayList<Goal> tempGoalArray = mGoals; //keep copy to revert back to in case of error
+        mGoals.remove(goal);
+        mUser.put("goals", mGoals);
+        mUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                goal.deleteInBackground(new DeleteCallback() {
+                    @Override
+                    public void done(com.parse.ParseException e) {
+                        if (e != null) {
+                            mGoals = tempGoalArray;
+                            e.printStackTrace();
+                            if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                                Toast.makeText(mContext, "Network Error. Please try again later!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(mContext, "Removed.", Toast.LENGTH_SHORT).show();
+                            notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        // track view objects
         @BindView(R.id.tv_name)
         TextView tvName;
 

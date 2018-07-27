@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,8 +53,7 @@ public class NewPinActivity extends AppCompatActivity {
     private Context context;
     private ParseUser currentUser;
 
-    final public static String PIN_KEY = "pin";
-    final public static String CODE_KEY ="REQUEST_CODE";
+    final public static String CODE_KEY = "REQUEST_CODE";
     final public static int REQUEST_CODE = 31;
 
 
@@ -83,7 +81,7 @@ public class NewPinActivity extends AppCompatActivity {
         int hei = bmp.getHeight();
 
         ivPreview.requestLayout();
-        wid = ivPreview.getLayoutParams().width * wid/hei;
+        wid = ivPreview.getLayoutParams().width * wid / hei;
         ivPreview.getLayoutParams().width = wid;
         ivPreview.setImageBitmap(bmp);
 
@@ -108,50 +106,76 @@ public class NewPinActivity extends AppCompatActivity {
         savePin(location);
     }
 
-    private void savePin(ParseGeoPoint location){
+    private void savePin(ParseGeoPoint location) {
         final Pin pin = new Pin();
 
         int radioButtonID = rbCategories.getCheckedRadioButtonId();
         View radioButton = rbCategories.findViewById(radioButtonID);
         final int idx = rbCategories.indexOfChild(radioButton);
-        Log.i("IDX", idx + "");
 
         String comment = etComment.getText().toString();
         pin.setCategory(idx);
         pin.setComment(comment);
         pin.setCheckincount(0);
-
         pin.setLatLng(location);
 
-        pin.setPhoto(new ParseFile(currentfile));
+        final ParseFile photo = new ParseFile(currentfile);
+        photo.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(context, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
+                } else {
+                    pin.setPhoto(photo);
+                    saveRestOfPin(pin);
+                }
+            }
+        });
+    }
 
+    private void saveRestOfPin(final Pin pin) {
         pin.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e!=null) e.printStackTrace();
-                int currPintcount = currentUser.getInt("pincount");
-                currentUser.put("pincount", currPintcount + 1);
-                currentUser.put("points", currPintcount * 10);
-                currentUser.saveInBackground();
+                if (e != null) {
+                    Toast.makeText(context, getString(R.string.pin_save_failure), Toast.LENGTH_SHORT).show();
+                } else {
+                    savePinToUser(pin);
+                }
+            }
+        });
+    }
 
-                Toast.makeText(context, "new pin complete!", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent();
-                intent.putExtra("id", pin.getObjectId());
-                Log.d("NewPinActivity", "new pin id " + (String) pin.getObjectId());
-                setResult(RESULT_OK, intent);
-                finish();
+    private void savePinToUser(final Pin pin){
+
+        currentUser.increment("pincount");
+        currentUser.increment("points", 10);
+
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(context, getString(R.string.pin_save_failure), Toast.LENGTH_SHORT).show();
+                    //TODO - figure out what to do in case of failure
+                } else {
+                    Toast.makeText(context, "New Pin Complete!", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("id", pin.getObjectId());
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
             }
         });
     }
 
     @OnClick(R.id.btn_camera)
-    public void loadCamera(){
+    public void loadCamera() {
         Intent i = new Intent(this, green_minds.com.finalproject.activities.CameraActivity.class);
         i.putExtra(CODE_KEY, REQUEST_CODE);
         startActivityForResult(i, REQUEST_CODE);
     }
 
-    private void redirectToLogin(){
+    private void redirectToLogin() {
         Intent i = new Intent(this, green_minds.com.finalproject.activities.UserInfoActivity.class);
         startActivity(i);
     }

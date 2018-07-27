@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".activities.UserInfoActivity">
 
-
-
     <Button
         android:id="@+id/btn_leaderboard"
         android:layout_width="wrap_content"
@@ -81,8 +79,25 @@
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="340dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tv_name" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_leaderboard"
+        android:layout_alignParentStart="true"
+        android:text="Score:   "
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_leaderboard"
+        android:layout_toEndOf="@+id/textView2"
+        android:text="score" />
 
 </RelativeLayout>

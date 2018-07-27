@@ -23,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.Pin;
-import green_minds.com.finalproject.model.PinCategoryHelper;
+import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.RelativePositionPin;
 import green_minds.com.finalproject.R;
 
@@ -60,7 +60,7 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
         DecimalFormat df = new DecimalFormat("0.00");
         String formatted = df.format(rp_pin.getDistanceAwayinMiles()).replaceAll("\\.00$", "");;
         holder.tv_miles_away.setText(formatted + " miles away");
-        holder.tv_type.setText(PinCategoryHelper.getPinIdentifier(pin.getCategory()));
+        holder.tv_type.setText(CategoryHelper.getPinIdentifier(pin.getCategory()));
         holder.tv_checkin_count.setText("Visited " + pin.getCheckincount() + " times.");
         final TextView checkin = holder.tv_checkin_count;
 
@@ -82,7 +82,7 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
 
                         user.put("points", user.getInt("points") + 1);
 
-                        String cat_key = PinCategoryHelper.getTypeKey(pin.getCategory());
+                        String cat_key = CategoryHelper.getTypeKey(pin.getCategory());
                         user.put(cat_key, user.getInt(cat_key) + 1);
 
                         user.saveInBackground();

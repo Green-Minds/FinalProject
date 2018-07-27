@@ -20,8 +20,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -29,32 +27,33 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
-import green_minds.com.finalproject.model.Category;
+import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.Goal;
-import green_minds.com.finalproject.model.PinCategoryHelper;
 
 public class EditGoalFragment extends Fragment {
 
     public interface OnEditGoalListener {
         void onNewGoal(Goal goal);
+
         void showProgressBar();
+
         void hideProgressBar();
     }
 
     private OnEditGoalListener mListener;
-    private Context context;
-    private ArrayList<Goal> goals;
-    private ParseUser user;
-    private Goal currentGoal;
-    private Date selectedDate;
-    private boolean beingEdited;
+    private Context mContext;
+    private ArrayList<Goal> mGoals;
+    private ParseUser mUser;
+    private Goal mCurrentGoal;
+    private Date mSelectedDate;
+    private boolean mBeingEdited;
 
+    private static final String ARG_PARAM0 = "beingedited";
     private static final String ARG_PARAM1 = "goal";
     private static final String ARG_PARAM2 = "goals";
 
@@ -76,17 +75,26 @@ public class EditGoalFragment extends Fragment {
     @BindView(R.id.btn_save)
     Button btnSave;
 
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
+
     public EditGoalFragment() {
     }
 
-    public static EditGoalFragment newInstance() {
+    public static EditGoalFragment newInstance(ArrayList<Goal> goals) {
         EditGoalFragment fragment = new EditGoalFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_PARAM0, false);
+        args.putParcelableArrayList(ARG_PARAM2, goals);
+        fragment.setArguments(args);
         return fragment;
     }
 
+    //overload new instance - this one is for editing existing goals
     public static EditGoalFragment newInstance(Goal goal, ArrayList<Goal> goals) {
         EditGoalFragment fragment = new EditGoalFragment();
         Bundle args = new Bundle();
+        args.putBoolean(ARG_PARAM0, true);
         args.putParcelable(ARG_PARAM1, goal);
         args.putParcelableArrayList(ARG_PARAM2, goals);
         fragment.setArguments(args);
@@ -97,64 +105,63 @@ public class EditGoalFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListener.showProgressBar();
-        user = ParseUser.getCurrentUser();
-        currentGoal = null;
-        beingEdited = false;
-        if (getArguments() != null) {
-            beingEdited = true;
-            currentGoal = getArguments().getParcelable(ARG_PARAM1);
-            goals = getArguments().getParcelableArrayList(ARG_PARAM2);
+        mUser = ParseUser.getCurrentUser();
+        mBeingEdited = getArguments().getBoolean(ARG_PARAM0);
+        mCurrentGoal = null;
+        if (mBeingEdited) {
+            mCurrentGoal = getArguments().getParcelable(ARG_PARAM1);
         }
-        else {
-            //have to do this weird "include goals" query because otherwise before I get anything in a goal obj I need to call "fetchifneeded"
-            ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
-            userQuery.include("goals");
-            userQuery.whereEqualTo("objectId", user.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
-                @Override
-                public void done(List<ParseUser> objects, com.parse.ParseException e) {
-                    if(e != null){
-                        Toast.makeText(context, "Error. Please try again later.", Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                        return;
-                    }
-                    if(objects.size() < 1){
-                        Toast.makeText(context, "Error. Please try again later.", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    user = objects.get(0);
-                    goals = (ArrayList<Goal>)user.get("goals");
-                    if( goals == null){
-                        goals = new ArrayList<>();
-                    }
-                }
-            });
-        }
+        mGoals = getArguments().getParcelableArrayList(ARG_PARAM2);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_edit_goal, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
-        final Category[] categories = PinCategoryHelper.categories;
-        selectedDate = new Date(calendar.getDate());
-        int initialPosition = 0;
-        if(currentGoal != null){
-            initialPosition = currentGoal.getType();
-            numberOf.setText(currentGoal.getGoal() + "");
-            selectedDate = currentGoal.getDeadline();
-            calendar.setDate(selectedDate.getTime());
-            btnSave.setText("Save changes!");
+
+        //set values appropriately if editing goal and not making new one
+        if (mBeingEdited) {
+            int position = mCurrentGoal.getType();
+            numberOf.setText(mCurrentGoal.getGoal() + "");
+            mSelectedDate = mCurrentGoal.getDeadline();
+            calendar.setDate(mSelectedDate.getTime());
+            btnSave.setText(R.string.button_save_text);
+            description.setText(CategoryHelper.categories[position].getDescription());
+            type.setText(CategoryHelper.categories[position].getUnit());
+            String title = getString(R.string.edit_goal_title) + CategoryHelper.getPinIdentifier(position);
+            tvTitle.setText(title);
+            //dropdown is turned off - user shouldn't be able to change the category when they're editing the goal.
+            dropdown.setVisibility(View.GONE);
+        } else {
+            //else make the dropdown menu visible and init fields to default
+            initFields();
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, PinCategoryHelper.listOfCategories);
-        dropdown.setAdapter(adapter);
+        //set up calendar listener
+        calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                Calendar c = Calendar.getInstance();
+                c.set(year, month, dayOfMonth);
+                mSelectedDate = new Date(c.getTimeInMillis());
+            }
+        });
 
+        mListener.hideProgressBar();
+    }
+
+    private void initFields() {
+        tvTitle.setText(R.string.new_goal_title);
+        btnSave.setText(R.string.button_new_text);
+        mSelectedDate = new Date(calendar.getDate());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, CategoryHelper.listOfCategories);
+        dropdown.setVisibility(View.VISIBLE);
+        dropdown.setAdapter(adapter);
         dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -162,31 +169,21 @@ public class EditGoalFragment extends Fragment {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                description.setText(categories[position].getDescription());
-                type.setText(categories[position].getUnit());
+                description.setText(CategoryHelper.categories[position].getDescription());
+                type.setText(CategoryHelper.categories[position].getUnit());
             }
         });
-        dropdown.setSelection(initialPosition);
-
-        calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                Calendar c = Calendar.getInstance();
-                c.set(year, month, dayOfMonth);
-                selectedDate = new Date(c.getTimeInMillis()); //this is what you want to use later
-            }
-        });
-        mListener.hideProgressBar();
+        dropdown.setSelection(0);
     }
 
     @Override
     public void onAttach(Context c) {
-        context = c;
-        super.onAttach(context);
-        if (context instanceof OnEditGoalListener) {
-            mListener = (OnEditGoalListener) context;
+        mContext = c;
+        super.onAttach(mContext);
+        if (mContext instanceof OnEditGoalListener) {
+            mListener = (OnEditGoalListener) mContext;
         } else {
-            throw new RuntimeException(context.toString()
+            throw new RuntimeException(mContext.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
@@ -200,12 +197,11 @@ public class EditGoalFragment extends Fragment {
     public void onStart() {
         super.onStart();
         //user deleted the object on the list page and navigated back. reset the fields
-        if(beingEdited && currentGoal == null){
-            beingEdited = false;
-            dropdown.setSelection(0);
+        if (mBeingEdited && mCurrentGoal == null) {
+            mBeingEdited = false;
+            initFields();
             numberOf.setText(0);
             calendar.setDate(calendar.getDate());
-            btnSave.setText("Make new goal!");
         }
     }
 
@@ -216,103 +212,107 @@ public class EditGoalFragment extends Fragment {
     }
 
     @OnClick(R.id.btn_save)
-    public void save(){
-        mListener.showProgressBar();
+    public void save() {
+        //check if fields are all valid
         try {
             doFieldChecks();
         } catch (Exception e) {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
             return;
         }
-
-        final Goal goal = beingEdited ? currentGoal : new Goal();
-        int type = dropdown.getSelectedItemPosition();
-        goal.setType(type);
-
-        if(goals.contains(goal) && !beingEdited){
-
-            AlertDialog.Builder builder;
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(context);
-            }
-            //TODO - put into strings.xml later
-            String title = "Override";
-            String message = "You have already set a goal for this category. Do you want to overwrite your old goal?";
-
-            builder.setTitle(title).setMessage(message)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Goal existingGoal = null;
-                            for(int i = 0; i < goals.size(); i ++){
-                                if(goals.get(i).equals(goal)) existingGoal = goals.get(i);
-                            }
-                            saveGoal(existingGoal, true);
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(context, "Save canceled.", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-
+        if (mBeingEdited) {
+            saveGoal(mCurrentGoal, true);
         } else {
-            saveGoal(goal, beingEdited);
+            final Goal goal = new Goal();
+            int type = dropdown.getSelectedItemPosition();
+            goal.setType(type);
+            if (mGoals.contains(goal) && !mBeingEdited) {
+                launchOverrideAlert(goal);
+            } else {
+                saveGoal(goal, false);
+            }
         }
     }
 
-    private void saveGoal(final Goal goal, boolean overwrite){
-
-        int goalNum = Integer.parseInt(numberOf.getText().toString()); //input validity checked earlier
-        goal.setDeadline(selectedDate);
-        goal.setGoal(goalNum);
-        if(!overwrite){
-            goals.add(goal);
+    private void launchOverrideAlert(final Goal goal) {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(mContext);
         }
-        user.put("goals", goals);
+        builder.setTitle(R.string.alert_dialog_title).setMessage(R.string.alert_dialog_body)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Goal existingGoal = null;
+                        for (int i = 0; i < mGoals.size(); i++) {
+                            if (mGoals.get(i).equals(goal)) existingGoal = mGoals.get(i);
+                        }
+                        saveGoal(existingGoal, true);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(mContext, getString(R.string.save_canceled), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
 
-        user.saveInBackground(new SaveCallback() {
+    private void saveGoal(final Goal goal, boolean overwrite) {
+        mListener.showProgressBar();
+        int goalNum = Integer.parseInt(numberOf.getText().toString()); //input validity checked earlier
+        goal.setDeadline(mSelectedDate);
+        goal.setGoal(goalNum);
+        //if being overwritten, current goal already exists in mGoals & pointer is the same
+        if (!overwrite) {
+            //if NOT being overwritten, add to array bc it's new
+            mGoals.add(goal);
+        }
+        mUser.put(ARG_PARAM2, mGoals);
+
+        mUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
                 mListener.hideProgressBar();
-                if(e != null){
+                if (e != null) {
                     e.printStackTrace();
-                } else{
+                    if (e.getCode() == com.parse.ParseException.CONNECTION_FAILED) {
+                        Toast.makeText(mContext, R.string.network_error, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(mContext, R.string.misc_error, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
                     mListener.onNewGoal(goal);
                 }
             }
         });
     }
 
-    private void doFieldChecks() throws Exception{
+    private void doFieldChecks() throws Exception {
         int goalNum = 0;
         String num = numberOf.getText().toString();
-        Date today = new Date(calendar.getDate());
         Calendar cToday = Calendar.getInstance();
         Calendar cSelected = Calendar.getInstance();
-        cSelected.setTime(selectedDate);
+        cSelected.setTime(mSelectedDate);
         boolean sameDay = cToday.get(Calendar.YEAR) == cSelected.get(Calendar.YEAR) &&
                 cToday.get(Calendar.DAY_OF_YEAR) == cSelected.get(Calendar.DAY_OF_YEAR);
-        if(sameDay || cToday.after(cSelected)) {
-            throw new Exception("Choose a date in the future!");
+        if (sameDay || cToday.after(cSelected)) {
+            throw new Exception(getString(R.string.exception_date));
         }
 
-        if(num.equals("")) throw new Exception("Fill out the goal field!");
-        try{
+        if (num.isEmpty()) throw new Exception(getString(R.string.exception_empty_string));
+        try {
             goalNum = Integer.parseInt(num);
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            if(e instanceof ParseException){
-                throw new Exception("Invalid characters in number field!");
+            if (e instanceof ParseException) {
+                throw new Exception(getString(R.string.exception_badchar));
             }
         }
-        if(goalNum < 1){
-            throw new Exception("Your number needs to be greater than 0!");
+        if (goalNum < 1) {
+            throw new Exception(getString(R.string.exception_zero));
         }
     }
-
 }

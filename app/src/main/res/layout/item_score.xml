@@ -38,5 +38,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/numberOf"
         android:layout_toEndOf="@+id/progress"
-        android:text="View Details" />
+        android:text="View Details"
+        android:visibility="visible" />
 </RelativeLayout>

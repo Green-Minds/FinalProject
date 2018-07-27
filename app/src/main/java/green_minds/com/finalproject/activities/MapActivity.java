@@ -14,7 +14,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -26,16 +25,15 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -69,23 +67,19 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import green_minds.com.finalproject.adapters.MyInfoWindowAdapter;
+import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.InfoWindowData;
 import green_minds.com.finalproject.model.MyItem;
 import green_minds.com.finalproject.model.Pin;
-import green_minds.com.finalproject.R;
-import green_minds.com.finalproject.model.PinCategoryHelper;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
@@ -109,6 +103,7 @@ public class MapActivity extends AppCompatActivity implements
     @BindView(R.id.ivAdjust) public ImageView ivAdjust;
     @BindView(R.id.adjustBtn) public Button adjustBtn;
     @BindView(R.id.tvAdjust) public TextView tvAdjust;
+    @BindView(R.id.profileBtn) public ImageButton profileBtn;
 
 
     private final int REQUEST_CODE = 20;
@@ -137,79 +132,35 @@ public class MapActivity extends AppCompatActivity implements
     private Cluster<MyItem> clickedCluster;
     private MyItem clickedClusterItem;
 
-    // the reaspm for this variable's existance is that a tap on the marker is considered a map move
+    // the reaspm for this variable's existence is that a tap on the marker is considered a map move
     // event, so i tap on a marker and want an infowindow to appear, but it appears and dissapears
-    // because a tap is a map event so sad
+    // because a tap is a map event
     private static boolean tapEvent = false;
-
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-
 
     private class MyItemRenderer extends DefaultClusterRenderer<MyItem> {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
         private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
-        // private final ImageView mImageView;
-        // private final ImageView mClusterImageView;
-        // private final int mDimension;
 
         public MyItemRenderer() {
             super(MapActivity.this, map, mClusterManager);
 
-            // View multiProfile = getLayoutInflater().inflate(R.layout.custom_icons, null);
-            // mClusterIconGenerator.setContentView(multiProfile);
-            // mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
-
-            // mImageView = new ImageView(getApplicationContext());
-            // mDimension = (int) getResources().getDimension(R.dimen.standard_55);
-            // mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
-            // int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
-            // mImageView.setPadding(padding, padding, padding, padding);
-            // mIconGenerator.setContentView(mImageView);
         }
 
         @Override
         protected void onBeforeClusterItemRendered(MyItem item, MarkerOptions markerOptions) {
-            // Draw a single person.
-            // Set the info window to show their name.
-            // mImageView.setImageResource(item.profilePhoto);
-            // Bitmap icon = mIconGenerator.makeIcon();
 
-            BitmapDescriptor customMarker =
-                    BitmapDescriptorFactory.fromResource(item.profilePhoto);
-            // markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.name);
-            markerOptions.icon(customMarker);
-        }
+            // BitmapDescriptor customMarker = BitmapDescriptorFactory.fromResource(item.getTypeIcon());
+            markerOptions.icon(bitmapDescriptorFromVector(MapActivity.this, item.getTypeIcon()));
 
-      /*  @Override
-        protected void onBeforeClusterRendered(Cluster<MyItem> cluster, MarkerOptions markerOptions) {
-            // Draw multiple people.
-            // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
-            List<Drawable> profilePhotos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
-            int width = mDimension;
-            int height = mDimension;
 
-            for (MyItem p : cluster.getItems()) {
-                // Draw 4 at most.
-                if (profilePhotos.size() == 4) break;
-                Drawable drawable = getResources().getDrawable(p.profilePhoto);
-                drawable.setBounds(0, 0, width, height);
-                profilePhotos.add(drawable);
-            }
-            // MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
-            // multiDrawable.setBounds(0, 0, width, height);
-
-            // mClusterImageView.setImageDrawable(multiDrawable);
-            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
         }
 
         @Override
         protected boolean shouldRenderAsCluster(Cluster cluster) {
-            // Always render clusters.
-            return cluster.getSize() > 1;
-        }
 
-        */
+            return cluster.getSize() > 10;
+        }
     }
 
 
@@ -265,21 +216,6 @@ public class MapActivity extends AppCompatActivity implements
 
             mClusterManager = new ClusterManager<MyItem>(MapActivity.this, map);
             mClusterManager.setRenderer(new MyItemRenderer());
-            // map.setOnMarkerClickListener(mClusterManager);
-            // map.setInfoWindowAdapter(mClusterManager.getMarkerManager());
-
-
-            // MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this, item);
-            // mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(adapter);
-            // mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
-            //     @Override
-            //     public boolean onClusterItemClick(MyItem item) {
-
-            //         MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this, items);
-            //         mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(adapter);
-            //         return false;
-            //    }
-            // });
 
             map.setOnInfoWindowClickListener(mClusterManager);
             map.setInfoWindowAdapter(mClusterManager.getMarkerManager());
@@ -289,10 +225,7 @@ public class MapActivity extends AppCompatActivity implements
 
             map.setOnMarkerClickListener(mClusterManager);
             // mClusterManager.setOnClusterClickListener((ClusterManager.OnClusterClickListener<MyItem>) MapActivity.this);
-            // mClusterManager.setOnClusterInfoWindowClickListener(this);
-            // mClusterManager.setOnClusterItemClickListener(this);
             // mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-
 
             mClusterManager
                     .setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
@@ -306,12 +239,13 @@ public class MapActivity extends AppCompatActivity implements
             user = ParseUser.getCurrentUser();
             if (user != null) {
                 ParseGeoPoint loc = user.getParseGeoPoint("location");
-                LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
                 if (loc != null ) {
+                    LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
                     map.animateCamera(cameraUpdate);
                 }
             }
+
             UiSettings mapUiSettings = map.getUiSettings();
             mapUiSettings.setZoomControlsEnabled(true);
             map.setMinZoomPreference(6.0f);
@@ -321,7 +255,6 @@ public class MapActivity extends AppCompatActivity implements
             MapActivityPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
 
             getMyLocation();
-            // map.setOnCameraIdleListener(mClusterManager);
             map.setOnCameraMoveStartedListener(this);
             map.setOnCameraMoveListener(this);
             map.setOnCameraMoveCanceledListener(this);
@@ -329,7 +262,6 @@ public class MapActivity extends AppCompatActivity implements
             newPinBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     user = ParseUser.getCurrentUser();
                     if (user == null) {
                         Intent log = new Intent(MapActivity.this, LoginActivity.class);
@@ -366,7 +298,6 @@ public class MapActivity extends AppCompatActivity implements
                         closeFABMenu();
                     }
                 }
-
                 private void closeFABMenu() {
                     isFABOpen=false;
                     fab0.animate().translationY(0);
@@ -375,7 +306,6 @@ public class MapActivity extends AppCompatActivity implements
                     fab3.animate().translationY(0);
                     fab4.animate().translationY(0);
                 }
-
                 private void showFABMenu() {
                     isFABOpen=true;
                     fab0.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
@@ -397,14 +327,13 @@ public class MapActivity extends AppCompatActivity implements
             onCameraIdle();
             if (user != null) {
                 ParseGeoPoint loc = user.getParseGeoPoint("location");
-                LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
                 if (loc != null ) {
+                    LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
                     map.animateCamera(cameraUpdate);
                     showAll();
                 }
             }
-
             map.setOnCameraIdleListener(this);
 
         } else {
@@ -618,11 +547,9 @@ public class MapActivity extends AppCompatActivity implements
         Toast.makeText(this, "The camera has stopped moving.",
                 Toast.LENGTH_SHORT).show();
 
-        // this piece is extra stupid but whatever
+        // this piece is here because otherwise infowindows instantly dissappear
         if (tapEvent) {
-            tapEvent = false;
-            mClusterManager.cluster();
-        }
+            tapEvent = false; }
         else {
             if (fab0.isSelected()) {
                 fab0.setSelected(false);
@@ -668,22 +595,6 @@ public class MapActivity extends AppCompatActivity implements
             tapEvent = true;
         }
 
-
-        // I leave this junk of code commented out because I might need it here in half an hour
-
-       /* if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-            Toast.makeText(this, "The user gestured on the map.",
-                    Toast.LENGTH_SHORT).show();
-        } else if (reason == GoogleMap.OnCameraMoveStartedListener
-                .REASON_API_ANIMATION) {
-            Toast.makeText(this, "The user tapped something on the map.",
-                    Toast.LENGTH_SHORT).show();
-        } else if (reason == GoogleMap.OnCameraMoveStartedListener
-                .REASON_DEVELOPER_ANIMATION) {
-            Toast.makeText(this, "The app moved the camera.",
-                    Toast.LENGTH_SHORT).show();
-        }
-        */
     }
 
     // Define a DialogFragment that displays the error dialog
@@ -779,21 +690,12 @@ public class MapActivity extends AppCompatActivity implements
                             type = mNewPin.getCategory();
                             pins.add(mNewPin);
 
-
                             // new cool map view with adjusting the pin position
                             CameraUpdate cameraNewPin = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 17);
                             map.animateCamera(cameraNewPin);
-                            ivAdjust.setVisibility(View.VISIBLE);
-                            adjustBtn.setVisibility(View.VISIBLE);
-                            tvAdjust.setVisibility(View.VISIBLE);
-                            newPinBtn.setVisibility(View.GONE);
-                            checkinBtn.setVisibility(View.GONE);
-                            fab.setVisibility(View.GONE);
-                            fab0.setVisibility(View.GONE);
-                            fab1.setVisibility(View.GONE);
-                            fab2.setVisibility(View.GONE);
-                            fab3.setVisibility(View.GONE);
-                            fab4.setVisibility(View.GONE);
+
+                            buttonsVisibilityBefore();
+
 
                             adjustBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -833,15 +735,6 @@ public class MapActivity extends AppCompatActivity implements
                                     items.add(item);
                                     mClusterManager.cluster();
 
-
-                                    // InfoWindowData info = new InfoWindowData();
-                                    // info.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
-                                    // info.setImage(image);
-                                    // MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
-                                    // map.setInfoWindowAdapter(adapter);
-                                    // mapMarker.setTag(info);
-                                    // mapMarker.showInfoWindow();
-
                                     // final Handler handler = new Handler();
                                     // handler.postDelayed(new Runnable() {
                                     // @Override
@@ -850,17 +743,7 @@ public class MapActivity extends AppCompatActivity implements
                                     //    }
                                     // }, 200);
 
-                                    adjustBtn.setVisibility(View.GONE);
-                                    ivAdjust.setVisibility(View.GONE);
-                                    tvAdjust.setVisibility(View.GONE);
-                                    newPinBtn.setVisibility(View.VISIBLE);
-                                    checkinBtn.setVisibility(View.VISIBLE);
-                                    fab.setVisibility(View.VISIBLE);
-                                    fab0.setVisibility(View.VISIBLE);
-                                    fab1.setVisibility(View.VISIBLE);
-                                    fab2.setVisibility(View.VISIBLE);
-                                    fab3.setVisibility(View.VISIBLE);
-                                    fab4.setVisibility(View.VISIBLE);
+                                    buttonsVisibilityAfter();
 
                                     mNewPin.saveInBackground(new SaveCallback() {
                                         @Override
@@ -885,26 +768,35 @@ public class MapActivity extends AppCompatActivity implements
         String imageName = "drop";
         switch (type) {
             case 0:
-                imageName = "recycling_bin";
+                imageName = "ic_recycling_bin";
                 break;
             case 1:
-                imageName = "drop";
+                // imageName = "drop";
+                imageName = "ic_recycling_bin";
+
                 break;
             case 2:
-                imageName = "bicycle";
+                // imageName = "bicycle";
+                imageName = "ic_recycling_bin";
                 break;
             case 3:
-                imageName = "growth";
+                // imageName = "growth";
+                imageName = "ic_recycling_bin";
                 break;
             case 4:
-                imageName = "battery";
+                // imageName = "battery";
+                imageName = "ic_recycling_bin";
                 break;
         }
         int drawableId = getResources().getIdentifier(imageName, "drawable", getPackageName());
         return drawableId;
+    }
 
-    };
-
+    @OnClick(R.id.profileBtn)
+    protected void  goToProfile() {
+        Intent i = new Intent(MapActivity.this, UserInfoActivity.class);
+        startActivity(i);
+    }
 
     @OnClick(R.id.fab0)
     protected void onFab0() {
@@ -920,12 +812,10 @@ public class MapActivity extends AppCompatActivity implements
             fab0.setBackgroundTintList(ColorStateList.valueOf(-1));
             showAll();
          }
-
     }
 
     @OnClick(R.id.fab1)
     protected void onFab1() {
-
         if (!fab1.isSelected()) {
             fab1.setSelected(true);
             fab1.setBackgroundTintList(ColorStateList.valueOf(-16777216));
@@ -938,7 +828,6 @@ public class MapActivity extends AppCompatActivity implements
             showAll();
         }
     }
-
 
     @OnClick(R.id.fab2)
     protected void onFab2() {
@@ -1017,23 +906,10 @@ public class MapActivity extends AppCompatActivity implements
                             BitmapDescriptor customMarker =
                                     BitmapDescriptorFactory.fromResource(drawableId);
 
-                            LatLng listingPosition = new LatLng(lat, lon);
-                            // Create the marker on the fragment
-                            // final Marker mapMarker = map.addMarker(new MarkerOptions()
-                            //         .position(listingPosition)
-                            //         .title("checkins: " + objects.get(i).getCheckincount())
-                            //         .snippet(objects.get(i).getComment())
-                            //         .icon(customMarker));
-
                             user = ParseUser.getCurrentUser();
                             final ParseGeoPoint userloc = user.getParseGeoPoint("location");
                             InfoWindowData info = new InfoWindowData();
                             info.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
-                            //info.setImage(image);
-                            // MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this);
-                            // map.setInfoWindowAdapter(adapter);
-                            //mapMarker.setTag(info);
-
                             MyItem item = new MyItem(lat, lon, drawableId);
                             item.setTitle("checkins: " + objects.get(i).getCheckincount());
                             item.setSnippet(objects.get(i).getComment());
@@ -1053,11 +929,10 @@ public class MapActivity extends AppCompatActivity implements
     @OnClick(R.id.logoutBtn)
     protected void logout() {
         ParseUser.logOut();
-        ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
+        ParseUser currentUser = ParseUser.getCurrentUser();
         Intent i = new Intent(MapActivity.this, LoginActivity.class);
         startActivity(i);
     }
-
 
     private static double round(double value, int places) {
         if (places < 0)
@@ -1095,7 +970,6 @@ public class MapActivity extends AppCompatActivity implements
         CameraPosition currentCameraPosition = map.getCameraPosition();
         currentLoc = currentCameraPosition.target;
         mZoom = currentCameraPosition.zoom;
-
         mClusterManager.clearItems();
         final ParseGeoPoint loc = new ParseGeoPoint(currentLoc.latitude, currentLoc.longitude);
         pinQuery = new Pin.Query();
@@ -1119,14 +993,6 @@ public class MapActivity extends AppCompatActivity implements
                             BitmapDescriptor customMarker =
                                     BitmapDescriptorFactory.fromResource(drawableId);
 
-                            LatLng listingPosition = new LatLng(lat, lon);
-                            // Create the marker on the fragment
-                            // final Marker mapMarker = map.addMarker(new MarkerOptions()
-                            //         .position(listingPosition)
-                             //        .title("checkins: " + objects.get(i).getCheckincount())
-                             //        .snippet(objects.get(i).getComment())
-                             //        .icon(customMarker));
-
                             ParseFile photo = pin.getPhoto();
                             if(photo != null){
                                 image = photo.getUrl();
@@ -1136,10 +1002,6 @@ public class MapActivity extends AppCompatActivity implements
                             info.setImage(image);
                             user = ParseUser.getCurrentUser();
                             final ParseGeoPoint userloc = user.getParseGeoPoint("location");
-
-                            // mapMarker.setTag(info);
-                            // mapMarker.showInfoWindow();
-                            // mapMarker.hideInfoWindow();
 
                             MyItem item = new MyItem(lat, lon, drawableId);
                             item.setTitle("checkins: " + objects.get(i).getCheckincount());
@@ -1151,21 +1013,13 @@ public class MapActivity extends AppCompatActivity implements
                             mClusterManager.addItem(item);
                             items.add(item);
                             mClusterManager.cluster();
-
-                            // MyInfoWindowAdapter adapter = new MyInfoWindowAdapter(MapActivity.this, items);
-                            // map.setInfoWindowAdapter(adapter);
-                            // mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(adapter);
                         }
-
-
                     }
                 } else {
                     e.printStackTrace();
                 }
             }
         });
-
-
     }
 
 
@@ -1188,7 +1042,6 @@ public class MapActivity extends AppCompatActivity implements
         return r;
     }
 
-
     public class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter {
 
         private final View myContentsView;
@@ -1205,35 +1058,58 @@ public class MapActivity extends AppCompatActivity implements
 
         @Override
         public View getInfoWindow(Marker marker) {
-            // TODO Auto-generated method stub
-
-
             TextView title = myContentsView.findViewById(R.id.title);
             TextView description = myContentsView.findViewById(R.id.description);
             TextView distance = myContentsView.findViewById(R.id.distance);
             ImageView img = myContentsView.findViewById(R.id.img);
-
-            // tvTitle.setTypeface(mTyFaceKreonBold);
-            // tvSnippet.setTypeface(mTyFaceKreonBold);
             if (clickedClusterItem != null) {
                  title.setText(clickedClusterItem.getTitle());
                  description.setText(clickedClusterItem.getSnippet());
                  distance.setText("distance: " + clickedClusterItem.getDistance());
                  GlideApp.with(MapActivity.this).load(clickedClusterItem.getImageUrl()).centerCrop().into(img);
-
             }
             return myContentsView;
         }
     }
+
+    private void buttonsVisibilityBefore() {
+        ivAdjust.setVisibility(View.VISIBLE);
+        adjustBtn.setVisibility(View.VISIBLE);
+        tvAdjust.setVisibility(View.VISIBLE);
+        newPinBtn.setVisibility(View.GONE);
+        checkinBtn.setVisibility(View.GONE);
+        logoutBtn.setVisibility(View.GONE);
+        fab.setVisibility(View.GONE);
+        fab0.setVisibility(View.GONE);
+        fab1.setVisibility(View.GONE);
+        fab2.setVisibility(View.GONE);
+        fab3.setVisibility(View.GONE);
+        fab4.setVisibility(View.GONE);
+    }
+
+    private  void buttonsVisibilityAfter() {
+        adjustBtn.setVisibility(View.GONE);
+        ivAdjust.setVisibility(View.GONE);
+        tvAdjust.setVisibility(View.GONE);
+        newPinBtn.setVisibility(View.VISIBLE);
+        checkinBtn.setVisibility(View.VISIBLE);
+        logoutBtn.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.VISIBLE);
+        fab0.setVisibility(View.VISIBLE);
+        fab1.setVisibility(View.VISIBLE);
+        fab2.setVisibility(View.VISIBLE);
+        fab3.setVisibility(View.VISIBLE);
+        fab4.setVisibility(View.VISIBLE);
+    }
 }
 /* TODO: add multiple categories at the same time functionality
- * add marker clusterization
- *
- *
+ * fix the thing with drop pin effect that there is a marker and a cluster item at the same time
+ * switch images from png to vectors, there is already a bitmap descriptor
  *
  * handler for post delayed
  *
  *
+ * make sure pictures upload from the first click
  * progress indication for everything
  * placeholder for the pucture
  * with handler mske code runnable and if there is like a piece in the queue we just remove it

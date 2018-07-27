@@ -28,12 +28,15 @@ import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.ScoreAdapter;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.Goal;
-import green_minds.com.finalproject.model.PinCategoryHelper;
+import green_minds.com.finalproject.model.CategoryHelper;
 
 public class UserInfoActivity extends AppCompatActivity {
 
     @BindView(R.id.tv_name)
     TextView tvName;
+
+    @BindView(R.id.tv_score)
+    TextView tvScore;
 
     @BindView(R.id.btn_edit)
     TextView btnEdit;
@@ -53,44 +56,45 @@ public class UserInfoActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    private void setupUserInfo(){
+    private void setupUserInfo() {
         showProgressBar();
-        mUser = ParseUser.getCurrentUser();
-        if(mUser == null){
-            redirectToLogin();
-        }
-
-        tvName.setText(mUser.getUsername());
-
         mContext = this;
+        mUser = ParseUser.getCurrentUser();
+        if (mUser == null) {
+            redirectToLogin();
+            return;
+        }
+        tvName.setText(mUser.getUsername());
+        tvScore.setText(mUser.getInt("points") + "");
         ParseFile photo = mUser.getParseFile("photo");
         String url = photo.getUrl();
         GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.q_mark).into(ivProfPic);
         ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
         userQuery.include("goals");
         userQuery.whereEqualTo("objectId", mUser.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
+
             @Override
             public void done(List<ParseUser> objects, com.parse.ParseException e) {
-                if(e != null){
-                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                hideProgressBar();
+                if (e != null) {
+                    Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                     return;
                 }
-                if(objects.size() < 1){
-                    Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_LONG).show();
+                if (objects.size() < 1) {
+                    Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 mUser = objects.get(0);
-                mGoals = (ArrayList<Goal>)mUser.get("goals");
-                if( mGoals == null){
+                mGoals = (ArrayList<Goal>) mUser.get("goals");
+                if (mGoals == null) {
                     mGoals = new ArrayList<>();
                 }
 
-                ScoreAdapter adapter = new ScoreAdapter(mContext, PinCategoryHelper.getCategoriesArrayList(), mGoals);
+                ScoreAdapter adapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
                 ListView listview = findViewById(R.id.listView);
                 listview.setAdapter(adapter);
-                hideProgressBar();
             }
         });
     }
@@ -100,38 +104,43 @@ public class UserInfoActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        ProgressBar v = (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
         setupUserInfo();
         return super.onPrepareOptionsMenu(menu);
     }
 
     @OnClick(R.id.btn_edit)
-    public void goToEdit(){
+    public void goToEdit() {
         Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
         startActivityForResult(i, 30);
     }
 
     @OnClick(R.id.btn_goals)
-    public void goToGoals(){
+    public void goToGoals() {
         Intent i = new Intent(UserInfoActivity.this, GoalActivity.class);
-        startActivityForResult(i, 31);
-    }
-
-    private void redirectToLogin(){
-        Intent i = new Intent(this, LoginActivity.class);
+        if(mGoals == null){
+            Toast.makeText(mContext, getString(R.string.wait_content), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        i.putExtra("GOALS", mGoals);
         startActivity(i);
     }
 
+    private void redirectToLogin() {
+        Intent i = new Intent(mContext, LoginActivity.class);
+        mContext.startActivity(i);
+        finish();
+    }
+
     public void showProgressBar() {
-        // Show progress item
         miActionProgressItem.setVisible(true);
     }
 
     public void hideProgressBar() {
-        // Hide progress item
         miActionProgressItem.setVisible(false);
     }
 }
