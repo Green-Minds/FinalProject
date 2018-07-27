@@ -291,7 +291,6 @@ public class LoginActivity extends AppCompatActivity {
         final Map<String, String> authData = new HashMap<>();
         user.setUsername(username);
         user.setEmail(email);
-        //user.put("connection", atvSchoolName.getText().toString());
         user.put("location", getLocation());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
