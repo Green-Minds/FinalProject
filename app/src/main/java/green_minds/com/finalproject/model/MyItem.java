@@ -7,7 +7,7 @@ public class MyItem implements ClusterItem {
     private final LatLng mPosition;
     public String mTitle;
     public String mSnippet;
-    public final int profilePhoto;
+    private final int mTypeIcon;
     public String mImageUrl;
     public String mDistance;
 
@@ -15,7 +15,7 @@ public class MyItem implements ClusterItem {
         mPosition = new LatLng(lat, lng);
         mTitle = null;
         mSnippet = null;
-        profilePhoto = pictureResource;
+        mTypeIcon = pictureResource;
         mImageUrl = null;
         mDistance = null;
     }
@@ -24,7 +24,7 @@ public class MyItem implements ClusterItem {
         mPosition = new LatLng(lat, lng);
         mTitle = title;
         mSnippet = snippet;
-        profilePhoto = pictureResource;
+        mTypeIcon = pictureResource;
         mImageUrl = null;
         mDistance = null;
     }
@@ -43,6 +43,7 @@ public class MyItem implements ClusterItem {
     public String getDistance() {return mDistance; }
     public String getImageUrl() {return mImageUrl; }
 
+    public int getTypeIcon() {return mTypeIcon; }
 
     /**
      * Set the title of the marker

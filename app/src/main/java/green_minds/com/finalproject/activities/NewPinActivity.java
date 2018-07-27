@@ -123,7 +123,14 @@ public class NewPinActivity extends AppCompatActivity {
 
         pin.setLatLng(location);
 
-        pin.setPhoto(new ParseFile(currentfile));
+        //pin.setPhoto(new ParseFile(currentfile));
+        final ParseFile parseFile = new ParseFile(currentfile);
+        parseFile.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                pin.setPhoto(parseFile);
+            }
+        });
 
         pin.saveInBackground(new SaveCallback() {
             @Override
