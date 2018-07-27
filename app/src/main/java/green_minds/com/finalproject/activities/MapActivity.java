@@ -159,7 +159,7 @@ public class MapActivity extends AppCompatActivity implements
         @Override
         protected boolean shouldRenderAsCluster(Cluster cluster) {
 
-            return cluster.getSize() > 10;
+            return cluster.getSize() > 15;
         }
     }
 
@@ -197,9 +197,9 @@ public class MapActivity extends AppCompatActivity implements
                 public void onMapReady(GoogleMap map) {
                     loadMap(map);
                     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                    onFab0();
-                    onFab0();
-                    mClusterManager.cluster();
+                    // onFab0();
+                    // onFab0();
+                    // mClusterManager.cluster();
 
                 }
             });
@@ -232,6 +232,7 @@ public class MapActivity extends AppCompatActivity implements
                         @Override
                         public boolean onClusterItemClick(MyItem item) {
                             clickedClusterItem = item;
+
                             return false;
                         }
                     });
@@ -339,6 +340,7 @@ public class MapActivity extends AppCompatActivity implements
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     @Override
@@ -713,8 +715,9 @@ public class MapActivity extends AppCompatActivity implements
                                         image = photo.getUrl();
                                     }
                                     int drawableId = getIcon(mNewPin.getCategory());
-                                    BitmapDescriptor customMarker =
-                                            BitmapDescriptorFactory.fromResource(drawableId);
+                                    // BitmapDescriptor customMarker =
+                                    //         BitmapDescriptorFactory.fromResource(drawableId);
+
 
                                     LatLng listingPosition = new LatLng(lat, lon);
                                     // Create the marker on the fragment
@@ -722,7 +725,7 @@ public class MapActivity extends AppCompatActivity implements
                                             .position(listingPosition)
                                             .title("checkins: " + mNewPin.getCheckincount())
                                             .snippet(mNewPin.getComment())
-                                            .icon(customMarker));
+                                            .icon(bitmapDescriptorFromVector(MapActivity.this, drawableId)));
 
                                     dropPinEffect(mapMarker);
 
@@ -771,21 +774,17 @@ public class MapActivity extends AppCompatActivity implements
                 imageName = "ic_recycling_bin";
                 break;
             case 1:
-                // imageName = "drop";
-                imageName = "ic_recycling_bin";
+                imageName = "ic_drop";
 
                 break;
             case 2:
-                // imageName = "bicycle";
-                imageName = "ic_recycling_bin";
+                imageName = "ic_cycling";
                 break;
             case 3:
-                // imageName = "growth";
-                imageName = "ic_recycling_bin";
+                imageName = "ic_money";
                 break;
             case 4:
-                // imageName = "battery";
-                imageName = "ic_recycling_bin";
+                imageName = "ic_battery";
                 break;
         }
         int drawableId = getResources().getIdentifier(imageName, "drawable", getPackageName());
@@ -903,9 +902,6 @@ public class MapActivity extends AppCompatActivity implements
                             }
 
                             int drawableId = getIcon(type);
-                            BitmapDescriptor customMarker =
-                                    BitmapDescriptorFactory.fromResource(drawableId);
-
                             user = ParseUser.getCurrentUser();
                             final ParseGeoPoint userloc = user.getParseGeoPoint("location");
                             InfoWindowData info = new InfoWindowData();

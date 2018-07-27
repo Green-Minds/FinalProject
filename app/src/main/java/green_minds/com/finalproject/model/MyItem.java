@@ -45,18 +45,10 @@ public class MyItem implements ClusterItem {
 
     public int getTypeIcon() {return mTypeIcon; }
 
-    /**
-     * Set the title of the marker
-     * @param title string to be set as title
-     */
     public void setTitle(String title) {
         mTitle = title;
     }
 
-    /**
-     * Set the description of the marker
-     * @param snippet string to be set as snippet
-     */
     public void setSnippet(String snippet) {
         mSnippet = snippet;
     }
