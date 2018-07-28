@@ -1,5 +1,6 @@
 package green_minds.com.finalproject.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -92,11 +93,20 @@ public class SecondSignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 btnConnectNext.setEnabled(false);
+                hideSoftKeyboard(SecondSignupActivity.this);
                 String connection = atvSchoolName.getText().toString();
                 if (rbWork.isChecked()) connection = etCompany.getText().toString();
                 gotoThirdScreen(connection);
             }
         });
+    }
+
+    private static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(
+                activity.getCurrentFocus().getWindowToken(), 0);
     }
 
     private void gotoThirdScreen(String connection) {
