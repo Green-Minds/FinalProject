@@ -5,12 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,10 +28,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,6 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.model.GlideApp;
+import green_minds.com.finalproject.model.ImageHelper;
 
 public class EditProfileActivity extends AppCompatActivity {
     public final static int PICK_PHOTO_CODE = 1046;
@@ -138,8 +131,14 @@ public class EditProfileActivity extends AppCompatActivity {
             mNewPic.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
-                    mUser.put("photo", mNewPic);
-                    saveUser();
+                    mSmallerNewPic.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            mUser.put("photo", mNewPic);
+                            mUser.put("smaller_photo", mSmallerNewPic);
+                            saveUser();
+                        }
+                    });
                 }
             });
         } else {
@@ -205,59 +204,21 @@ public class EditProfileActivity extends AppCompatActivity {
             try {
                 selectedImage = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
             } catch (IOException e) {
+                Toast.makeText(mContext, "Error. Failed to get image from gallery. Please try again later.", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
+                return;
             }
             int rotation = getRotationFromMediaStore(this, photoUri);
-
             Matrix matrix = new Matrix();
             matrix.postRotate(rotation);
+            //consider resizing this bitmap before loading it into the imageview
             Bitmap rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.getWidth(), selectedImage.getHeight(), matrix, true);
-
-            Bitmap circular_bitmap = getCroppedBitmap(rotatedBitmap);
+            Bitmap circular_bitmap = ImageHelper.getCroppedBitmap(rotatedBitmap);
             ivProfPic.setImageBitmap(circular_bitmap);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] imageByte = byteArrayOutputStream.toByteArray();
-            mNewPic = new ParseFile(getFileName(), imageByte);
-
-//            Bitmap smallerBitmap =
-//
-//            mNewPic = new ParseFile(getFileName(), imageByte);
-
+            mNewPic = ImageHelper.getParseFile(rotatedBitmap);
+            mSmallerNewPic = ImageHelper.getSmallerParseFile(rotatedBitmap);
         }
-    }
-
-    public Bitmap getCroppedBitmap(Bitmap bitmap) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-
-        final int color = 0xff424242;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
-                bitmap.getWidth() / 2, paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        return output;
-    }
-
-    private String getFileName() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-                .format(new Date());
-        return "IMG_" + timeStamp + ".jpg";
-    }
-
-    private String getSmallerFileName() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-                .format(new Date());
-        return "IMG_SMALLER_" + timeStamp + ".jpg";
     }
 
     //https://stackoverflow.com/questions/21085105/get-orientation-of-image-from-mediastore-images-media-data/30572852
