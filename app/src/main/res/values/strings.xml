@@ -27,5 +27,6 @@
     <string name="username_exists">"Username already exists!"</string>
     <string name="discard_changes_body">Discard current changes?</string>
     <string name="pin_save_failure">Failure saving pin. Please try again later.</string>
+    <string name="username_empty">Username can\'t be empty</string>
     <string name="updated_alert">Updated info!</string>
 </resources>

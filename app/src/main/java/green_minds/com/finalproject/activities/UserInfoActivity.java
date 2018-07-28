@@ -68,12 +68,18 @@ public class UserInfoActivity extends AppCompatActivity {
         tvName.setText(mUser.getUsername());
         int test = mUser.getInt("points");
         tvScore.setText(mUser.getInt("points") + "");
-        ParseFile photo = mUser.getParseFile("photo");
-        if (photo == null) {
-            GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
-        } else {
-            String url = photo.getUrl();
+        ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
+        if (smallerPhoto != null) {
+            String url = smallerPhoto.getUrl();
             GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+        } else {
+            ParseFile photo = mUser.getParseFile("photo");
+            if(photo != null){
+                String url = photo.getUrl();
+                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+            } else {
+                GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+            }
         }
 
         ParseQuery<ParseUser> userQuery = ParseUser.getQuery();

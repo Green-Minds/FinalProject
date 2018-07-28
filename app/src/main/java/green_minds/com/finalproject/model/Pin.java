@@ -1,8 +1,5 @@
 package green_minds.com.finalproject.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -19,6 +16,7 @@ public class Pin extends ParseObject {
     private static final String KEY_CATEGORY = "category";
     private static final String KEY_CHECKINCOUNT = "checkincount";
     private static final String KEY_PHOTO = "photo";
+    private static final String KEY_PHOTO_SMALL = "smaller_photo";
 
 
     public ParseGeoPoint getLatLng() { return getParseGeoPoint(KEY_LATLNG);}
@@ -48,6 +46,10 @@ public class Pin extends ParseObject {
     public ParseFile getPhoto() { return getParseFile(KEY_PHOTO);}
 
     public void setPhoto(ParseFile photo) { put(KEY_PHOTO, photo);}
+
+    public ParseFile getSmallerPhoto() { return getParseFile(KEY_PHOTO_SMALL);}
+
+    public void setSmallerPhoto(ParseFile photo) { put(KEY_PHOTO_SMALL, photo);}
 
 
     public static class Query extends ParseQuery<Pin> {
