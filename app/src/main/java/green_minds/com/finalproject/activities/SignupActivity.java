@@ -50,7 +50,7 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                tvUsernameTaken.setVisibility(View.GONE);
             }
 
             @Override
@@ -58,6 +58,7 @@ public class SignupActivity extends AppCompatActivity {
                 if (etUsernameInput.getText().toString().length() > 1
                         && etPasswordInput.getText().toString().length() > 1
                         && etEmailInput.getText().toString().length() > 1) {
+
                     btnInfoNext.setEnabled(true);
                 }
             }
@@ -66,14 +67,14 @@ public class SignupActivity extends AppCompatActivity {
         etPasswordInput.addTextChangedListener(textWatcher);
         etEmailInput.addTextChangedListener(textWatcher);
 
-//        boolean isEmailValid(CharSequence eMail) {
-//            return android.util.Patterns.EMAIL_ADDRESS.matcher(eMail)
-//                    .matches();
-//        }
-
         btnInfoNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(etEmailInput.getText().toString()).matches()) {
+                    tvUsernameTaken.setText("Invalid email address");
+                    tvUsernameTaken.setVisibility(View.VISIBLE);
+                    return;
+                }
                 btnInfoNext.setEnabled(false);
                 ParseQuery usernameQuery = ParseUser.getQuery();
                 ParseQuery emailQuery = ParseUser.getQuery();

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -46,7 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,12 +59,13 @@ import green_minds.com.finalproject.R;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final List<String> mPermissions = new ArrayList<String>() {{ add("email"); }};
+    private final List < String > mPermissions = Arrays.asList("email", "public_profile");
     @BindView(R.id.etUsernameLogin) public EditText etUsernameLogin;
     @BindView(R.id.etPasswordLogin) public EditText etPasswordLogin;
     @BindView(R.id.btnLogin) public Button btnLogin;
     @BindView(R.id.tvIncorrectInfo) public TextView tvIncorrectInfo;
     @BindView(R.id.fbLoginButton) public LoginButton fbLoginButton;
+    private  Map<String, String> authData = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +74,10 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (ParseUser.getCurrentUser() != null) {
-            alertDisplayer("Login Successful","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
+            alertDisplayer("Successful Login ","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
+        } else if (AccessToken.getCurrentAccessToken() != null) {
+            LoginManager.getInstance().logInWithReadPermissions(this, mPermissions);
+            alertDisplayer("Successful Login","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
         }
 
         TextWatcher textWatcher = new TextWatcher() {
@@ -83,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                tvIncorrectInfo.setVisibility(View.GONE);
             }
 
             @Override
@@ -137,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                     tvIncorrectInfo.setVisibility(View.GONE);
                     btnLogin.setEnabled(false);
                     fbLoginButton.setEnabled(false);
-                    alertDisplayer("Sucessful Login","Welcome back " + username + "!");
+                    alertDisplayer("Successful Login","Welcome back " + username + "!");
                 } else {
                     etPasswordLogin.startAnimation(invalidCredentials());
                     tvIncorrectInfo.setText(e.getMessage().toString());
@@ -183,7 +188,7 @@ public class LoginActivity extends AppCompatActivity {
         Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
         try {
             parseUserTask.waitForCompletion();
-            alertDisplayer("Sucessful Login","Welcome back " + user.getUsername() + "!");
+            alertDisplayer("Successful Login","Welcome back " + user.getUsername() + "!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -241,7 +246,6 @@ public class LoginActivity extends AppCompatActivity {
         v.setEnabled(false);
         final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
         startActivity(intent);
-        finish();
     }
 
     private class ProfileAsync extends AsyncTask<String, String, String> {
@@ -288,7 +292,6 @@ public class LoginActivity extends AppCompatActivity {
     private void saveNewUser(Bitmap image, String email, final String username) {
 
         final ParseUser user = ParseUser.getCurrentUser();
-        final Map<String, String> authData = new HashMap<>();
         user.setUsername(username);
         user.setEmail(email);
         user.put("location", getLocation());
@@ -311,7 +314,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
                                 try {
                                     parseUserTask.waitForCompletion();
-                                    alertDisplayer("Sucessful Login","Welcome back " + username + "!");
+                                    alertDisplayer("Successful Login ","Welcome  " + username + "!");
                                 } catch (InterruptedException err) {
                                     err.printStackTrace();
                                 }
