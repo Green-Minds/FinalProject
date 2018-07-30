@@ -99,6 +99,7 @@ public class SecondSignupActivity extends AppCompatActivity {
                 gotoThirdScreen(connection);
             }
         });
+
     }
 
     private static void hideSoftKeyboard(Activity activity) {
