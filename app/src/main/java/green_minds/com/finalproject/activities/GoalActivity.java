@@ -95,10 +95,10 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
     }
 
     public void showProgressBar() {
-        miActionProgressItem.setVisible(true);
+        if(miActionProgressItem != null) miActionProgressItem.setVisible(true);
     }
 
     public void hideProgressBar() {
-        miActionProgressItem.setVisible(false);
+        if(miActionProgressItem != null) miActionProgressItem.setVisible(false);
     }
 }

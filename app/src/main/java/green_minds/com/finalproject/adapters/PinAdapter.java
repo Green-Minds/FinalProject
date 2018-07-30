@@ -32,14 +32,12 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
     Context context;
     ParseUser user;
 
-    // initialize with list
     public PinAdapter(ArrayList<RelativePositionPin> pins) {
 
         this.mPins = pins;
         this.user = ParseUser.getCurrentUser();
     }
 
-    // creates and inflates a new view
     @Override
     @NonNull
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -49,7 +47,6 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
         return new ViewHolder(postView);
     }
 
-    // binds an inflated view to a new item
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
         //relative position pin holds the relative position
@@ -72,7 +69,7 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
         holder.btn_checkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pin.put("checkincount", pin.getCheckincount() + 1);
+                pin.increment("checkincount");
                 pin.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
@@ -80,10 +77,8 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
                         int numtimes  = pin.getCheckincount();
                         checkin.setText("Visited " + numtimes + " times.");
 
-                        user.put("points", user.getInt("points") + 1);
-
-                        String cat_key = CategoryHelper.getTypeKey(pin.getCategory());
-                        user.put(cat_key, user.getInt(cat_key) + 1);
+                        user.increment("points");
+                        user.increment(CategoryHelper.getTypeKey(pin.getCategory()));
 
                         user.saveInBackground();
                     }
@@ -92,13 +87,11 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
         });
     }
 
-    // returns the total number of items in the list
     @Override
     public int getItemCount() {
         return mPins.size();
     }
 
-    // create the viewholder as a static inner class
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         // track view objects

@@ -68,12 +68,18 @@ public class EditProfileActivity extends AppCompatActivity {
         mContext = this;
         ButterKnife.bind(this);
         etUsername.setText(mUser.getUsername());
-        ParseFile photo = mUser.getParseFile("photo");
-        if (photo == null) {
-            GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
-        } else {
-            String url = photo.getUrl();
+        ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
+        if (smallerPhoto != null) {
+            String url = smallerPhoto.getUrl();
             GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+        } else {
+            ParseFile photo = mUser.getParseFile("photo");
+            if(photo != null){
+                String url = photo.getUrl();
+                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+            } else {
+                GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+            }
         }
     }
 
