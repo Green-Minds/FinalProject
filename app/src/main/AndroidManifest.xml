@@ -30,7 +30,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.LoginActivity">
+        <activity android:name=".activities.LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,9 +41,11 @@
         <activity android:name=".activities.CheckInActivity" />
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.MapActivity" />
-        <activity android:name=".activities.SignupActivity" />
+        <activity android:name=".activities.SignupActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".activities.NewPinActivity" />
-        <activity android:name=".activities.LeaderboardActivity" />
+        <activity android:name=".activities.LeaderboardActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".activities.UserInfoActivity" />
         <activity android:name=".activities.CameraActivity" />
 
@@ -80,8 +83,10 @@
         <activity android:name=".activities.GoalActivity" />
         <activity android:name=".activities.ClusteringActivity" />
         <activity android:name=".activities.GoalDetailActivity" />
-        <activity android:name=".activities.SecondSignupActivity" />
-        <activity android:name=".activities.ThirdSignupActivity"></activity>
+        <activity android:name=".activities.SecondSignupActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ThirdSignupActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
