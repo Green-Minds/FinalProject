@@ -10,8 +10,8 @@
         android:id="@+id/btn_leaderboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/btn_map"
+        android:layout_above="@+id/btn_map"
+        android:layout_alignParentStart="true"
         android:text="LEADERBOARD"
         tools:layout_editor_absoluteX="205dp"
         tools:layout_editor_absoluteY="447dp" />
@@ -35,6 +35,22 @@
         android:layout_alignParentStart="true"
         android:text="map"
         android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/btn_checkin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/btn_map"
+        android:text="check in" />
+
+    <Button
+        android:id="@+id/btn_stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/btn_checkin"
+        android:text="stats" />
 
     <ImageView
         android:id="@+id/iv_prof_pic"
@@ -72,9 +88,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/btn_leaderboard"
-        android:layout_toStartOf="@+id/tv_score"
-        android:text="Score:  "
-        android:textSize="30sp"
+        android:layout_alignParentStart="true"
+        android:text="Score:   "
         android:textStyle="bold" />
 
     <TextView
@@ -82,28 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/btn_leaderboard"
-        android:layout_alignParentEnd="true"
-        android:text="score"
-        android:layout_marginRight="10dp"
-        android:textSize="30sp" />
-
-    <TextView
-        android:id="@+id/tv_pinc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_leaderboard"
-        android:layout_alignParentStart="true"
-        android:text="Pins Made:  "
-        android:layout_marginLeft="10dp"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/tv_pin_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_leaderboard"
-        android:layout_toEndOf="@+id/tv_pinc"
-        android:text="0"
-        android:textSize="18sp" />
+        android:layout_toEndOf="@+id/textView2"
+        android:text="score" />
 
 </RelativeLayout>

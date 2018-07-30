@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical" >
+
+    <ImageButton
+        android:id="@+id/unfoldBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/distance"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/ic_unfold" />
 
     <ImageView
         android:id="@+id/img"
@@ -16,6 +26,8 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/img"
         android:singleLine="true"
         android:text="title"
         android:textColor="#ff669900"
@@ -25,6 +37,8 @@
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/title"
         android:text="description"
         android:textColor="#ff0099cc" />
 
@@ -32,10 +46,11 @@
         android:id="@+id/distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/description"
         android:text="Distance"
         android:textColor="#c2185b" />
 
 
 
-</LinearLayout>
+</RelativeLayout>
