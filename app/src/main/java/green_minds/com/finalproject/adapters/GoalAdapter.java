@@ -97,12 +97,12 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder> {
                             mGoals = tempGoalArray;
                             e.printStackTrace();
                             if (e.getCode() == ParseException.CONNECTION_FAILED) {
-                                Toast.makeText(mContext, "Network Error. Please try again later!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, mContext.getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(mContext, "Error. Please try again later.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, mContext.getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(mContext, "Removed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, mContext.getString(R.string.removed), Toast.LENGTH_SHORT).show();
                             notifyDataSetChanged();
                         }
                     }

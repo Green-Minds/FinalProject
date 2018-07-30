@@ -53,7 +53,10 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
             ft.replace(R.id.container, mEditGoalFragment);
             ft.commit();
         }
-
+        if (mEditGoalFragment == null || mGoalListFragment == null) {
+            mEditGoalFragment = EditGoalFragment.newInstance(mGoals);
+            mGoalListFragment = GoalListFragment.newInstance(mGoals);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -95,10 +98,10 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
     }
 
     public void showProgressBar() {
-        if(miActionProgressItem != null) miActionProgressItem.setVisible(true);
+        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
     }
 
     public void hideProgressBar() {
-        if(miActionProgressItem != null) miActionProgressItem.setVisible(false);
+        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
     }
 }
