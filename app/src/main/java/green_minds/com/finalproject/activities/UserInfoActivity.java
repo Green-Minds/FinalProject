@@ -38,6 +38,9 @@ public class UserInfoActivity extends AppCompatActivity {
     @BindView(R.id.tv_score)
     TextView tvScore;
 
+    @BindView(R.id.tv_pin_count)
+    TextView tvPincount;
+
     @BindView(R.id.btn_edit)
     TextView btnEdit;
 
@@ -48,6 +51,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private ArrayList<Goal> mGoals;
     private Context mContext;
     private MenuItem miActionProgressItem;
+    private ScoreAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +70,7 @@ public class UserInfoActivity extends AppCompatActivity {
         }
 
         tvName.setText(mUser.getUsername());
-        int test = mUser.getInt("points");
+        tvPincount.setText(mUser.getInt("pincount") + "");
         tvScore.setText(mUser.getInt("points") + "");
         ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
         if (smallerPhoto != null) {
@@ -105,11 +109,20 @@ public class UserInfoActivity extends AppCompatActivity {
                     mGoals = new ArrayList<>();
                 }
 
-                ScoreAdapter adapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
+                mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
                 ListView listview = findViewById(R.id.listView);
-                listview.setAdapter(adapter);
+                listview.setAdapter(mAdapter);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //in case of builtin back button, need to keep user info page consistent if goal has been deleted!!!!
+        if(miActionProgressItem != null){
+            setupUserInfo();
+        }
     }
 
     @Override
@@ -149,11 +162,24 @@ public class UserInfoActivity extends AppCompatActivity {
         finish();
     }
 
+    @OnClick(R.id.btn_map)
+    public void redirectToMap(){
+        Intent i = new Intent(mContext, MapActivity.class);
+        mContext.startActivity(i);
+        finish();
+    }
+
+    @OnClick(R.id.btn_leaderboard)
+    public void redirectToLeaderboard(){
+        Intent i = new Intent(mContext, LeaderboardActivity.class);
+        mContext.startActivity(i);
+    }
+
     public void showProgressBar() {
-        miActionProgressItem.setVisible(true);
+        if(miActionProgressItem != null) miActionProgressItem.setVisible(true);
     }
 
     public void hideProgressBar() {
-        miActionProgressItem.setVisible(false);
+        if(miActionProgressItem != null) miActionProgressItem.setVisible(false);
     }
 }
