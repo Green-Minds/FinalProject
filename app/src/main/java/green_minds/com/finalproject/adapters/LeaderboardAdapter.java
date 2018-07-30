@@ -62,7 +62,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             holder.itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
 
         GlideApp.with(context)
-                .load(user.getParseFile("photo").getUrl())
+                .load(user.getParseFile("smaller_photo").getUrl())
+                .placeholder(R.drawable.camera)
                 .apply(RequestOptions.circleCropTransform())
                 .error(R.drawable.placeholder)
                 .into(holder.ivUserImg);

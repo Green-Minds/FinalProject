@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,11 +30,14 @@ import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.model.GlideApp;
+
+import static green_minds.com.finalproject.model.ImageHelper.getSmallerParseFile;
 
 public class ThirdSignupActivity extends AppCompatActivity {
 
@@ -51,6 +55,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
     private String email;
     private String connection;
     private Bitmap imageBitmap;
+    private static final int SELECT_PICTURE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,25 +87,43 @@ public class ThirdSignupActivity extends AppCompatActivity {
         ivUserPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(ThirdSignupActivity.this, CameraActivity.class)
-                        .putExtra("REQUEST_CODE", 3), 3);
+                Intent pickIntent = new Intent();
+                pickIntent.setType("image/*");
+                pickIntent.setAction(Intent.ACTION_GET_CONTENT);
 
+                Intent takePhotoIntent = new Intent(ThirdSignupActivity.this, CameraActivity.class)
+                        .putExtra("REQUEST_CODE", 3);
+
+                String pickTitle = "Take picture or upload from device"; // Or get from strings.xml
+                Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] { takePhotoIntent });
+
+                startActivityForResult(chooserIntent, SELECT_PICTURE);
             }
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            set_container.setVisibility(View.GONE);
-            //Bundle extras = data.getExtras();
-            imageBitmap = BitmapFactory.decodeFile(data.getStringExtra("image"));
+        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
+            if (data.getData() != null) {
+                try {
+                    set_container.setVisibility(View.GONE);
+                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                set_container.setVisibility(View.GONE);
+                imageBitmap = BitmapFactory.decodeFile(data.getStringExtra("image"));
+            }
+
             GlideApp.with(getApplicationContext())
-                    .load(imageBitmap)
-                    .apply(RequestOptions.circleCropTransform())
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder)
-                    .into(ivUserPic);
+                .load(imageBitmap)
+                .apply(RequestOptions.circleCropTransform())
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
+                .into(ivUserPic);
         }
     }
 
@@ -113,6 +136,8 @@ public class ThirdSignupActivity extends AppCompatActivity {
         byte[] bytedata = stream.toByteArray();
         String name = username.replaceAll("\\s+", "");
 
+        final ParseFile smallerParseFile = getSmallerParseFile(imageBitmap);
+        smallerParseFile.saveInBackground();
         final ParseFile parseFile = new ParseFile(name + "prof_pic.jpg", bytedata);
         parseFile.saveInBackground(new SaveCallback() {
             @Override
@@ -125,6 +150,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
                 user.put("connection", connection);
                 user.put("location", getLocation());
                 user.put("photo", parseFile);
+                user.put("smaller_photo", smallerParseFile);
 
                 user.signUpInBackground(new SignUpCallback() {
                     @Override
