@@ -6,7 +6,7 @@
     <string name="fb_login_protocol_scheme">fb1817693664978014</string>
     <string name="alert_dialog_title">Overwrite</string>
     <string name="alert_dialog_body">You have already set a goal for this category. Do you want to overwrite your old goal?</string>
-    <string name="network_error">Network Error. Please try again later!</string>
+    <string name="network_error">Network Error. Please try again later.</string>
     <string name="misc_error">Error. Please came back to this page later!</string>
     <string name="exception_date">Choose a date in the future!</string>
     <string name="exception_empty_string">Fill out the goal field!</string>
@@ -17,6 +17,7 @@
     <string name="button_new_text">Make New Goal!</string>
     <string name="new_goal_title">Making New Goal</string>
     <string name="edit_goal_title">Editing Goal - </string>
+    <string name="removed">Removed.</string>
     <string name="goal_details">You have checked in %1$d times out of your goal of %2$d.</string>
     <string name="wait_content">Please wait for content to load first.</string>
     <string name="goal_details_estimate">You will need to check in roughly %1$s times per day to reach your goal by your deadline of %2$s.</string>

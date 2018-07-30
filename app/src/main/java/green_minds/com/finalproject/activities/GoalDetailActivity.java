@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +44,7 @@ public class GoalDetailActivity extends AppCompatActivity {
         Date date = g.getDeadline();
         Calendar c = Calendar.getInstance();
         Date today = c.getTime();
-        double daysBetween = daysBetween(today, date); // add the last day
+        double daysBetween = daysBetween(today, date) + 1; // add the last day
         double daily = (goal - checkins) / (daysBetween);
         DecimalFormat df = new DecimalFormat();
         df.setMaximumFractionDigits(1);
@@ -55,8 +56,8 @@ public class GoalDetailActivity extends AppCompatActivity {
         tvEstimate.setText(estimate);
     }
 
-    //doesn't account for daylist savings
-    private double daysBetween(Date d1, Date d2){
-        return ( (d2.getTime() - d1.getTime()) / (1000.0 * 60 * 60 * 24));
+    public double daysBetween(Date d1, Date d2) {
+        long diff = d2.getTime() - d1.getTime();
+        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 }

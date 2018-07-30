@@ -4,6 +4,7 @@ package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
@@ -104,6 +107,7 @@ public class MapActivity extends AppCompatActivity implements
     @BindView(R.id.adjustBtn) public Button adjustBtn;
     @BindView(R.id.tvAdjust) public TextView tvAdjust;
     @BindView(R.id.profileBtn) public ImageButton profileBtn;
+    @BindView(R.id.navigationView) public BottomNavigationView bottomNavigationView;
 
 
     private final int REQUEST_CODE = 20;
@@ -197,17 +201,40 @@ public class MapActivity extends AppCompatActivity implements
                 public void onMapReady(GoogleMap map) {
                     loadMap(map);
                     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                    // onFab0();
-                    // onFab0();
-                    // mClusterManager.cluster();
-
                 }
             });
         } else {
             Toast.makeText(this, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
 
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_map:
+                        return true;
+                    case R.id.navigation_user:
+                        gotoProfile();
+                        return true;
+                    case R.id.navigation_board:
+                        gotoLeaderboard();
+                        return true;
+                }
+                return false;
+            }
+        });
+
     }
+
+    private void gotoLeaderboard() {
+        startActivity(new Intent(this, LeaderboardActivity.class));
+    }
+
+    private void gotoProfile() {
+        startActivity(new Intent(this, UserInfoActivity.class));
+    }
+
 
     protected void loadMap(GoogleMap googleMap) {
         map = googleMap;
@@ -715,9 +742,6 @@ public class MapActivity extends AppCompatActivity implements
                                         image = photo.getUrl();
                                     }
                                     int drawableId = getIcon(mNewPin.getCategory());
-                                    // BitmapDescriptor customMarker =
-                                    //         BitmapDescriptorFactory.fromResource(drawableId);
-
 
                                     LatLng listingPosition = new LatLng(lat, lon);
                                     // Create the marker on the fragment
@@ -1058,11 +1082,19 @@ public class MapActivity extends AppCompatActivity implements
             TextView description = myContentsView.findViewById(R.id.description);
             TextView distance = myContentsView.findViewById(R.id.distance);
             ImageView img = myContentsView.findViewById(R.id.img);
+            ImageButton unfoldBtn = myContentsView.findViewById(R.id.unfoldBtn);
+
             if (clickedClusterItem != null) {
                  title.setText(clickedClusterItem.getTitle());
                  description.setText(clickedClusterItem.getSnippet());
                  distance.setText("distance: " + clickedClusterItem.getDistance());
                  GlideApp.with(MapActivity.this).load(clickedClusterItem.getImageUrl()).centerCrop().into(img);
+                 unfoldBtn.setOnClickListener(new View.OnClickListener() {
+                     @Override
+                     public void onClick(View view) {
+                         Toast.makeText(MapActivity.this, "Error - Map Fragment was null!!", Toast.LENGTH_LONG).show();
+                     }
+                 });
             }
             return myContentsView;
         }

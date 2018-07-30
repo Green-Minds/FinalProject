@@ -1,7 +1,6 @@
 package green_minds.com.finalproject.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,11 +20,10 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
-import green_minds.com.finalproject.activities.GoalDetailActivity;
 import green_minds.com.finalproject.fragments.GoalListFragment;
-import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.CustomProgressBar;
 import green_minds.com.finalproject.model.Goal;
+import green_minds.com.finalproject.model.CategoryHelper;
 
 public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder> {
     private ArrayList<Goal> mGoals;
@@ -64,16 +62,6 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 mListener.openEditFragment(goal);
-            }
-        });
-        holder.btnDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(mContext, GoalDetailActivity.class);
-                i.putExtra("GOAL", goal);
-                int checkins = mUser.getInt(CategoryHelper.getTypeKey(goal.getType()));
-                i.putExtra("CHECKINS", checkins);
-                mContext.startActivity(i);
             }
         });
     }
