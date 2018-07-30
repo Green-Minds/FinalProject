@@ -48,6 +48,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private ArrayList<Goal> mGoals;
     private Context mContext;
     private MenuItem miActionProgressItem;
+    private ScoreAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,9 +106,9 @@ public class UserInfoActivity extends AppCompatActivity {
                     mGoals = new ArrayList<>();
                 }
 
-                ScoreAdapter adapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
+                mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
                 ListView listview = findViewById(R.id.listView);
-                listview.setAdapter(adapter);
+                listview.setAdapter(mAdapter);
             }
         });
     }
@@ -140,7 +141,17 @@ public class UserInfoActivity extends AppCompatActivity {
             return;
         }
         i.putExtra("GOALS", mGoals);
-        startActivity(i);
+        startActivityForResult(i, 31);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 31 && data!=null){
+            List<Goal> g = data.getParcelableArrayListExtra("GOALS");
+            mGoals.clear();
+            mGoals.addAll(g);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     private void redirectToLogin() {

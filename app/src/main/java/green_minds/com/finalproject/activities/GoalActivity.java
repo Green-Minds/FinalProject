@@ -79,7 +79,8 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
     @OnClick(R.id.btn_return)
     public void returnToProfile() {
         Intent i = new Intent(this, UserInfoActivity.class);
-        startActivity(i);
+        i.putExtra("GOALS", mGoals);
+        setResult(RESULT_OK, i);
         finish();
     }
 
@@ -103,5 +104,14 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
 
     public void hideProgressBar() {
         if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(getCallingActivity()!=null && getCallingActivity().getClassName().equals("green_minds.com.finalproject.activities.UserInfoActivity")){
+            returnToProfile();
+        } else{
+            super.onBackPressed();
+        }
     }
 }
