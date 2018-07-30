@@ -1,6 +1,7 @@
 package green_minds.com.finalproject.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,6 +32,7 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -46,7 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,12 +63,13 @@ import green_minds.com.finalproject.R;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final List<String> mPermissions = new ArrayList<String>() {{ add("email"); }};
+    private final List < String > mPermissions = Arrays.asList("email", "public_profile");
     @BindView(R.id.etUsernameLogin) public EditText etUsernameLogin;
     @BindView(R.id.etPasswordLogin) public EditText etPasswordLogin;
     @BindView(R.id.btnLogin) public Button btnLogin;
     @BindView(R.id.tvIncorrectInfo) public TextView tvIncorrectInfo;
     @BindView(R.id.fbLoginButton) public LoginButton fbLoginButton;
+    private  Map<String, String> authData = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +78,10 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (ParseUser.getCurrentUser() != null) {
-            alertDisplayer("Login Successful","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
+            alertDisplayer("Successful Login ","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
+        } else if (AccessToken.getCurrentAccessToken() != null) {
+            LoginManager.getInstance().logInWithReadPermissions(this, mPermissions);
+            alertDisplayer("Successful Login","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
         }
 
         TextWatcher textWatcher = new TextWatcher() {
@@ -83,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                tvIncorrectInfo.setVisibility(View.GONE);
             }
 
             @Override
@@ -99,9 +108,10 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideSoftKeyboard(LoginActivity.this);
+                if (!isOnline()) return;
                 String username = etUsernameLogin.getText().toString();
                 String password = etPasswordLogin.getText().toString();
-                Toast.makeText(getApplicationContext(),"Logging you in", Toast.LENGTH_SHORT).show();
                 login(username, password);
             }
         });
@@ -129,6 +139,25 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private boolean isOnline() {
+        ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
+
+        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
+            Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
+    private static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(
+                activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
     private void login(final String username, String password) {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
@@ -137,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                     tvIncorrectInfo.setVisibility(View.GONE);
                     btnLogin.setEnabled(false);
                     fbLoginButton.setEnabled(false);
-                    alertDisplayer("Sucessful Login","Welcome back " + username + "!");
+                    alertDisplayer("Successful Login","Welcome back " + username + "!");
                 } else {
                     etPasswordLogin.startAnimation(invalidCredentials());
                     tvIncorrectInfo.setText(e.getMessage().toString());
@@ -157,7 +186,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
-                        Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, LeaderboardActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
@@ -183,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
         Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
         try {
             parseUserTask.waitForCompletion();
-            alertDisplayer("Sucessful Login","Welcome back " + user.getUsername() + "!");
+            alertDisplayer("Successful Login","Welcome back " + user.getUsername() + "!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -241,7 +270,6 @@ public class LoginActivity extends AppCompatActivity {
         v.setEnabled(false);
         final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
         startActivity(intent);
-        finish();
     }
 
     private class ProfileAsync extends AsyncTask<String, String, String> {
@@ -288,7 +316,6 @@ public class LoginActivity extends AppCompatActivity {
     private void saveNewUser(Bitmap image, String email, final String username) {
 
         final ParseUser user = ParseUser.getCurrentUser();
-        final Map<String, String> authData = new HashMap<>();
         user.setUsername(username);
         user.setEmail(email);
         user.put("location", getLocation());
@@ -311,7 +338,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
                                 try {
                                     parseUserTask.waitForCompletion();
-                                    alertDisplayer("Sucessful Login","Welcome back " + username + "!");
+                                    alertDisplayer("Successful Login ","Welcome  " + username + "!");
                                 } catch (InterruptedException err) {
                                     err.printStackTrace();
                                 }

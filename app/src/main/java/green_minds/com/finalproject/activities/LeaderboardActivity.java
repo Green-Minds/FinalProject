@@ -1,10 +1,18 @@
 package green_minds.com.finalproject.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -16,14 +24,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import green_minds.com.finalproject.adapters.LeaderboardAdapter;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.adapters.LeaderboardAdapter;
 
 public class LeaderboardActivity extends AppCompatActivity {
 
     @BindView(R.id.swipe_container) public SwipeRefreshLayout swipeContainer;
+    @BindView(R.id.navigationView) public BottomNavigationView bottomNavigationView;
     @BindView(R.id.rvUsers) public RecyclerView rvUsers;
-    private ParseUser newUser;
     protected LeaderboardAdapter leaderboardAdapter;
     protected ArrayList<ParseUser> users;
 
@@ -46,9 +54,37 @@ public class LeaderboardActivity extends AppCompatActivity {
                 refreshLeaderboard();
             }
         });
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_map:
+                        gotoMap();
+                        return true;
+                    case R.id.navigation_user:
+                        gotoProfile();
+                        return true;
+                    case R.id.navigation_board:
+                        return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
+
+        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
+            Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
     }
 
     private void showLeaderboard() {
+        if (!isOnline()) return;
         ParseQuery query = ParseUser.getQuery();
         query.orderByAscending("points").addAscendingOrder("pincount").whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection")).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
             @Override
@@ -68,6 +104,10 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void refreshLeaderboard() {
+        if (!isOnline()) {
+            swipeContainer.setRefreshing(false);
+            return;
+        }
         ParseQuery query = ParseUser.getQuery();
         query.orderByAscending("points").addAscendingOrder("pincount").whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection")).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
             @Override
@@ -89,5 +129,13 @@ public class LeaderboardActivity extends AppCompatActivity {
                 swipeContainer.setRefreshing(false);
             }
         });
+    }
+
+    private void gotoMap() {
+        startActivity(new Intent(this, MapActivity.class));
+    }
+
+    private void gotoProfile() {
+        startActivity(new Intent(this, UserInfoActivity.class));
     }
 }
