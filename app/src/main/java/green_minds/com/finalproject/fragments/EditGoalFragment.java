@@ -43,6 +43,8 @@ public class EditGoalFragment extends Fragment {
         void showProgressBar();
 
         void hideProgressBar();
+
+        void setNetworkCallInProgress(boolean b);
     }
 
     private OnEditGoalListener mListener;
@@ -261,6 +263,7 @@ public class EditGoalFragment extends Fragment {
     }
 
     private void saveGoal(final Goal goal, boolean overwrite) {
+        mListener.setNetworkCallInProgress(true);
         mListener.showProgressBar();
         int goalNum = Integer.parseInt(numberOf.getText().toString()); //input validity checked earlier
         goal.setDeadline(mSelectedDate);
@@ -275,6 +278,7 @@ public class EditGoalFragment extends Fragment {
         mUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
+                mListener.setNetworkCallInProgress(false);
                 mListener.hideProgressBar();
                 if (e != null) {
                     e.printStackTrace();

@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
 
     private boolean mSavedInstanceNull;
     private ArrayList<Goal> mGoals;
+    private boolean saving; //app crashes if user navigates away from activity while fragment is still doing a network call
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
         ButterKnife.bind(this);
         mGoals = getIntent().getParcelableArrayListExtra("GOALS");
         mSavedInstanceNull = (savedInstanceState == null);
+        saving = false;
     }
 
     @Override
@@ -63,6 +66,10 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
 
     @OnClick(R.id.btn_new)
     public void openNewFragment() {
+        if (saving) {
+            Toast.makeText(this, getString(R.string.network_waiting), Toast.LENGTH_SHORT).show();
+            return;
+        }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, mEditGoalFragment);
         ft.commit();
@@ -70,6 +77,10 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
 
     @OnClick(R.id.btn_edit)
     public void openListFragment() {
+        if (saving) {
+            Toast.makeText(this, getString(R.string.network_waiting), Toast.LENGTH_SHORT).show();
+            return;
+        }
         mEditGoalFragment = EditGoalFragment.newInstance(mGoals);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, mGoalListFragment);
@@ -78,6 +89,10 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
 
     @OnClick(R.id.btn_return)
     public void returnToProfile() {
+        if (saving) {
+            Toast.makeText(this, getString(R.string.network_waiting), Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent i = new Intent(this, UserInfoActivity.class);
         i.putExtra("GOALS", mGoals);
         setResult(RESULT_OK, i);
@@ -85,6 +100,10 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
     }
 
     public void openEditFragment(Goal goal) {
+        if (saving) {
+            Toast.makeText(this, getString(R.string.network_waiting), Toast.LENGTH_SHORT).show();
+            return;
+        }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         mEditGoalFragment = EditGoalFragment.newInstance(goal, mGoals);
         ft.replace(R.id.container, mEditGoalFragment);
@@ -108,10 +127,18 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
 
     @Override
     public void onBackPressed() {
-        if(getCallingActivity()!=null && getCallingActivity().getClassName().equals("green_minds.com.finalproject.activities.UserInfoActivity")){
+        if (saving) {
+            Toast.makeText(this, getString(R.string.network_waiting), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (getCallingActivity() != null && getCallingActivity().getClassName().equals("green_minds.com.finalproject.activities.UserInfoActivity")) {
             returnToProfile();
-        } else{
+        } else {
             super.onBackPressed();
         }
+    }
+
+    public void setNetworkCallInProgress(boolean flag) {
+        saving = flag;
     }
 }

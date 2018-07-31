@@ -10,12 +10,14 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -40,15 +42,18 @@ public class CheckInActivity extends AppCompatActivity {
 
     private ArrayList<RelativePositionPin> mPins;
     private PinAdapter adapter;
-    private RecyclerView rvPins;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Location lastLocation;
     private ParseUser user;
     private Context context;
+    private MenuItem miActionProgressItem;
 
     @BindView(R.id.btn_reload)
     ImageView btnReload;
+
+    @BindView(R.id.rv_pins)
+    RecyclerView rvPins;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +65,14 @@ public class CheckInActivity extends AppCompatActivity {
         if (user == null) {
             redirectToLogin();
         }
+        ButterKnife.bind(this);
 
         //set up adapter
-        rvPins = findViewById(R.id.rv_pins);
         mPins = new ArrayList<>();
         adapter = new PinAdapter(mPins);
         context = this;
         rvPins.setLayoutManager(new LinearLayoutManager(this));
         rvPins.setAdapter(adapter);
-        ButterKnife.bind(this);
 
         //need a location to start with because requestlocationupdates takes ~3 seconds to start up
         Double lat = getIntent().getDoubleExtra("latitude", 0.0);
@@ -95,10 +99,8 @@ public class CheckInActivity extends AppCompatActivity {
 
     @OnClick({R.id.btn_reload})
     public void reloadNearbyPins() {
+        showProgressBar();
         getListOfPins();
-        Animation rotation = AnimationUtils.loadAnimation(this, R.anim.reload_item_spinning);
-        rotation.setRepeatCount(Animation.INFINITE);
-        btnReload.startAnimation(rotation);
     }
 
     @Override
@@ -149,7 +151,7 @@ public class CheckInActivity extends AppCompatActivity {
                   mPins.clear();
                   mPins.addAll(rpList);
                   adapter.notifyDataSetChanged();
-                  btnReload.clearAnimation();
+                  hideProgressBar();
                 } else {
                   e.printStackTrace();
                 }
@@ -193,4 +195,28 @@ public class CheckInActivity extends AppCompatActivity {
     @Override
     public void onProviderDisabled(String provider) {}
   }
+
+    //progress icon setup
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        ProgressBar v = (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void showProgressBar() {
+        if(miActionProgressItem !=null) miActionProgressItem.setVisible(true);
+    }
+
+    private void hideProgressBar() {
+        if(miActionProgressItem !=null) miActionProgressItem.setVisible(false);
+    }
+
+    //TODO - consider what happens if user navigates away while network call still in progress
 }

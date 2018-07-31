@@ -29,5 +29,6 @@
     <string name="discard_changes_body">Discard current changes?</string>
     <string name="pin_save_failure">Failure saving pin. Please try again later.</string>
     <string name="username_empty">Username can\'t be empty</string>
+    <string name="network_waiting">Navigation canceled. Please wait for network call to finish.</string>
     <string name="updated_alert">Updated info!</string>
 </resources>
