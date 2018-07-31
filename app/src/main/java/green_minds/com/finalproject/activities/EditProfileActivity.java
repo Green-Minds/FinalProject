@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -46,6 +48,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private ParseUser mUser;
     private Context mContext;
     private MenuItem miActionProgressItem;
+    private boolean saving; //cancel backpressed if still saving or else it crashes
 
     @BindView(R.id.tv_username)
     EditText etUsername;
@@ -75,6 +78,7 @@ public class EditProfileActivity extends AppCompatActivity {
             String url = photo.getUrl();
             GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
         }
+        saving = false;
     }
 
     @Override
@@ -126,6 +130,7 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void saveChanges() {
+        saving = true;
         mUser.setUsername(etUsername.getText().toString());
         if (mNewPic != null) {
             mNewPic.saveInBackground(new SaveCallback() {
@@ -150,6 +155,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                saving = false;
                 if (e != null){
                     e.printStackTrace();
                     Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
@@ -191,33 +197,51 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @OnClick({R.id.btn_edit_pic})
     public void onPickPhoto() {
-        Intent intent = new Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_PHOTO_CODE);
+
+        Intent pickIntent = new Intent();
+        pickIntent.setType("image/*");
+        pickIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+        Intent takePhotoIntent = new Intent(EditProfileActivity.this, CameraActivity.class)
+                .putExtra("REQUEST_CODE", 32);
+
+        String pickTitle = "Take picture or upload from device"; // Or get from strings.xml
+        Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePhotoIntent});
+
+        startActivityForResult(chooserIntent, PICK_PHOTO_CODE);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data != null) {
-            Uri photoUri = data.getData();
-            Bitmap selectedImage = null;
-            try {
-                selectedImage = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
-            } catch (IOException e) {
-                Toast.makeText(mContext, "Error. Failed to get image from gallery. Please try again later.", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-                return;
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_PHOTO_CODE && resultCode == RESULT_OK) {
+            Bitmap imageBitmap = null;
+            if (data.getData() != null) {
+                Uri photoUri = data.getData();
+                try {
+                    imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
+                } catch (IOException e) {
+                    Toast.makeText(mContext, "Error. Failed to get image from gallery. Please try again later.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    return;
+                }
+                int rotation = getRotationFromMediaStore(this, photoUri);
+                Matrix matrix = new Matrix();
+                matrix.postRotate(rotation);
+                imageBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+            } else {
+                imageBitmap = BitmapFactory.decodeFile(data.getStringExtra("image"));
             }
-            int rotation = getRotationFromMediaStore(this, photoUri);
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotation);
-            //consider resizing this bitmap before loading it into the imageview
-            Bitmap rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.getWidth(), selectedImage.getHeight(), matrix, true);
-            Bitmap circular_bitmap = ImageHelper.getCroppedBitmap(rotatedBitmap);
-            ivProfPic.setImageBitmap(circular_bitmap);
 
-            mNewPic = ImageHelper.getParseFile(rotatedBitmap);
-            mSmallerNewPic = ImageHelper.getSmallerParseFile(rotatedBitmap);
+            GlideApp.with(getApplicationContext())
+                    .load(imageBitmap)
+                    .apply(RequestOptions.circleCropTransform())
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder)
+                    .into(ivProfPic);
+
+            mNewPic = ImageHelper.getParseFile(imageBitmap);
+            mSmallerNewPic = ImageHelper.getSmallerParseFile(imageBitmap);
         }
     }
 
@@ -234,16 +258,25 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void showProgressBar() {
-        miActionProgressItem.setVisible(true);
+        if(miActionProgressItem !=null) miActionProgressItem.setVisible(true);
     }
 
     private void hideProgressBar() {
-        miActionProgressItem.setVisible(false);
+        if(miActionProgressItem !=null) miActionProgressItem.setVisible(false);
     }
 
     private void goBackToProfile(){
         Intent i = new Intent(mContext, UserInfoActivity.class);
         startActivity(i);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(saving){
+            Toast.makeText(this, getString(R.string.network_waiting), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        super.onBackPressed();
     }
 }

@@ -72,6 +72,7 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder> {
     }
 
     private void removeGoal(final Goal goal) {
+        mListener.setNetworkCallInProgress(true);
         final ArrayList<Goal> tempGoalArray = mGoals; //keep copy to revert back to in case of error
         mGoals.remove(goal);
         mUser.put("goals", mGoals);
@@ -81,6 +82,7 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder> {
                 goal.deleteInBackground(new DeleteCallback() {
                     @Override
                     public void done(com.parse.ParseException e) {
+                        mListener.setNetworkCallInProgress(false);
                         if (e != null) {
                             mGoals = tempGoalArray;
                             e.printStackTrace();

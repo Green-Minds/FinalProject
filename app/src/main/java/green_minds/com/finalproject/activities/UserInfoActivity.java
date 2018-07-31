@@ -49,11 +49,13 @@ public class UserInfoActivity extends AppCompatActivity {
     private Context mContext;
     private MenuItem miActionProgressItem;
     private ScoreAdapter mAdapter;
+    private boolean saving;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
+        saving = false;
         ButterKnife.bind(this);
     }
 
@@ -67,7 +69,6 @@ public class UserInfoActivity extends AppCompatActivity {
         }
 
         tvName.setText(mUser.getUsername());
-        int test = mUser.getInt("points");
         tvScore.setText(mUser.getInt("points") + "");
         ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
         if (smallerPhoto != null) {
@@ -160,11 +161,11 @@ public class UserInfoActivity extends AppCompatActivity {
         finish();
     }
 
-    public void showProgressBar() {
-        miActionProgressItem.setVisible(true);
+    private void showProgressBar() {
+        if(miActionProgressItem !=null) miActionProgressItem.setVisible(true);
     }
 
-    public void hideProgressBar() {
-        miActionProgressItem.setVisible(false);
+    private void hideProgressBar() {
+        if(miActionProgressItem !=null) miActionProgressItem.setVisible(false);
     }
 }

@@ -28,6 +28,8 @@ public class GoalListFragment extends Fragment {
         void showProgressBar();
 
         void hideProgressBar();
+
+        void setNetworkCallInProgress(boolean b);
     }
 
     private OnGoalListListener mListener;
