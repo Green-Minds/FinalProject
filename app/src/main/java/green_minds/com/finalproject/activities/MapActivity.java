@@ -106,7 +106,6 @@ public class MapActivity extends AppCompatActivity implements
     @BindView(R.id.ivAdjust) public ImageView ivAdjust;
     @BindView(R.id.adjustBtn) public Button adjustBtn;
     @BindView(R.id.tvAdjust) public TextView tvAdjust;
-    @BindView(R.id.profileBtn) public ImageButton profileBtn;
     @BindView(R.id.navigationView) public BottomNavigationView bottomNavigationView;
 
 
@@ -813,12 +812,6 @@ public class MapActivity extends AppCompatActivity implements
         }
         int drawableId = getResources().getIdentifier(imageName, "drawable", getPackageName());
         return drawableId;
-    }
-
-    @OnClick(R.id.profileBtn)
-    protected void  goToProfile() {
-        Intent i = new Intent(MapActivity.this, UserInfoActivity.class);
-        startActivity(i);
     }
 
     @OnClick(R.id.fab0)
