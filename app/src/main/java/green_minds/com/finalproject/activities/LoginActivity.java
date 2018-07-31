@@ -20,12 +20,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +50,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -60,6 +63,11 @@ import bolts.Task;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.adapters.SchoolAutoCompleteAdapter;
+import green_minds.com.finalproject.model.DelayAutoCompleteTextView;
+
+import static green_minds.com.finalproject.model.ImageHelper.getParseFile;
+import static green_minds.com.finalproject.model.ImageHelper.getSmallerParseFile;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -78,10 +86,10 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (ParseUser.getCurrentUser() != null) {
-            alertDisplayer("Successful Login ","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
+            userPersistenceDisplayer("Successful Login ","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
         } else if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logInWithReadPermissions(this, mPermissions);
-            alertDisplayer("Successful Login","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
+            userPersistenceDisplayer("Successful Login","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
         }
 
         TextWatcher textWatcher = new TextWatcher() {
@@ -179,7 +187,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void alertDisplayer(String title,String message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this).setCancelable(false)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -194,6 +202,93 @@ public class LoginActivity extends AppCompatActivity {
                 });
         AlertDialog ok = builder.create();
         ok.show();
+    }
+
+    private void userPersistenceDisplayer(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this).setCancelable(false)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        Intent intent = new Intent(LoginActivity.this, LeaderboardActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Not you?", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (AccessToken.getCurrentAccessToken() != null) {
+                            LoginManager.getInstance().logOut();
+                        } else {
+                            ParseUser.logOut();
+                        }
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog ok = builder.create();
+        ok.show();
+    }
+
+    private void facebookSignupDisplayer() {
+        LayoutInflater layoutInflater = LayoutInflater.from(LoginActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.custom_alert, null);
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        final DelayAutoCompleteTextView atvSchoolNameAlert = promptView.findViewById(R.id.atvSchoolNameAlert);
+        final RadioGroup rgSelectionAlert = promptView.findViewById(R.id.rgSelectionAlert);
+        final RadioButton rbWorkAlert = promptView.findViewById(R.id.rbWorkAlert);
+        final EditText etCompanyAlert = promptView.findViewById(R.id.etCompanyAlert);
+        final String[] school = {null};
+
+        atvSchoolNameAlert.setThreshold(2);
+        atvSchoolNameAlert.setAdapter(new SchoolAutoCompleteAdapter(this));
+        atvSchoolNameAlert.setLoadingIndicator(
+                (android.widget.ProgressBar) promptView.findViewById(R.id.pb_loading_indicator_alert));
+        atvSchoolNameAlert.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+                school[0] = (String) parent.getItemAtPosition(position);
+                atvSchoolNameAlert.setText(school[0]);
+            }
+        });
+
+        rgSelectionAlert.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (rbWorkAlert.isChecked()) {
+                    atvSchoolNameAlert.setVisibility(View.GONE);
+                    etCompanyAlert.setVisibility(View.VISIBLE);
+                } else {
+                    atvSchoolNameAlert.setVisibility(View.VISIBLE);
+                    etCompanyAlert.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (atvSchoolNameAlert.getText().toString().length() > 1 && school != null) {
+                            ParseUser user = ParseUser.getCurrentUser();
+                            user.put("connection", atvSchoolNameAlert.getText().toString());
+                            user.saveInBackground();
+
+                            Intent intent = new Intent(LoginActivity.this, LeaderboardActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                });
+        AlertDialog b = alertDialogBuilder.create();
+        b.show();
     }
 
     private TranslateAnimation invalidCredentials() {
@@ -268,7 +363,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void gotoSignup(View v) {
         v.setEnabled(false);
-        final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+        final Intent intent = new Intent(LoginActivity.this, SecondSignupActivity.class);
         startActivity(intent);
     }
 
@@ -316,39 +411,35 @@ public class LoginActivity extends AppCompatActivity {
     private void saveNewUser(Bitmap image, String email, final String username) {
 
         final ParseUser user = ParseUser.getCurrentUser();
+        final ParseFile parseFile = getParseFile(image);
         user.setUsername(username);
         user.setEmail(email);
         user.put("location", getLocation());
 
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        if (image != null) {
-            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] data = stream.toByteArray();
-            String name = user.getUsername().replaceAll("\\s+", "");
-            final ParseFile parseFile = new ParseFile(name + "prof_pic.jpg", data);
-            parseFile.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    user.put("photo", parseFile);
-                    user.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                authData.put("token", user.getSessionToken());
-                                Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
-                                try {
-                                    parseUserTask.waitForCompletion();
-                                    alertDisplayer("Successful Login ","Welcome  " + username + "!");
-                                } catch (InterruptedException err) {
-                                    err.printStackTrace();
-                                }
-                            } else {
-                                e.printStackTrace();
+        final ParseFile smallerParseFile = getSmallerParseFile(image);
+        smallerParseFile.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                user.put("photo", parseFile);
+                user.put("smaller_photo", smallerParseFile);
+                user.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            authData.put("token", user.getSessionToken());
+                            Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
+                            try {
+                                parseUserTask.waitForCompletion();
+                                facebookSignupDisplayer();
+                            } catch (InterruptedException err) {
+                                err.printStackTrace();
                             }
+                        } else {
+                            e.printStackTrace();
                         }
-                    });
-                }
-            });
-        }
+                    }
+                });
+            }
+        });
     }
 }

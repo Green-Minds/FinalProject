@@ -30,22 +30,37 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.LoginActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".activities.LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.CheckInActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.MainActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.MapActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.SignupActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.NewPinActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.LeaderboardActivity"/>
-        <activity android:name=".activities.UserInfoActivity"
+        <activity
+            android:name=".activities.CheckInActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.CameraActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.MapActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.SignupActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.NewPinActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activities.LeaderboardActivity" />
+        <activity
+            android:name=".activities.UserInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.CameraActivity"
+            android:screenOrientation="portrait" />
 
         <uses-library
             android:name="com.google.android.maps"
@@ -77,12 +92,25 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.EditProfileActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.GoalActivity" android:screenOrientation="portrait" />
-        <activity android:name=".activities.ClusteringActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.GoalDetailActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.SecondSignupActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.ThirdSignupActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.EditProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.GoalActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ClusteringActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.GoalDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.SecondSignupActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ThirdSignupActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activities.PinDetailActivity" android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

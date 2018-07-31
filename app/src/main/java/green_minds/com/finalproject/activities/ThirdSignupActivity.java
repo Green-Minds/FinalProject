@@ -37,6 +37,7 @@ import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.model.GlideApp;
 
+import static green_minds.com.finalproject.model.ImageHelper.getParseFile;
 import static green_minds.com.finalproject.model.ImageHelper.getSmallerParseFile;
 
 public class ThirdSignupActivity extends AppCompatActivity {
@@ -132,13 +133,10 @@ public class ThirdSignupActivity extends AppCompatActivity {
         if (imageBitmap == null) {
             imageBitmap = ((BitmapDrawable) ivUserPic.getDrawable()).getBitmap();
         }
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] bytedata = stream.toByteArray();
-        String name = username.replaceAll("\\s+", "");
 
         final ParseFile smallerParseFile = getSmallerParseFile(imageBitmap);
         smallerParseFile.saveInBackground();
-        final ParseFile parseFile = new ParseFile(name + "prof_pic.jpg", bytedata);
+        final ParseFile parseFile = getParseFile(imageBitmap);
         parseFile.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -182,7 +180,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
     }
 
     private void alertDisplayer(String title,String message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(ThirdSignupActivity.this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(ThirdSignupActivity.this).setCancelable(false)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
