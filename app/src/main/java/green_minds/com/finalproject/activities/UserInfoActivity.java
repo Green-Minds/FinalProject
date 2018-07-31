@@ -76,7 +76,7 @@ public class UserInfoActivity extends AppCompatActivity {
             GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
         } else {
             ParseFile photo = mUser.getParseFile("photo");
-            if(photo != null){
+            if (photo != null) {
                 String url = photo.getUrl();
                 GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
             } else {
@@ -147,11 +147,29 @@ public class UserInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 31 && data!=null){
+        //update user info page with new info
+        if (resultCode != RESULT_OK) return;
+        if (requestCode == 31 && data != null) {
             List<Goal> g = data.getParcelableArrayListExtra("GOALS");
             mGoals.clear();
             mGoals.addAll(g);
             mAdapter.notifyDataSetChanged();
+        } else if (requestCode == 30) {
+            mUser = ParseUser.getCurrentUser();
+            tvName.setText(mUser.getUsername());
+            ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
+            if (smallerPhoto != null) {
+                String url = smallerPhoto.getUrl();
+                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+            } else {
+                ParseFile photo = mUser.getParseFile("photo");
+                if (photo != null) {
+                    String url = photo.getUrl();
+                    GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+                } else {
+                    GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+                }
+            }
         }
     }
 
@@ -162,10 +180,10 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void showProgressBar() {
-        if(miActionProgressItem !=null) miActionProgressItem.setVisible(true);
+        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
     }
 
     private void hideProgressBar() {
-        if(miActionProgressItem !=null) miActionProgressItem.setVisible(false);
+        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
     }
 }

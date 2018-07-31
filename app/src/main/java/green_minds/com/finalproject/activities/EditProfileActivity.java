@@ -48,7 +48,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private ParseUser mUser;
     private Context mContext;
     private MenuItem miActionProgressItem;
-    private boolean saving; //cancel backpressed if still saving or else it crashes
 
     @BindView(R.id.tv_username)
     EditText etUsername;
@@ -78,7 +77,6 @@ public class EditProfileActivity extends AppCompatActivity {
             String url = photo.getUrl();
             GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
         }
-        saving = false;
     }
 
     @Override
@@ -130,7 +128,6 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void saveChanges() {
-        saving = true;
         mUser.setUsername(etUsername.getText().toString());
         if (mNewPic != null) {
             mNewPic.saveInBackground(new SaveCallback() {
@@ -155,7 +152,6 @@ public class EditProfileActivity extends AppCompatActivity {
         mUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                saving = false;
                 if (e != null){
                     e.printStackTrace();
                     Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
@@ -266,17 +262,12 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void goBackToProfile(){
-        Intent i = new Intent(mContext, UserInfoActivity.class);
-        startActivity(i);
+        setResult(RESULT_OK);
         finish();
     }
 
     @Override
     public void onBackPressed() {
-        if(saving){
-            Toast.makeText(this, getString(R.string.network_waiting), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        super.onBackPressed();
+        cancel();
     }
 }
