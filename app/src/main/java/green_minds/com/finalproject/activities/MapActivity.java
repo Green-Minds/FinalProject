@@ -263,6 +263,20 @@ public class MapActivity extends AppCompatActivity implements
                         }
                     });
 
+            mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>() {
+                @Override
+                public void onClusterItemInfoWindowClick(MyItem myItem) {
+                    // clickedClusterItem = myItem;
+                    Intent intent = new Intent(MapActivity.this, PinDetailActivity.class);
+                    Log.d("MapActivity", "checkins: " + clickedClusterItem.getTitle());
+                    intent.putExtra("checkins", clickedClusterItem.getTitle());
+                    intent.putExtra("comment", clickedClusterItem.getSnippet());
+                    intent.putExtra("distance", clickedClusterItem.getDistance());
+                    intent.putExtra("image", clickedClusterItem.getImageUrl());
+                    intent.putExtra("type", clickedClusterItem.getTypeIcon());
+                    startActivity(intent);
+                }
+            });
             user = ParseUser.getCurrentUser();
             if (user != null) {
                 ParseGeoPoint loc = user.getParseGeoPoint("location");
