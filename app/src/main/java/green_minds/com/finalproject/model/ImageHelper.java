@@ -40,7 +40,7 @@ public class ImageHelper {
     }
 
     public static ParseFile getParseFile(Bitmap b){
-        return new ParseFile(getFileName(), getByteArray(b, 750, 100));
+        return new ParseFile(getFileName(), getByteArray(b, b.getWidth(), 100));
     }
 
     public static String getFileName() {

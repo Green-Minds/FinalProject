@@ -63,9 +63,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
         GlideApp.with(context)
                 .load(user.getParseFile("smaller_photo").getUrl())
-                .placeholder(R.drawable.camera)
-                .apply(RequestOptions.circleCropTransform())
                 .error(R.drawable.placeholder)
+                .apply(RequestOptions.circleCropTransform())
                 .into(holder.ivUserImg);
     }
 
