@@ -3,6 +3,8 @@ package green_minds.com.finalproject.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -26,9 +29,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.ScoreAdapter;
+import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.Goal;
-import green_minds.com.finalproject.model.CategoryHelper;
 
 public class UserInfoActivity extends AppCompatActivity {
 
@@ -41,22 +44,46 @@ public class UserInfoActivity extends AppCompatActivity {
     @BindView(R.id.btn_edit)
     TextView btnEdit;
 
+    @BindView(R.id.tv_pin)
+    TextView tvPin;
+
     @BindView(R.id.iv_prof_pic)
     ImageView ivProfPic;
+
+    @BindView(R.id.navigationView)
+    BottomNavigationView bottomNavigationView;
 
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
     private Context mContext;
     private MenuItem miActionProgressItem;
     private ScoreAdapter mAdapter;
-    private boolean saving;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
-        saving = false;
         ButterKnife.bind(this);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_map:
+                        Intent intent1 = new Intent(mContext, MapActivity.class);
+                        startActivity(intent1);
+                        return true;
+                    case R.id.navigation_user:
+                        //do nothing, already on page
+                        return true;
+                    case R.id.navigation_board:
+                        Intent intent2 = new Intent(mContext, LeaderboardActivity.class);
+                        startActivity(intent2);
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void setupUserInfo() {
@@ -68,8 +95,16 @@ public class UserInfoActivity extends AppCompatActivity {
             return;
         }
 
-        tvName.setText(mUser.getUsername());
+        Object username = mUser.get("original_username"); //check if exists first
+        if(username != null){
+            tvName.setText((String)username);
+        } else{
+            tvName.setText(mUser.getUsername());
+        }
+
         tvScore.setText(mUser.getInt("points") + "");
+        tvPin.setText(mUser.getInt("pincount") + "");
+
         ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
         if (smallerPhoto != null) {
             String url = smallerPhoto.getUrl();
@@ -91,25 +126,38 @@ public class UserInfoActivity extends AppCompatActivity {
             @Override
             public void done(List<ParseUser> objects, com.parse.ParseException e) {
                 hideProgressBar();
-                if (e != null) {
+                if (e == null) {
+                    if (objects.size() < 1) {
+                        Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    mUser = objects.get(0);
+                    Object username = mUser.get("original_username"); //check if exists first
+                    if(username != null){
+                        tvName.setText((String)username);
+                    } else{
+                        tvName.setText(mUser.getUsername());
+                    }
+                    tvScore.setText(mUser.getInt("points") + "");
+                    tvPin.setText(mUser.getInt("pincount") + "");
+
+                    mGoals = (ArrayList<Goal>) mUser.get("goals");
+                    if (mGoals == null) {
+                        mGoals = new ArrayList<>();
+                    }
+
+                    mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
+                    ListView listview = findViewById(R.id.listView);
+                    listview.setAdapter(mAdapter);
+                } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
+                    Toast.makeText(mContext, getString(R.string.session_error), Toast.LENGTH_LONG).show();
+                } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                    Toast.makeText(mContext, getString(R.string.network_error), Toast.LENGTH_LONG).show();
+                } else {
                     Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
-                    return;
                 }
-                if (objects.size() < 1) {
-                    Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                mUser = objects.get(0);
-                mGoals = (ArrayList<Goal>) mUser.get("goals");
-                if (mGoals == null) {
-                    mGoals = new ArrayList<>();
-                }
-
-                mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
-                ListView listview = findViewById(R.id.listView);
-                listview.setAdapter(mAdapter);
             }
         });
     }

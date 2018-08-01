@@ -18,9 +18,9 @@ public class ParseApp extends Application{
         ParseObject.registerSubclass(Goal.class);
 
         final Parse.Configuration configuration = new Parse.Configuration.Builder(this)
-                .applicationId("greenMindsFBU")
-                .clientKey("meatMagic")
-                .server("http://greenMindsFBU.herokuapp.com/parse")
+                .applicationId("fbu-cycle")
+                .clientKey("meat_magic")
+                .server("http://fbu-cycle.herokuapp.com/parse")
                 .build();
 
         Parse.initialize(configuration);

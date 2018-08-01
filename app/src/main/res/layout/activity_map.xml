@@ -16,7 +16,6 @@
         android:layout_above="@+id/navigationView"
         tools:context=".activities.MapActivity">
 
-
         <fragment
             android:id="@+id/map"
             class="com.google.android.gms.maps.SupportMapFragment"

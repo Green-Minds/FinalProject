@@ -100,7 +100,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void checkUsernameFirst(String username) {
 
-        if(username.equals(mUser.getUsername())){
+        if (username.equals(mUser.getUsername())) {
             saveChanges();
         } else if (etUsername.getText().toString().isEmpty()) {
             Toast.makeText(mContext, getString(R.string.username_empty), Toast.LENGTH_SHORT).show();
@@ -128,19 +128,31 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void saveChanges() {
+        mUser.setUsername(etUsername.getText().toString().toLowerCase());
+        mUser.put("original_username", etUsername.getText().toString());
         mUser.setUsername(etUsername.getText().toString());
         if (mNewPic != null) {
             mNewPic.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
-                    mSmallerNewPic.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            mUser.put("photo", mNewPic);
-                            mUser.put("smaller_photo", mSmallerNewPic);
-                            saveUser();
-                        }
-                    });
+                    if (e == null) {
+                        mSmallerNewPic.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    mUser.put("photo", mNewPic);
+                                    mUser.put("smaller_photo", mSmallerNewPic);
+                                    saveUser();
+                                } else {
+                                    e.printStackTrace();
+                                    Toast.makeText(mContext, "Error saving. Try again later.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    } else {
+                        e.printStackTrace();
+                        Toast.makeText(mContext, "Error saving. Try again later.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         } else {
@@ -148,14 +160,14 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void saveUser(){
+    private void saveUser() {
         mUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e != null){
+                if (e != null) {
                     e.printStackTrace();
                     Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
-                } else{
+                } else {
                     Toast.makeText(mContext, getString(R.string.updated_alert), Toast.LENGTH_SHORT).show();
                     goBackToProfile();
                 }
@@ -254,14 +266,14 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void showProgressBar() {
-        if(miActionProgressItem !=null) miActionProgressItem.setVisible(true);
+        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
     }
 
     private void hideProgressBar() {
-        if(miActionProgressItem !=null) miActionProgressItem.setVisible(false);
+        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
     }
 
-    private void goBackToProfile(){
+    private void goBackToProfile() {
         setResult(RESULT_OK);
         finish();
     }

@@ -2,6 +2,8 @@ package green_minds.com.finalproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
@@ -28,6 +31,9 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
     private ArrayList<Goal> mGoals;
     private boolean saving; //app crashes if user navigates away from activity while fragment is still doing a network call
 
+    @BindView(R.id.navigationView)
+    BottomNavigationView bottomNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +42,31 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
         mGoals = getIntent().getParcelableArrayListExtra("GOALS");
         mSavedInstanceNull = (savedInstanceState == null);
         saving = false;
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if (saving) {
+                    Toast.makeText(GoalActivity.this, getString(R.string.network_waiting), Toast.LENGTH_SHORT).show();
+
+                } else {
+                    switch (item.getItemId()) {
+                        case R.id.navigation_map:
+                            Intent intent1 = new Intent(GoalActivity.this, MapActivity.class);
+                            startActivity(intent1);
+                            return true;
+                        case R.id.navigation_user:
+                            returnToProfile();
+                            return true;
+                        case R.id.navigation_board:
+                            Intent intent2 = new Intent(GoalActivity.this, LeaderboardActivity.class);
+                            startActivity(intent2);
+                            return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     @Override

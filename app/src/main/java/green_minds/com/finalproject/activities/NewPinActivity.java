@@ -133,13 +133,16 @@ public class NewPinActivity extends AppCompatActivity {
         pin.setComment(comment);
         pin.setCheckincount(0);
         pin.setLatLng(location);
+        //saveRestOfPin(pin);
 
         final ParseFile photo = ImageHelper.getParseFile(mCurrentBitmap);
         final ParseFile smallerPhoto = ImageHelper.getSmallerParseFile(mCurrentBitmap);
         photo.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                hideProgressBar();
                 if (e != null) {
+                    e.printStackTrace();
                     Toast.makeText(context, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
                 } else {
                     smallerPhoto.saveInBackground(new SaveCallback() {
