@@ -183,7 +183,8 @@ public class NewPinActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 hideProgressBar();
                 if (e != null) {
-                    Toast.makeText(context, getString(R.string.pin_save_failure), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    Toast.makeText(context, "USER" + getString(R.string.pin_save_failure), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(context, "New Pin Complete!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent();
