@@ -23,9 +23,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
@@ -102,12 +104,10 @@ public class MapActivity extends AppCompatActivity implements
     @BindView(R.id.fab2) public FloatingActionButton fab2;
     @BindView(R.id.fab3) public FloatingActionButton fab3;
     @BindView(R.id.fab4) public FloatingActionButton fab4;
-    @BindView(R.id.logoutBtn) public FloatingActionButton logoutBtn;
     @BindView(R.id.ivAdjust) public ImageView ivAdjust;
     @BindView(R.id.adjustBtn) public Button adjustBtn;
     @BindView(R.id.tvAdjust) public TextView tvAdjust;
     @BindView(R.id.navigationView) public BottomNavigationView bottomNavigationView;
-
 
     private final int REQUEST_CODE = 20;
     final public static String PIN_KEY = "pin";
@@ -166,7 +166,6 @@ public class MapActivity extends AppCompatActivity implements
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -205,7 +204,6 @@ public class MapActivity extends AppCompatActivity implements
         } else {
             Toast.makeText(this, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
-
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -754,7 +752,7 @@ public class MapActivity extends AppCompatActivity implements
                                     if(photo != null){
                                         image = photo.getUrl();
                                     }
-                                    int drawableId = getIcon(mNewPin.getCategory());
+                                    final int drawableId = getIcon(mNewPin.getCategory());
 
                                     LatLng listingPosition = new LatLng(lat, lon);
                                     // Create the marker on the fragment
@@ -766,31 +764,50 @@ public class MapActivity extends AppCompatActivity implements
 
                                     dropPinEffect(mapMarker);
 
-                                    MyItem item = new MyItem(lat, lon, drawableId);
-                                    item.setTitle("checkins: " + mNewPin.getCheckincount());
-                                    item.setSnippet(mNewPin.getComment());
-                                    item.setImage(image);
-                                    item.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
-                                    mClusterManager.addItem(item);
-                                    items.add(item);
-                                    mClusterManager.cluster();
 
-                                    // final Handler handler = new Handler();
-                                    // handler.postDelayed(new Runnable() {
-                                    // @Override
-                                    //    public void run() {
-                                    //       mapMarker.showInfoWindow();
-                                    //    }
-                                    // }, 200);
+                                    final android.os.Handler handler = new android.os.Handler();
+                                    final long start = SystemClock.uptimeMillis();
+                                    final long duration = 5000;
 
-                                    buttonsVisibilityAfter();
+                                    // Use the bounce interpolator
+                                    final android.view.animation.Interpolator interpolator =
+                                            new BounceInterpolator();
 
-                                    mNewPin.saveInBackground(new SaveCallback() {
+                                    // Animate marker with a bounce updating its position every 15ms
+                                    handler.post(new Runnable() {
                                         @Override
-                                        public void done(ParseException e) {
+                                        public void run() {
+                                            long elapsed = SystemClock.uptimeMillis() - start;
+                                            // Calculate t for bounce based on elapsed time
+                                            float t = Math.max(
+                                                    1 - interpolator.getInterpolation((float) elapsed
+                                                            / duration), 0);
+                                            // Set the anchor
+                                            mapMarker.setAnchor(0.5f, 1.0f + 14 * t);
+
+                                            if (t > 0.0) {
+                                                // Post this event again 15ms from now.
+                                                handler.postDelayed(this, 150);
+                                            } else { // done elapsing, show window
+                                                mapMarker.remove();
+                                                MyItem item = new MyItem(lat, lon, drawableId);
+                                                item.setTitle("checkins: " + mNewPin.getCheckincount());
+                                                item.setSnippet(mNewPin.getComment());
+                                                item.setImage(image);
+                                                item.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                                mClusterManager.addItem(item);
+                                                items.add(item);
+                                                mClusterManager.cluster();
+                                                mNewPin.saveInBackground(new SaveCallback() {
+                                                    @Override
+                                                    public void done(ParseException e) {
+                                                    }
+                                                });
+                                            }
                                         }
                                     });
 
+                                    buttonsVisibilityAfter();
                                 }
                             });
 
@@ -953,13 +970,7 @@ public class MapActivity extends AppCompatActivity implements
         });
     }
 
-    @OnClick(R.id.logoutBtn)
-    protected void logout() {
-        ParseUser.logOut();
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        Intent i = new Intent(MapActivity.this, LoginActivity.class);
-        startActivity(i);
-    }
+
 
     private static double round(double value, int places) {
         if (places < 0)
@@ -1113,7 +1124,6 @@ public class MapActivity extends AppCompatActivity implements
         tvAdjust.setVisibility(View.VISIBLE);
         newPinBtn.setVisibility(View.GONE);
         checkinBtn.setVisibility(View.GONE);
-        logoutBtn.setVisibility(View.GONE);
         fab.setVisibility(View.GONE);
         fab0.setVisibility(View.GONE);
         fab1.setVisibility(View.GONE);
@@ -1128,13 +1138,32 @@ public class MapActivity extends AppCompatActivity implements
         tvAdjust.setVisibility(View.GONE);
         newPinBtn.setVisibility(View.VISIBLE);
         checkinBtn.setVisibility(View.VISIBLE);
-        logoutBtn.setVisibility(View.VISIBLE);
         fab.setVisibility(View.VISIBLE);
         fab0.setVisibility(View.VISIBLE);
         fab1.setVisibility(View.VISIBLE);
         fab2.setVisibility(View.VISIBLE);
         fab3.setVisibility(View.VISIBLE);
         fab4.setVisibility(View.VISIBLE);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.map_menu, menu);
+        return true;
+    }
+
+    public void onAddNew() {
+        user = ParseUser.getCurrentUser();
+        if (user == null) {
+            Intent log = new Intent(MapActivity.this, LoginActivity.class);
+        }
+        Intent intent = new Intent(MapActivity.this, NewPinActivity.class);
+        Log.d("MapActivity", "Pin at " + mCurrentLocation.getLatitude());
+        intent.putExtra("latitude", mCurrentLocation.getLatitude());
+        intent.putExtra("longitude", mCurrentLocation.getLongitude());
+        startActivityForResult(intent, REQUEST_CODE);
     }
 }
 /* TODO: add multiple categories at the same time functionality

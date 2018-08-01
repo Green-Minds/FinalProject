@@ -13,11 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.camerakit.CameraKitView;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.ImageHelper;
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -41,7 +42,7 @@ public class CameraActivity extends AppCompatActivity {
     FrameLayout cameraUnderlay;
 
     @BindView(R.id.iv_preview)
-    ImageView ivPreview;
+    CropImageView ivPreview;
 
     @BindView(R.id.overlay)
     RelativeLayout previewOverlay;
@@ -54,10 +55,13 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        ButterKnife.bind(this);
+
         context = this;
         requestCode = getIntent().getIntExtra("REQUEST_CODE", 0);
-        try{
-            switch(requestCode){
+
+        try {
+            switch (requestCode) {
                 case 3:
                     parentActivity = ThirdSignupActivity.class;
                     break;
@@ -71,11 +75,14 @@ public class CameraActivity extends AppCompatActivity {
                     parentActivity = null;
                     throw new Exception("invalid request code.");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        ButterKnife.bind(this);
+        if (!(parentActivity == NewPinActivity.class)) {
+            ivPreview.setAspectRatio(1, 1);
+            ivPreview.setFixedAspectRatio(true);
+            ivPreview.setCropShape(CropImageView.CropShape.OVAL);
+        }
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
@@ -94,7 +101,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.btn_takepic)
-    public void takePicture(){
+    public void takePicture() {
         camera.captureImage(new CameraKitView.ImageCallback() {
             @Override
             public void onImage(CameraKitView cameraKitView, byte[] bytes) {
@@ -104,17 +111,16 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.btn_upload)
-    public void upload(){
-        //should not be null, underlay w this button doesn't show until one pic taken
-        if(currentBytes == null){
-            Toast.makeText(this, "Error...", Toast.LENGTH_SHORT).show();
-        }
+    public void upload() {
+
+        Bitmap cropped = ivPreview.getCroppedImage();
+        byte[] bytes = ImageHelper.getByteArray(cropped, cropped.getWidth(), 100);
 
         File output = getOutputMediaFile();
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(output);
-            outputStream.write(currentBytes);
+            outputStream.write(bytes);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -133,19 +139,19 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.btn_newpic)
-    public void launchCamera(){
+    public void launchCamera() {
         currentBytes = null;
         camera.onResume();
         previewOverlay.setVisibility(View.GONE);
         cameraUnderlay.setVisibility(View.VISIBLE);
     }
 
-    private void launchPreview(final CameraKitView cameraKitView, byte[] bytes){
+    private void launchPreview(final CameraKitView cameraKitView, byte[] bytes) {
 
         camera.onPause();
 
         final Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        currentBytes= bytes;
+        currentBytes = bytes;
 
         runOnUiThread(new Runnable() {
             @Override
@@ -153,6 +159,7 @@ public class CameraActivity extends AppCompatActivity {
                 ivPreview.setImageBitmap(bm);
                 cameraUnderlay.setVisibility(View.GONE);
                 previewOverlay.setVisibility(View.VISIBLE);
+
             }
         });
     }
@@ -186,4 +193,9 @@ public class CameraActivity extends AppCompatActivity {
         return mediaFile;
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
+    }
 }
