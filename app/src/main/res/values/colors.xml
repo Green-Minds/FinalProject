@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#4c4c73</color>
     <color name="colorAccent">#597855</color>
     <color name="action_bar_semi_transparent_white">#bfffffff</color>
+    <color name="light_yellow">#ecd8b3</color>
     <color name="action_bar_transparent_background">#20000000</color>
     <color name="action_bar_transparent_background_pressed_state">#30000000</color>
     <color name="ads_manager_subtitle_color">#8a000000</color>
