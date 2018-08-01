@@ -16,7 +16,7 @@ The following features are implemented:
     * [x] *(optional)* fetch schools from the server (some open source provider)
   * [x] workplace (text field)
     * [ ] *(optional)* saving workplaces and provide them later to other people
-  * [x] *(optional)* upload image or use app's camera
+  * [x] *(optional)* upload image or use app's camera for profile picture
 
 * **1. Login Page**
   * [x] *(optional)* login via facebook 
@@ -116,7 +116,7 @@ Describe any challenges encountered while building the app.
 
 ## Open-source libraries used
 
-- [US Colleges API](https://github.com/karllhughes/colleges) - API for accessing the names and locations of accredited colleges and universities in the United States
+- [US Colleges API](https://github.com/RTICWDT/open-data-maker/blob/master/API.md) - API for accessing the names and locations of accredited colleges and universities in the United States
 - [Glide](https://github.com/bumptech/glide) - Image loading and caching library for Android
 
 ## License
