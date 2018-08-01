@@ -1,6 +1,6 @@
-# **Name of app**
+# **Cycle**
 
-**Name of app** shows the locations of water fountains and recycling bins on a specific campus and provides tips on stores that offer discounts to recycling.
+**Cycle** shows the locations of water fountains and recycling bins on a specific campus and provides tips on stores that offer discounts to recycling.
 
 Time spent: hours spent in total
 
@@ -9,26 +9,29 @@ Time spent: hours spent in total
 The following features are implemented:
 
 * **0. Registration Page**
-  * [ ] create your own userid (text field)
-    * [ ] add protection from creating identical userids 
-  * [ ] schools selection (drop down list)
-    * [ ] few hardcoded schools 
-    * [ ] *(optional)* filtering
-          https://www.androidhive.info/2017/11/android-recyclerview-with-search-filter-functionality/
-    * [ ] *(optional)* fetch schools from the server (some open source provider)
-  * [ ] workplace (text field)
+  * [x] create your own userid (text field)
+    * [x] add protection from creating identical userids 
+  * [x] schools selection (drop down list)
+    * [x] *(optional)* filtering
+    * [x] *(optional)* fetch schools from the server (some open source provider)
+  * [x] workplace (text field)
     * [ ] *(optional)* saving workplaces and provide them later to other people
-  * [ ] *(optional)* registation via facebook 
-  * [ ] *(optional)* upload you picture
+  * [x] *(optional)* upload image or use app's camera
+
+* **1. Login Page**
+  * [x] *(optional)* login via facebook 
+    * [x] register via facebook and get user's information from facebook
+  * [x] user persistence with facebook and parse login
+
   
-* **1. Map (view)**
-   * [ ] displaying items on a map
-   * [ ] google maps api
-   * [ ] *(optional)* create clusters of items (when you have >1 item in small space)
+* **2. Map (view)**
+   * [x] displaying items on a map
+   * [x] google maps api
+   * [x] *(optional)* create clusters of items (when you have >1 item in small space)
    * [ ] *(optional)* routing 
-   * [ ] UI
-    * [ ] screen with a map
-      * [ ] diffrent pins (may be diffrent colors) for different categories
+   * [x] UI
+    * [x] screen with a map
+      * [x] diffrent pins (may be diffrent colors) for different categories
        * [ ] dialog should be opened when point is pressed 
         * dialog should contain
           * basic info
@@ -37,9 +40,9 @@ The following features are implemented:
           * category 
           * button "take me there"
           * *(optional)* how many people visited 
-    * [ ] *(optional)* sreen with a list ordered by distance to a point from you
+    * [ ] *(optional)* screen with a list ordered by distance to a point from you
 
-* **2. Map (add item)**
+* **3. Map (add item)**
   * [ ] adding item 
     * bike racks
     * coffee shops 
@@ -62,7 +65,7 @@ The following features are implemented:
     
     https://developers.google.com/maps/documentation/android-sdk/marker
 
-* **3. Checkin**
+* **4. Checkin**
     * [ ] based on your location show closest item and provide a button to checkin
         * upload to the server side info that you visited that specific place
     * [ ] *(optional)* qr code scanner to indicate that you visited a place
@@ -71,21 +74,21 @@ The following features are implemented:
     * [ ] *(optional)* comment about the point 
     * [ ] *(optional)* report if not corrrect
     
-* **4. Leader board**
-    * [ ] list with people
-        * indication of 1st, 2nd, 3ed places 
-        * indicate you rank and your score 
-        * iteam with should look different 
+* **5. Leader board**
+    * [x] leaderboard based on connection (school or work)
+       [x] * indication of 1st, 2nd, 3rd places 
+       [x] * indicate your rank and your score 
+       [x] * item with your info should look different 
     * [ ] *(optional)* infinite scrolling / pagination
-    * [ ] *(optional)* pull-to-refresh
+    * [x] *(optional)* pull-to-refresh
    
-* [ ] **5. (optional) Adding friends**
+* [ ] **6. (optional) Adding friends**
     * [ ] finding people by name
     * [ ] *(optional)* qr code scanner for you friends 
     
-* [ ] **6. (optional) Adding goal for recycling** 
+* [ ] **7. (optional) Adding goal for recycling** 
 
-* [ ] **7. (optional) Sharing a video of you recycling**
+* [ ] **8. (optional) Sharing a video of you recycling**
 
 * [ ] **8. (optional) Location based notifications if you are close to a recycling bin or coffee shop**
 
