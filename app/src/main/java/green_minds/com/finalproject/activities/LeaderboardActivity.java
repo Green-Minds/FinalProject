@@ -42,6 +42,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_leaderboard);
         ButterKnife.bind(this);
 
+
         users = new ArrayList<>();
         leaderboardAdapter = new LeaderboardAdapter(users);
         rvUsers.setLayoutManager(new LinearLayoutManager(this));
@@ -86,7 +87,9 @@ public class LeaderboardActivity extends AppCompatActivity {
     private void showLeaderboard() {
         if (!isOnline()) return;
         ParseQuery query = ParseUser.getQuery();
-        query.orderByAscending("points").addAscendingOrder("pincount").whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection")).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
+        query.orderByAscending("points").addAscendingOrder("pincount")
+                .whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection"))
+                .setLimit(20).findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
                 ParseUser user = null;

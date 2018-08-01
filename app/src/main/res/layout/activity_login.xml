@@ -13,7 +13,9 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="90dp"
+        android:fontFamily="serif-monospace"
         android:text="@string/app_name"
+        android:textAllCaps="true"
         android:textColor="@android:color/black"
         android:textSize="36sp"
         android:textStyle="bold" />
@@ -58,14 +60,12 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_above="@id/go_to_signup_container"
-        android:layout_below="@+id/fbLoginButton"
-        android:layout_marginTop="49dp"
         android:background="@drawable/border" />
 
     <RelativeLayout
         android:id="@+id/go_to_signup_container"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:background="@color/grey_1_80_transparent"

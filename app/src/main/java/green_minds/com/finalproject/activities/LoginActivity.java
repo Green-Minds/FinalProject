@@ -2,6 +2,7 @@ package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -78,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.tvIncorrectInfo) public TextView tvIncorrectInfo;
     @BindView(R.id.fbLoginButton) public LoginButton fbLoginButton;
     private  Map<String, String> authData = new HashMap<>();
+    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,10 +88,10 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (ParseUser.getCurrentUser() != null) {
-            userPersistenceDisplayer("Successful Login ","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
+            userPersistenceDisplayer("Successful Login ","Welcome back " + ParseUser.getCurrentUser().getString("original_username") + "!");
         } else if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logInWithReadPermissions(this, mPermissions);
-            userPersistenceDisplayer("Successful Login","Welcome back " + ParseUser.getCurrentUser().getUsername() + "!");
+            userPersistenceDisplayer("Successful Login","Welcome back " + ParseUser.getCurrentUser().getString("original_username") + "!");
         }
 
         TextWatcher textWatcher = new TextWatcher() {
@@ -118,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 hideSoftKeyboard(LoginActivity.this);
                 if (!isOnline()) return;
-                String username = etUsernameLogin.getText().toString();
+                String username = etUsernameLogin.getText().toString().toLowerCase();
                 String password = etPasswordLogin.getText().toString();
                 login(username, password);
             }
@@ -167,15 +169,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(final String username, String password) {
+        showProgressDialog();
+        btnLogin.setEnabled(false);
+        fbLoginButton.setEnabled(false);
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
-                    tvIncorrectInfo.setVisibility(View.GONE);
-                    btnLogin.setEnabled(false);
-                    fbLoginButton.setEnabled(false);
-                    alertDisplayer("Successful Login","Welcome back " + username + "!");
+                    hideProgressDialog();
+                    alertDisplayer("Successful Login","Welcome back " + user.getString("original_username") + "!");
                 } else {
+                    hideProgressDialog();
+                    btnLogin.setEnabled(true);
+                    fbLoginButton.setEnabled(true);
                     etPasswordLogin.startAnimation(invalidCredentials());
                     tvIncorrectInfo.setText(e.getMessage().toString());
                     tvIncorrectInfo.setVisibility(View.VISIBLE);
@@ -223,6 +229,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         if (AccessToken.getCurrentAccessToken() != null) {
                             LoginManager.getInstance().logOut();
+                            ParseUser.logOut();
                         } else {
                             ParseUser.logOut();
                         }
@@ -307,7 +314,7 @@ public class LoginActivity extends AppCompatActivity {
         Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
         try {
             parseUserTask.waitForCompletion();
-            alertDisplayer("Successful Login","Welcome back " + user.getUsername() + "!");
+            alertDisplayer("Successful Login","Welcome back " + user.getString("original_username") + "!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -363,7 +370,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void gotoSignup(View v) {
         v.setEnabled(false);
-        final Intent intent = new Intent(LoginActivity.this, SecondSignupActivity.class);
+        final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
         startActivity(intent);
     }
 
@@ -412,7 +419,8 @@ public class LoginActivity extends AppCompatActivity {
 
         final ParseUser user = ParseUser.getCurrentUser();
         final ParseFile parseFile = getParseFile(image);
-        user.setUsername(username);
+        user.setUsername(username.toLowerCase());
+        user.put("original_username", username);
         user.setEmail(email);
         user.put("location", getLocation());
 
@@ -441,5 +449,20 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void showProgressDialog() {
+        // Show progress item
+        pd = new ProgressDialog(this);
+        pd.setTitle("Processing...");
+        pd.setMessage("Please wait.");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    private void hideProgressDialog() {
+        // Hide progress item
+        pd.dismiss();
     }
 }

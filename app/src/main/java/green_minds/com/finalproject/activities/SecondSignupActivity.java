@@ -1,6 +1,7 @@
 package green_minds.com.finalproject.activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,9 @@ import green_minds.com.finalproject.model.DelayAutoCompleteTextView;
 
 public class SecondSignupActivity extends AppCompatActivity {
 
+    private Intent intent;
+    private String school;
+    private ProgressDialog pd;
     @BindView(R.id.rgSelection)
     public RadioGroup rgSelection;
     @BindView(R.id.rbWork)
@@ -33,8 +37,6 @@ public class SecondSignupActivity extends AppCompatActivity {
     public DelayAutoCompleteTextView atvSchoolName;
     @BindView(R.id.btnConnectNext)
     public Button btnConnectNext;
-    private Intent intent;
-    private String school;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +94,7 @@ public class SecondSignupActivity extends AppCompatActivity {
         btnConnectNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showProgressDialog();
                 btnConnectNext.setEnabled(false);
                 hideSoftKeyboard(SecondSignupActivity.this);
                 String connection = atvSchoolName.getText().toString();
@@ -113,7 +116,23 @@ public class SecondSignupActivity extends AppCompatActivity {
     private void gotoThirdScreen(String connection) {
         intent.putExtra("connection", connection);
         intent.setClass(SecondSignupActivity.this, ThirdSignupActivity.class);
+        hideProgressDialog();
         startActivity(intent);
         finish();
+    }
+
+    private void showProgressDialog() {
+        // Show progress item
+        pd = new ProgressDialog(this);
+        pd.setTitle("Processing...");
+        pd.setMessage("Please wait.");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    private void hideProgressDialog() {
+        // Hide progress item
+       pd.dismiss();
     }
 }

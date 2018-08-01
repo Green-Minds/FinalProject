@@ -1,6 +1,7 @@
 package green_minds.com.finalproject.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,7 +30,6 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import butterknife.BindView;
@@ -42,6 +42,15 @@ import static green_minds.com.finalproject.model.ImageHelper.getSmallerParseFile
 
 public class ThirdSignupActivity extends AppCompatActivity {
 
+    private static final int SELECT_PICTURE = 1;
+    private Intent intent;
+    private String password;
+    private String username;
+    private String originalUsername;
+    private String email;
+    private String connection;
+    private Bitmap imageBitmap;
+    private ProgressDialog pd;
     @BindView(R.id.ivUserPic)
     public ImageView ivUserPic;
     @BindView(R.id.set_container)
@@ -50,13 +59,6 @@ public class ThirdSignupActivity extends AppCompatActivity {
     public Button btnSignup;
     @BindView(R.id.tvUser)
     public TextView tvUser;
-    private Intent intent;
-    private String password;
-    private String username;
-    private String email;
-    private String connection;
-    private Bitmap imageBitmap;
-    private static final int SELECT_PICTURE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +68,11 @@ public class ThirdSignupActivity extends AppCompatActivity {
         intent = getIntent();
 
         username = intent.getStringExtra("username");
+        originalUsername = intent.getStringExtra("original_username");
         password = intent.getStringExtra("password");
         email = intent.getStringExtra("email");
         connection = intent.getStringExtra("connection");
-        tvUser.setText(username);
+        tvUser.setText(originalUsername);
         tvUser.setVisibility(View.VISIBLE);
         GlideApp.with(getApplicationContext())
                 .load(R.drawable.placeholder)
@@ -80,6 +83,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showProgressDialog();
                 btnSignup.setEnabled(false);
                 signUp();
             }
@@ -129,7 +133,6 @@ public class ThirdSignupActivity extends AppCompatActivity {
     }
 
     private void signUp() {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if (imageBitmap == null) {
             imageBitmap = ((BitmapDrawable) ivUserPic.getDrawable()).getBitmap();
         }
@@ -145,6 +148,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
                 user.setPassword(password);
                 user.setUsername(username);
                 user.setEmail(email);
+                user.put("original_username", originalUsername);
                 user.put("connection", connection);
                 user.put("location", getLocation());
                 user.put("photo", parseFile);
@@ -154,7 +158,8 @@ public class ThirdSignupActivity extends AppCompatActivity {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            alertDisplayer("Signup Successful","Welcome " + username + "!");
+                            hideProgressDialog();
+                            alertDisplayer("Signup Successful","Welcome " + originalUsername + "!");
                         } else {
                             e.printStackTrace();
                         }
@@ -195,5 +200,20 @@ public class ThirdSignupActivity extends AppCompatActivity {
                 });
         AlertDialog ok = builder.create();
         ok.show();
+    }
+
+    private void showProgressDialog() {
+        // Show progress item
+        pd = new ProgressDialog(this);
+        pd.setTitle("Processing...");
+        pd.setMessage("Please wait.");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    private void hideProgressDialog() {
+        // Hide progress item
+        pd.dismiss();
     }
 }
