@@ -1,6 +1,7 @@
 package green_minds.com.finalproject.activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -31,6 +32,7 @@ import green_minds.com.finalproject.R;
 
 public class SignupActivity extends AppCompatActivity {
 
+    private ProgressDialog pd;
     @BindView(R.id.etUsernameInput)
     public EditText etUsernameInput;
     @BindView(R.id.etPasswordInput)
@@ -86,7 +88,7 @@ public class SignupActivity extends AppCompatActivity {
                 btnInfoNext.setEnabled(false);
                 ParseQuery usernameQuery = ParseUser.getQuery();
                 ParseQuery emailQuery = ParseUser.getQuery();
-                usernameQuery.whereEqualTo("username", etUsernameInput.getText().toString());
+                usernameQuery.whereEqualTo("lowercase_username", etUsernameInput.getText().toString().toLowerCase());
                 emailQuery.whereEqualTo("email", etEmailInput.getText().toString());
                 List<ParseQuery<ParseUser>> queries = new ArrayList<>();
                 queries.add(usernameQuery);
@@ -97,11 +99,9 @@ public class SignupActivity extends AppCompatActivity {
                     public void done(List<ParseUser> objects, ParseException e) {
                         if (e == null) {
                             if (objects.size() == 0) {
+                                showProgressDialog();
                                 tvUsernameTaken.setVisibility(View.GONE);
-                                String username = etUsernameInput.getText().toString();
-                                String password = etPasswordInput.getText().toString();
-                                String email = etEmailInput.getText().toString();
-                                gotoSecondScreen(username, password, email);
+                                gotoSecondScreen();
                             } else {
                                 btnInfoNext.setEnabled(true);
                                 tvUsernameTaken.setText("Account with username/ email already exists");
@@ -136,13 +136,30 @@ public class SignupActivity extends AppCompatActivity {
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void gotoSecondScreen(String username, String password, String email) {
+    private void gotoSecondScreen() {
         Intent intent = new Intent(SignupActivity.this, SecondSignupActivity.class);
-        intent.putExtra("username", username);
-        intent.putExtra("password", password);
-        intent.putExtra("email", email);
+        intent.putExtra("username", etUsernameInput.getText().toString().toLowerCase());
+        intent.putExtra("password", etPasswordInput.getText().toString());
+        intent.putExtra("email", etEmailInput.getText().toString());
+        intent.putExtra("original_username", etUsernameInput.getText().toString());
+        hideProgressDialog();
         startActivity(intent);
         finish();
+    }
+
+    private void showProgressDialog() {
+        // Show progress item
+        pd = new ProgressDialog(this);
+        pd.setTitle("Processing...");
+        pd.setMessage("Please wait.");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    private void hideProgressDialog() {
+        // Hide progress item
+        pd.dismiss();
     }
 }
 
