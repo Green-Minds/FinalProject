@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.MapFragment">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:fitsSystemWindows="true"
+            android:layout_height="match_parent"
+            tools:context=".activities.MapActivity">
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/mapLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/navigationView"
+                tools:context=".activities.MapActivity">
+
+
+                <fragment
+                    android:id="@+id/map"
+                    class="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true" />
+
+
+                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    >
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab4"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignTop="@+id/fab"
+                        android:layout_gravity="bottom|end"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        app:backgroundTint="@android:color/background_light"
+                        app:rippleColor="@android:color/transparent"
+                        app:srcCompat="@drawable/ic_battery" />
+
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab3"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignTop="@+id/fab"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="bottom|end"
+                        app:backgroundTint="@android:color/background_light"
+                        app:rippleColor="@android:color/transparent"
+                        app:srcCompat="@drawable/ic_money" />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab2"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignTop="@+id/fab"
+                        android:layout_gravity="bottom|end"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        app:backgroundTint="@android:color/background_light"
+                        app:rippleColor="@android:color/transparent"
+                        app:srcCompat="@drawable/ic_cycling" />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab1"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignTop="@+id/fab"
+                        android:layout_gravity="bottom|end"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        app:backgroundTint="@android:color/background_light"
+                        app:rippleColor="@android:color/transparent"
+                        app:srcCompat="@drawable/ic_drop" />
+
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab0"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignTop="@+id/fab"
+                        android:layout_alignParentBottom="true"
+                        android:layout_gravity="bottom"
+                        android:layout_centerHorizontal="true"
+                        app:backgroundTint="@android:color/background_light"
+                        app:rippleColor="@android:color/background_light"
+                        app:srcCompat="@drawable/ic_recycling_bin" />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginStart="10dp"
+                        android:clickable="true"
+                        android:paddingBottom="15dp"
+                        android:paddingStart="10dp"
+                        app:backgroundTint="@color/colorPrimaryDark"
+                        app:rippleColor="@android:color/transparent"
+                        app:srcCompat="@drawable/ic_menu" />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/newPinBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="16dp"
+                        android:clickable="true"
+                        android:paddingLeft="10dp"
+                        app:backgroundTint="@color/colorPrimaryDark"
+                        app:srcCompat="@drawable/ic_addbutton" />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/checkinBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_below="@+id/newPinBtn"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="81dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="81dp"
+                        android:clickable="true"
+                        app:backgroundTint="@color/colorPrimaryDark"
+                        app:srcCompat="@drawable/ic_checkin" />
+
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/ivAdjust"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    app:srcCompat="@drawable/newpin" />
+
+                <Button
+                    android:id="@+id/adjustBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="80dp"
+                    android:text="CONFIRM" />
+
+                <TextView
+                    android:id="@+id/tvAdjust"
+                    android:layout_width="253dp"
+                    android:layout_height="34dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="88dp"
+                    android:background="@android:color/background_light"
+                    android:text="Please adjust the position of your pin!"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark" />
+
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
