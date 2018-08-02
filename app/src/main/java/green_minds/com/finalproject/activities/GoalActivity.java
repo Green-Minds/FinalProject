@@ -67,6 +67,17 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
                 return false;
             }
         });
+        if (mSavedInstanceNull) {
+            mEditGoalFragment = EditGoalFragment.newInstance(mGoals);
+            mGoalListFragment = GoalListFragment.newInstance(mGoals);
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.container, mEditGoalFragment);
+            ft.commit();
+        }
+        if (mEditGoalFragment == null || mGoalListFragment == null) {
+            mEditGoalFragment = EditGoalFragment.newInstance(mGoals);
+            mGoalListFragment = GoalListFragment.newInstance(mGoals);
+        }
     }
 
     @Override
@@ -80,17 +91,7 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
 
         //need menu to be loaded before we start loading fragments so we can show progress item
-        if (mSavedInstanceNull) {
-            mEditGoalFragment = EditGoalFragment.newInstance(mGoals);
-            mGoalListFragment = GoalListFragment.newInstance(mGoals);
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.container, mEditGoalFragment);
-            ft.commit();
-        }
-        if (mEditGoalFragment == null || mGoalListFragment == null) {
-            mEditGoalFragment = EditGoalFragment.newInstance(mGoals);
-            mGoalListFragment = GoalListFragment.newInstance(mGoals);
-        }
+
         return super.onPrepareOptionsMenu(menu);
     }
 

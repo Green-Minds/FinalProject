@@ -1,116 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorLightPurpleTransparent"
+    android:orientation="vertical"
+    android:weightSum="3"
     tools:context=".activities.UserInfoActivity">
 
-
-    <RelativeLayout
-        android:id="@+id/layout_content"
+    <FrameLayout
+        android:id="@+id/profile"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:padding="10dp">
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:background="@drawable/rect"
+        android:elevation="8dp"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/textView2"
+        <ImageButton
+            android:id="@+id/btn_popup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/listView"
-            android:layout_toLeftOf="@+id/tv_score"
-            android:text="Score:   "
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_gravity="top|right"
+            android:background="@color/transparent"
+            app:srcCompat="@drawable/ic_settings_work_tool" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_imageview">
+
+                <ImageView
+                    android:id="@+id/iv_prof_pic"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/q_mark" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/molengo"
+                android:text="name"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="4dp"
+                android:background="@color/colorLightPurple" />
+
+            <TextView
+                android:id="@+id/tv_connection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:text="Some College"
+                android:textColor="@color/colorLightPurple" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/goals"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="2"
+        android:background="@drawable/rect_grey"
+        android:elevation="4dp"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tv_name"
+            android:fadeScrollbars="false" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/stats"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/rect_grey"
+        android:elevation="4dp">
 
         <TextView
             android:id="@+id/tv_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/listView"
+            android:layout_weight="1"
             android:text="score"
+            android:textColor="@color/white"
             android:textSize="16sp" />
+    </FrameLayout>
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/listView"
-            android:layout_alignParentStart="true"
-            android:text="Pins Made:   "
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv_pin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/textView3"
-            android:layout_below="@id/listView"
-            android:text="pin"
-            android:textSize="16sp" />
-
-        <ListView
-            android:id="@+id/listView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/tv_name" />
-
-        <Button
-            android:id="@+id/btn_goals"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/btn_edit"
-            android:text="Edit Goals" />
-
-        <Button
-            android:id="@+id/btn_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:text="Edit Profile" />
-
-        <ImageView
-            android:id="@+id/iv_prof_pic"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            app:srcCompat="@drawable/q_mark" />
-
-        <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="64dp"
-            android:layout_marginTop="0dp"
-            android:padding="20dp"
-            android:text="name" />
-    </RelativeLayout>
-
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:background="?android:attr/windowBackground"
-        app:itemBackground="@color/colorPrimary"
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/navigation"
-        android:layout_gravity="bottom"/>
-
-</RelativeLayout>
+</LinearLayout>
