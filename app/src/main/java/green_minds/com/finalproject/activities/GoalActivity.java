@@ -59,7 +59,7 @@ public class GoalActivity extends AppCompatActivity implements EditGoalFragment.
                             returnToProfile();
                             return true;
                         case R.id.navigation_board:
-                            Intent intent2 = new Intent(GoalActivity.this, LeaderboardActivity.class);
+                            Intent intent2 = new Intent(GoalActivity.this, MainActivity.class);
                             startActivity(intent2);
                             return true;
                     }

@@ -78,7 +78,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         //do nothing, already on page
                         return true;
                     case R.id.navigation_board:
-                        Intent intent2 = new Intent(mContext, LeaderboardActivity.class);
+                        Intent intent2 = new Intent(mContext, MainActivity.class);
                         startActivity(intent2);
                         return true;
                 }
