@@ -5,21 +5,24 @@
     <item
         android:id="@+id/navigation_map"
         android:icon="@drawable/ic_map_icon"
+        android:checked="false"
         android:title="Map"
         android:visible="true"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/navigation_user"
         android:icon="@drawable/ic_profile_icon"
+        android:checked="false"
         android:title="Profile"
         android:visible="true"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/navigation_board"
         android:icon="@drawable/ic_leaderboard_icon"
+        android:checked="false"
         android:title="Leaderboard"
         android:visible="true"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 </menu>
