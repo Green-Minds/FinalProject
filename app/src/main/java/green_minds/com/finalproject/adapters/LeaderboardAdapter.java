@@ -19,14 +19,21 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.fragments.LeaderboardFragment;
 import green_minds.com.finalproject.model.GlideApp;
 
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
 
     private List<ParseUser> mUsers;
     private Context context;
+    private LeaderboardFragment.OnFragmentInteractionListener mListener;
 
     public LeaderboardAdapter(List<ParseUser> users) {mUsers = users;}
+
+    public LeaderboardAdapter(ArrayList<ParseUser> users, LeaderboardFragment.OnFragmentInteractionListener listener) {
+        mUsers = users;
+        mListener = listener;
+    }
 
     public void clear () {
         mUsers.clear();

@@ -55,7 +55,8 @@
         <activity
             android:name=".activities.NewPinActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.LeaderboardActivity" />
+        <activity android:name=".activities.LeaderboardActivity"
+            android:theme="@style/LeaderboardTheme"/>
         <activity
             android:name=".activities.UserInfoActivity"
             android:screenOrientation="portrait" />
