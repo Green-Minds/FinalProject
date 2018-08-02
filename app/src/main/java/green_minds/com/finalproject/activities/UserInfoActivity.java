@@ -3,18 +3,17 @@ package green_minds.com.finalproject.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -41,17 +40,14 @@ public class UserInfoActivity extends AppCompatActivity {
     @BindView(R.id.tv_score)
     TextView tvScore;
 
-    @BindView(R.id.btn_edit)
-    TextView btnEdit;
-
-    @BindView(R.id.tv_pin)
-    TextView tvPin;
+    @BindView(R.id.tv_connection)
+    TextView tvConnection;
 
     @BindView(R.id.iv_prof_pic)
     ImageView ivProfPic;
 
-    @BindView(R.id.navigationView)
-    BottomNavigationView bottomNavigationView;
+    @BindView(R.id.btn_popup)
+    ImageButton btnPopup;
 
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
@@ -65,30 +61,36 @@ public class UserInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_info);
         ButterKnife.bind(this);
         mContext = this;
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_map:
-                        Intent intent1 = new Intent(mContext, MapActivity.class);
-                        startActivity(intent1);
-                        return true;
-                    case R.id.navigation_user:
-                        //do nothing, already on page
-                        return true;
-                    case R.id.navigation_board:
-                        Intent intent2 = new Intent(mContext, LeaderboardActivity.class);
-                        startActivity(intent2);
-                        return true;
-                }
-                return false;
-            }
-        });
         setupUserInfo();
     }
 
+    @OnClick(R.id.btn_popup)
+    public void showPopUp() {
+        //Creating the instance of PopupMenu
+        PopupMenu popup = new PopupMenu(UserInfoActivity.this, btnPopup);
+        //Inflating the Popup using xml file
+        popup.getMenuInflater()
+                .inflate(R.menu.popup_user, popup.getMenu());
 
+        //registering popup with OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                //TODO - add to strings.xml
+                String[] ids = getResources().getResourceName(item.getItemId()).split("\\/");
+                String id = ids[1];
+                if (id.equals("mi_logout")) {
+                    logOut();
+                } else if (id.equals("mi_edit_prof")) {
+                    goToEdit();
+                } else {
+                    goToGoals();
+                }
+                return true;
+            }
+        });
+
+        popup.show(); //showing popup menu
+    }
 
     private void setupUserInfo() {
         showProgressBar();
@@ -100,14 +102,13 @@ public class UserInfoActivity extends AppCompatActivity {
         }
 
         Object username = mUser.get("original_username"); //check if exists first
-        if(username != null){
-            tvName.setText((String)username);
-        } else{
+        if (username != null) {
+            tvName.setText((String) username);
+        } else {
             tvName.setText(mUser.getUsername());
         }
 
         tvScore.setText(mUser.getInt("points") + "");
-        tvPin.setText(mUser.getInt("pincount") + "");
 
         ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
         if (smallerPhoto != null) {
@@ -129,7 +130,6 @@ public class UserInfoActivity extends AppCompatActivity {
 
             @Override
             public void done(List<ParseUser> objects, com.parse.ParseException e) {
-                hideProgressBar();
                 if (e == null) {
                     if (objects.size() < 1) {
                         Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
@@ -138,13 +138,13 @@ public class UserInfoActivity extends AppCompatActivity {
 
                     mUser = objects.get(0);
                     Object username = mUser.get("original_username"); //check if exists first
-                    if(username != null){
-                        tvName.setText((String)username);
-                    } else{
+                    if (username != null) {
+                        tvName.setText((String) username);
+                    } else {
                         tvName.setText(mUser.getUsername());
                     }
                     tvScore.setText(mUser.getInt("points") + "");
-                    tvPin.setText(mUser.getInt("pincount") + "");
+                    tvConnection.setText(mUser.getString("connection"));
 
                     mGoals = (ArrayList<Goal>) mUser.get("goals");
                     if (mGoals == null) {
@@ -166,27 +166,11 @@ public class UserInfoActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        ProgressBar v = (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
-        setupUserInfo();
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @OnClick(R.id.btn_edit)
     public void goToEdit() {
         Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
         startActivityForResult(i, 30);
     }
 
-    @OnClick(R.id.btn_goals)
     public void goToGoals() {
         Intent i = new Intent(UserInfoActivity.this, GoalActivity.class);
         if (mGoals == null) {
@@ -237,5 +221,15 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private void hideProgressBar() {
         if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
+    }
+
+    public void logOut() {
+        if (AccessToken.getCurrentAccessToken() != null) {
+            LoginManager.getInstance().logOut();
+            ParseUser.logOut();
+        } else {
+            ParseUser.logOut();
+        }
+        redirectToLogin();
     }
 }

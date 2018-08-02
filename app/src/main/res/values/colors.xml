@@ -3,6 +3,10 @@
     <color name="colorPrimary">#6899ad</color>
     <color name="colorPrimaryDark">#4c4c73</color>
     <color name="colorAccent">#597855</color>
+    <color name="colorMediumPurple">#6A70A1</color>
+    <color name="colorLightPurpleTransparent">#77A1B2C9</color>
+    <color name="colorLightPurple">#A1A3C9</color>
+    <color name="colorLightGreyBlue">#B1DCDE</color>
     <color name="action_bar_semi_transparent_white">#bfffffff</color>
     <color name="light_yellow">#ecd8b3</color>
     <color name="action_bar_transparent_background">#20000000</color>
