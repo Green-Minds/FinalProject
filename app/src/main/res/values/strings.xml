@@ -6,7 +6,7 @@
     <string name="fb_login_protocol_scheme">fb1817693664978014</string>
     <string name="alert_dialog_title">Overwrite</string>
     <string name="alert_dialog_body">You have already set a goal for this category. Do you want to overwrite your old goal?</string>
-    <string name="network_error">Network Error. Please try again later.</string>
+    <string name="network_error">Network Error. Please check connection.</string>
     <string name="session_error">Session error. Please log out and log back in again.</string>
     <string name="misc_error">Error. Please come back to this page later!</string>
     <string name="exception_date">Choose a date in the future!</string>

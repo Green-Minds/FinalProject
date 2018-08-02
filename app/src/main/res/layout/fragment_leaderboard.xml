@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.LeaderboardFragment">
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/leaderboardToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/swipe_container_fragment">
+        android:gravity="top"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:id="@+id/connectionTitle"
+            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:gravity="top"
+            android:maxLines="2"
+            android:textAlignment="center"
+            android:title=" " />
+
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/leaderboardToolbar">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvUsersFragment"
@@ -18,4 +40,4 @@
             android:layout_alignParentTop="true" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
-</FrameLayout>
+</RelativeLayout>

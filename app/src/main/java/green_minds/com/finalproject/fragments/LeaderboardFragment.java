@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -36,6 +37,7 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
     private Context mContext;
     @BindView(R.id.swipe_container_fragment) public SwipeRefreshLayout swipeContainer;
     @BindView(R.id.rvUsersFragment) public RecyclerView rvUsers;
+    @BindView(R.id.connectionTitle) public TextView connectionTitle;
 
     public LeaderboardFragment() {
         // Required empty public constructor
@@ -68,6 +70,7 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
+        connectionTitle.setText(ParseUser.getCurrentUser().getString("connection") + " Leaderboard");
         rvUsers.setLayoutManager(new LinearLayoutManager(mContext));
         rvUsers.setAdapter(leaderboardAdapter);
         swipeContainer.setOnRefreshListener(this);

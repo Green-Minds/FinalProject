@@ -13,10 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -38,6 +35,7 @@ public class UserInfoFragment extends Fragment {
         void goToEdit(ArrayList<Goal> g);
         void showProgressBar();
         void hideProgressBar();
+        void logout();
     }
 
     private static final String ARG_PARAM1 = "user";
@@ -179,73 +177,73 @@ public class UserInfoFragment extends Fragment {
         }
     }
 
-    private void setupUserInfo() {
-        mUser = ParseUser.getCurrentUser();
-
-        Object username = mUser.get("original_username"); //check if exists first
-        if(username != null){
-            tvName.setText((String)username);
-        } else{
-            tvName.setText(mUser.getUsername());
-        }
-
-        tvScore.setText(mUser.getInt("points") + "");
-        tvPin.setText(mUser.getInt("pincount") + "");
-
-        ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
-        if (smallerPhoto != null) {
-            String url = smallerPhoto.getUrl();
-            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-        } else {
-            ParseFile photo = mUser.getParseFile("photo");
-            if (photo != null) {
-                String url = photo.getUrl();
-                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-            } else {
-                GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
-            }
-        }
-
-        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
-        userQuery.include("goals");
-        userQuery.whereEqualTo("objectId", mUser.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
-
-            @Override
-            public void done(List<ParseUser> objects, com.parse.ParseException e) {
-                if (e == null) {
-                    if (objects.size() < 1) {
-                        Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    mUser = objects.get(0);
-                    Object username = mUser.get("original_username"); //check if exists first
-                    if(username != null){
-                        tvName.setText((String)username);
-                    } else{
-                        tvName.setText(mUser.getUsername());
-                    }
-                    tvScore.setText(mUser.getInt("points") + "");
-                    tvPin.setText(mUser.getInt("pincount") + "");
-
-                    mGoals = (ArrayList<Goal>) mUser.get("goals");
-                    if (mGoals == null) {
-                        mGoals = new ArrayList<>();
-                    }
-                    mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
-                    listView.setAdapter(mAdapter);
-                    mListener.hideProgressBar();
-                } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
-                    Toast.makeText(mContext, getString(R.string.session_error), Toast.LENGTH_LONG).show();
-                } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
-                    Toast.makeText(mContext, getString(R.string.network_error), Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+//    private void setupUserInfo() {
+//        mUser = ParseUser.getCurrentUser();
+//
+//        Object username = mUser.get("original_username"); //check if exists first
+//        if(username != null){
+//            tvName.setText((String)username);
+//        } else{
+//            tvName.setText(mUser.getUsername());
+//        }
+//
+//        tvScore.setText(mUser.getInt("points") + "");
+//        tvPin.setText(mUser.getInt("pincount") + "");
+//
+//        ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
+//        if (smallerPhoto != null) {
+//            String url = smallerPhoto.getUrl();
+//            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+//        } else {
+//            ParseFile photo = mUser.getParseFile("photo");
+//            if (photo != null) {
+//                String url = photo.getUrl();
+//                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+//            } else {
+//                GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+//            }
+//        }
+//
+//        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
+//        userQuery.include("goals");
+//        userQuery.whereEqualTo("objectId", mUser.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
+//
+//            @Override
+//            public void done(List<ParseUser> objects, com.parse.ParseException e) {
+//                if (e == null) {
+//                    if (objects.size() < 1) {
+//                        Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
+//                        return;
+//                    }
+//
+//                    mUser = objects.get(0);
+//                    Object username = mUser.get("original_username"); //check if exists first
+//                    if(username != null){
+//                        tvName.setText((String)username);
+//                    } else{
+//                        tvName.setText(mUser.getUsername());
+//                    }
+//                    tvScore.setText(mUser.getInt("points") + "");
+//                    tvPin.setText(mUser.getInt("pincount") + "");
+//
+//                    mGoals = (ArrayList<Goal>) mUser.get("goals");
+//                    if (mGoals == null) {
+//                        mGoals = new ArrayList<>();
+//                    }
+//                    mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
+//                    listView.setAdapter(mAdapter);
+//                    mListener.hideProgressBar();
+//                } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
+//                    Toast.makeText(mContext, getString(R.string.session_error), Toast.LENGTH_LONG).show();
+//                } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
+//                    Toast.makeText(mContext, getString(R.string.network_error), Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//    }
 
     @OnClick(R.id.btn_goals)
     public void goToGoals() {
@@ -254,6 +252,11 @@ public class UserInfoFragment extends Fragment {
             return;
         }
         mListener.goToGoals(mGoals);
+    }
+
+    @OnClick(R.id.btnLogout)
+    public void logout() {
+        mListener.logout();
     }
 
 }

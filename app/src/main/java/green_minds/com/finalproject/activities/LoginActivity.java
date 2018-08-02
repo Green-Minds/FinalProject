@@ -37,7 +37,6 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -86,13 +85,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
-        if (ParseUser.getCurrentUser() != null) {
-            userPersistenceDisplayer("Successful Login ","Welcome back " + ParseUser.getCurrentUser().getString("original_username") + "!");
-        } else if (AccessToken.getCurrentAccessToken() != null) {
-            LoginManager.getInstance().logInWithReadPermissions(this, mPermissions);
-            userPersistenceDisplayer("Successful Login","Welcome back " + ParseUser.getCurrentUser().getString("original_username") + "!");
-        }
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -154,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
         NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
 
         if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
-            Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
@@ -210,35 +202,35 @@ public class LoginActivity extends AppCompatActivity {
         ok.show();
     }
 
-    private void userPersistenceDisplayer(String title, String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this).setCancelable(false)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    }
-                })
-                .setNegativeButton("Not you?", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (AccessToken.getCurrentAccessToken() != null) {
-                            LoginManager.getInstance().logOut();
-                            ParseUser.logOut();
-                        } else {
-                            ParseUser.logOut();
-                        }
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog ok = builder.create();
-        ok.show();
-    }
+//    private void userPersistenceDisplayer(String title, String message) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this).setCancelable(false)
+//                .setTitle(title)
+//                .setMessage(message)
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//                })
+//                .setNegativeButton("Not you?", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        if (AccessToken.getCurrentAccessToken() != null) {
+//                            LoginManager.getInstance().logOut();
+//                            ParseUser.logOut();
+//                        } else {
+//                            ParseUser.logOut();
+//                        }
+//                        dialog.cancel();
+//                    }
+//                });
+//        AlertDialog ok = builder.create();
+//        ok.show();
+//    }
 
     private void facebookSignupDisplayer() {
         LayoutInflater layoutInflater = LayoutInflater.from(LoginActivity.this);

@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -49,24 +51,27 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadUsers();
         setContentView(R.layout.activity_main);
+        loadUsers();
         ButterKnife.bind(this);
         context = this;
 
+        bottomNavigationView.setSelectedItemId(R.id.navigation_board);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_map:
-                        startActivity(new Intent(MainActivity.this, MapActivity.class));
-                        finish();
+                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_map).isChecked()) {
+                            startActivity(new Intent(MainActivity.this, MapActivity.class));
+                            finish();
+                        }
                         return true;
                     case R.id.navigation_user:
-                        getUserInfo();
+                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_user).isChecked()) getUserInfo();
                         return true;
                     case R.id.navigation_board:
-                        loadUsers();
+                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_board).isChecked()) loadUsers();
                         return true;
                 }
                 return false;
@@ -90,6 +95,16 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     @Override
     public void hideProgressBar() {
         if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
+    }
+
+    @Override
+    public void logout() {
+        if (AccessToken.getCurrentAccessToken() != null) {
+            LoginManager.getInstance().logOut();
+        }
+        ParseUser.logOut();
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        finish();
     }
 
     public void loadUsers() {
@@ -125,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
 
         if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
-            Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
