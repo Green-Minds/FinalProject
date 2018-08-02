@@ -57,7 +57,7 @@ public class UserInfoFragment extends Fragment {
     @BindView(R.id.iv_prof_pic)
     ImageView ivProfPic;
 
-    @BindView(R.id.listView)
+    @BindView(R.id.goal_list)
     ListView listView;
 
     private ParseUser mUser;

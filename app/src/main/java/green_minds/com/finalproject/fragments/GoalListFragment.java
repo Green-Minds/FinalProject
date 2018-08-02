@@ -56,8 +56,8 @@ public class GoalListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListener.showProgressBar();
-        mGoals = getArguments().getParcelableArrayList(ARG_PARAM0);
-        mAdapter = new GoalAdapter(mGoals, mListener);
+//        mGoals = getArguments().getParcelableArrayList(ARG_PARAM0);
+//        mAdapter = new GoalAdapter(mGoals, mListener);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class GoalListFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         rvGoals.setLayoutManager(new LinearLayoutManager(mContext));
-        rvGoals.setAdapter(mAdapter);
+//        rvGoals.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
         mListener.hideProgressBar();
     }
