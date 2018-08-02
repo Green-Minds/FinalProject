@@ -70,7 +70,6 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
 
         rvUsers.setLayoutManager(new LinearLayoutManager(mContext));
         rvUsers.setAdapter(leaderboardAdapter);
-        leaderboardAdapter.notifyDataSetChanged();
         swipeContainer.setOnRefreshListener(this);
         swipeContainer.setColorSchemeColors(getResources().getColor(R.color.colorPrimary), getResources().getColor(R.color.colorAccent),
                 getResources().getColor(R.color.colorPrimaryDark));
@@ -93,6 +92,7 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        leaderboardAdapter.clear();
     }
 
     @Override

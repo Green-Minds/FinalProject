@@ -1,18 +1,14 @@
 package green_minds.com.finalproject.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.parse.ParseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,7 +62,7 @@ public class PinDetailActivity extends AppCompatActivity {
         });
     }
     private void gotoLeaderboard() {
-        startActivity(new Intent(this, LeaderboardActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     private void gotoProfile() {

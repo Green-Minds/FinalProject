@@ -4,7 +4,6 @@ package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,7 +22,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -225,7 +223,7 @@ public class MapActivity extends AppCompatActivity implements
     }
 
     private void gotoLeaderboard() {
-        startActivity(new Intent(this, LeaderboardActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     private void gotoProfile() {

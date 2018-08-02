@@ -31,13 +31,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.LoginActivity"
-            android:screenOrientation="portrait"></activity>
+            android:name=".activities.SplashActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.CheckInActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.Main2Activity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".activities.MapActivity"
@@ -49,17 +55,11 @@
             android:name=".activities.NewPinActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.LeaderboardActivity"
-            android:theme="@style/LeaderboardTheme" />
+            android:name=".activities.MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.UserInfoActivity"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CameraActivity"
             android:screenOrientation="portrait" />
@@ -114,7 +114,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.PinDetailActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".activities.LoginActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

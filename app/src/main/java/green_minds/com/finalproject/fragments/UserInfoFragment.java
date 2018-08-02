@@ -4,10 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -38,7 +36,11 @@ public class UserInfoFragment extends Fragment {
     public interface OnUserInfoListener {
         void goToGoals(ArrayList<Goal> g);
         void goToEdit(ArrayList<Goal> g);
+        void showProgressBar();
+        void hideProgressBar();
     }
+
+    private static final String ARG_PARAM1 = "user";
 
     @BindView(R.id.tv_name)
     TextView tvName;
@@ -58,13 +60,9 @@ public class UserInfoFragment extends Fragment {
     @BindView(R.id.listView)
     ListView listView;
 
-    @BindView(R.id.navigationView)
-    BottomNavigationView bottomNavigationView;
-
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
     private Context mContext;
-    private MenuItem miActionProgressItem;
     private ScoreAdapter mAdapter;
 
     private OnUserInfoListener mListener;
@@ -72,15 +70,22 @@ public class UserInfoFragment extends Fragment {
     public UserInfoFragment() {
     }
 
-    public static UserInfoFragment newInstance() {
+    public static UserInfoFragment newInstance(ParseUser user) {
         UserInfoFragment fragment = new UserInfoFragment();
         Bundle args = new Bundle();
+        args.putParcelable(ARG_PARAM1, user);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mUser = getArguments().getParcelable("user");
+        mGoals = (ArrayList<Goal>) mUser.get("goals");
+        if (mGoals == null) {
+            mGoals = new ArrayList<>();
+        }
+        mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
         super.onCreate(savedInstanceState);
     }
 
@@ -113,7 +118,10 @@ public class UserInfoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
         super.onViewCreated(view, savedInstanceState);
-        setupUserInfo();
+
+        setUp();
+        listView.setAdapter(mAdapter);
+        //setupUserInfo();
     }
 
     @OnClick(R.id.btn_edit)
@@ -130,6 +138,32 @@ public class UserInfoFragment extends Fragment {
     public void refreshUserData(){
         mUser = ParseUser.getCurrentUser();
         tvName.setText(mUser.getUsername());
+        ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
+        if (smallerPhoto != null) {
+            String url = smallerPhoto.getUrl();
+            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+        } else {
+            ParseFile photo = mUser.getParseFile("photo");
+            if (photo != null) {
+                String url = photo.getUrl();
+                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+            } else {
+                GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+            }
+        }
+    }
+
+    private void setUp() {
+        Object username = mUser.get("original_username"); //check if exists first
+        if(username != null){
+            tvName.setText((String)username);
+        } else{
+            tvName.setText(mUser.getUsername());
+        }
+
+        tvScore.setText(mUser.getInt("points") + "");
+        tvPin.setText(mUser.getInt("pincount") + "");
+
         ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
         if (smallerPhoto != null) {
             String url = smallerPhoto.getUrl();
@@ -200,6 +234,7 @@ public class UserInfoFragment extends Fragment {
                     }
                     mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
                     listView.setAdapter(mAdapter);
+                    mListener.hideProgressBar();
                 } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
                     Toast.makeText(mContext, getString(R.string.session_error), Toast.LENGTH_LONG).show();
                 } else if (e.getCode() == ParseException.CONNECTION_FAILED) {

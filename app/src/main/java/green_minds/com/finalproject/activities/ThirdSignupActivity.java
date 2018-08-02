@@ -192,7 +192,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
-                        Intent intent = new Intent(ThirdSignupActivity.this, LeaderboardActivity.class);
+                        Intent intent = new Intent(ThirdSignupActivity.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
