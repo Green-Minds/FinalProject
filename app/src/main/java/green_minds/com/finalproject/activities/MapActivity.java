@@ -96,8 +96,8 @@ public class MapActivity extends AppCompatActivity implements
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraMoveCanceledListener,
         GoogleMap.OnCameraIdleListener {
-    @BindView(R.id.newPinBtn) public Button newPinBtn;
-    @BindView(R.id.checkinBtn) public Button checkinBtn;
+    @BindView(R.id.newPinBtn) public FloatingActionButton newPinBtn;
+    @BindView(R.id.checkinBtn) public FloatingActionButton checkinBtn;
     @BindView(R.id.fab) public FloatingActionButton fab;
     @BindView(R.id.fab0) public FloatingActionButton fab0;
     @BindView(R.id.fab1) public FloatingActionButton fab1;
@@ -347,11 +347,11 @@ public class MapActivity extends AppCompatActivity implements
                 }
                 private void showFABMenu() {
                     isFABOpen=true;
-                    fab0.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-                    fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
-                    fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
-                    fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_205));
-                    fab4.animate().translationY(-getResources().getDimension(R.dimen.standard_255));
+                    fab0.animate().translationY(-getResources().getDimension(R.dimen.standard_65));
+                    fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_115));
+                    fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_165));
+                    fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_215));
+                    fab4.animate().translationY(-getResources().getDimension(R.dimen.standard_265));
                 }
             });
 
