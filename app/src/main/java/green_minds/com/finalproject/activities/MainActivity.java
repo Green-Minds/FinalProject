@@ -2,6 +2,7 @@ package green_minds.com.finalproject.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -31,15 +31,18 @@ import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.ScoreAdapter;
 import green_minds.com.finalproject.fragments.LeaderboardFragment;
+import green_minds.com.finalproject.fragments.MapFragment;
 import green_minds.com.finalproject.fragments.UserInfoFragment;
 import green_minds.com.finalproject.model.Goal;
+import green_minds.com.finalproject.model.MyItem;
 
 public class MainActivity extends AppCompatActivity implements LeaderboardFragment.OnFragmentInteractionListener,
-        UserInfoFragment.OnUserInfoListener {
+        UserInfoFragment.OnUserInfoListener, MapFragment.OnFragmentInteractionListener {
 
     private LeaderboardFragment leaderboardFragment;
     private FragmentTransaction ft;
     private UserInfoFragment userInfoFragment;
+    private MapFragment mapFragment;
     private ArrayList<ParseUser> users = new ArrayList<>();
     private MenuItem miActionProgressItem;
     private ParseUser parseUser;
@@ -52,26 +55,29 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadUsers();
+        showMap();
         ButterKnife.bind(this);
         context = this;
 
-        bottomNavigationView.setSelectedItemId(R.id.navigation_board);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_map);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_map:
                         if(!bottomNavigationView.getMenu().findItem(R.id.navigation_map).isChecked()) {
-                            startActivity(new Intent(MainActivity.this, MapActivity.class));
-                            finish();
+                            showMap();
                         }
                         return true;
                     case R.id.navigation_user:
-                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_user).isChecked()) getUserInfo();
+                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_user).isChecked()) {
+                            getUserInfo();
+                        }
                         return true;
                     case R.id.navigation_board:
-                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_board).isChecked()) loadUsers();
+                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_board).isChecked()) {
+                            loadUsers();
+                        }
                         return true;
                 }
                 return false;
@@ -98,6 +104,44 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     }
 
     @Override
+    public void goToCheckin(Location currentLocation) {
+        parseUser = ParseUser.getCurrentUser();
+        if (parseUser == null) {
+            Intent log = new Intent(MainActivity.this, LoginActivity.class);
+        }
+        Intent intent = new Intent(MainActivity.this, CheckInActivity.class);
+        intent.putExtra("latitude", currentLocation.getLatitude());
+        intent.putExtra("longitude", currentLocation.getLongitude());
+        startActivity(intent);
+
+    }
+
+    @Override
+    public void goToNewPin(Location currentLocation) {
+        parseUser = ParseUser.getCurrentUser();
+        if (parseUser == null) {
+            Intent log = new Intent(MainActivity.this, LoginActivity.class);
+        }
+        Intent intent = new Intent(MainActivity.this, NewPinActivity.class);
+        intent.putExtra("latitude", currentLocation.getLatitude());
+        intent.putExtra("longitude", currentLocation.getLongitude());
+        startActivityForResult(intent, 20);
+
+    }
+
+    @Override
+    public void goToPinDetails(MyItem myItem) {
+        Intent intent = new Intent(MainActivity.this, PinDetailActivity.class);
+        intent.putExtra("checkins", myItem.getTitle());
+        intent.putExtra("comment", myItem.getSnippet());
+        intent.putExtra("distance", myItem.getDistance());
+        intent.putExtra("image", myItem.getImageUrl());
+        intent.putExtra("type", myItem.getTypeIcon());
+        startActivity(intent);
+
+    }
+
+    @Override
     public void logout() {
         if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logOut();
@@ -105,6 +149,19 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         ParseUser.logOut();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
         finish();
+    }
+
+    private void reloadMap() {
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.show(mapFragment);
+        ft.commit();
+    }
+
+    private void showMap() {
+        mapFragment = mapFragment.newInstance();
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container, mapFragment);
+        ft.commit();
     }
 
     public void loadUsers() {
@@ -124,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
 
                         leaderboardFragment = leaderboardFragment.newInstance(users);
                         ft = getSupportFragmentManager().beginTransaction();
-                        ft.replace(R.id.fragment_container, leaderboardFragment);
+                        ft.replace(R.id.fragment_container, leaderboardFragment.newInstance(users));
                         ft.commit();
                     } else {
                         e.printStackTrace();
@@ -169,25 +226,15 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         if (resultCode != RESULT_OK) return;
         if (requestCode == 31 && data != null) {
             List<Goal> g = data.getParcelableArrayListExtra("GOALS");
-            goals.clear();
-            goals.addAll(g);
+            userInfoFragment.setGoals(g);
             scoreAdapter.notifyDataSetChanged();
         } else if (requestCode == 30) {
-            parseUser = ParseUser.getCurrentUser();
-            //tvName.setText(parseUser.getUsername());
-            ParseFile smallerPhoto = parseUser.getParseFile("smaller_photo");
-            if (smallerPhoto != null) {
-                String url = smallerPhoto.getUrl();
-                //GlideApp.with(context).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-            } else {
-                ParseFile photo = parseUser.getParseFile("photo");
-                if (photo != null) {
-                    String url = photo.getUrl();
-                    //GlideApp.with(context).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-                } else {
-                    //GlideApp.with(context).load(R.drawable.anon).circleCrop().into(ivProfPic);
-                }
-            }
+            userInfoFragment.refreshUserData();
+        } else if (requestCode == 20) {
+            // set the screen for adjusting pins
+            data.getExtras();
+            String id = data.getStringExtra("id");
+            mapFragment.adjustScreen(id);
         }
     }
 

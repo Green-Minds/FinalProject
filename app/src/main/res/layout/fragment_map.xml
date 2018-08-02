@@ -121,7 +121,7 @@
                         android:clickable="true"
                         android:paddingBottom="15dp"
                         android:paddingStart="10dp"
-                        app:backgroundTint="@color/colorPrimaryDark"
+                        app:backgroundTint="@color/colorPrimary"
                         app:rippleColor="@android:color/transparent"
                         app:srcCompat="@drawable/ic_menu" />
 
@@ -135,7 +135,7 @@
                         android:layout_marginTop="16dp"
                         android:clickable="true"
                         android:paddingLeft="10dp"
-                        app:backgroundTint="@color/colorPrimaryDark"
+                        app:backgroundTint="@color/colorPrimary"
                         app:srcCompat="@drawable/ic_addbutton" />
 
                     <android.support.design.widget.FloatingActionButton
@@ -149,7 +149,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="81dp"
                         android:clickable="true"
-                        app:backgroundTint="@color/colorPrimaryDark"
+                        app:backgroundTint="@color/colorPrimary"
                         app:srcCompat="@drawable/ic_checkin" />
 
 
