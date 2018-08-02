@@ -1,17 +1,17 @@
-package green_minds.com.finalproject.activities;
+package green_minds.com.finalproject.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +33,12 @@ import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.Goal;
 
-public class UserInfoActivity extends AppCompatActivity {
+public class UserInfoFragment extends Fragment {
+
+    public interface OnUserInfoListener {
+        void goToGoals(ArrayList<Goal> g);
+        void goToEdit(ArrayList<Goal> g);
+    }
 
     @BindView(R.id.tv_name)
     TextView tvName;
@@ -50,6 +55,9 @@ public class UserInfoActivity extends AppCompatActivity {
     @BindView(R.id.iv_prof_pic)
     ImageView ivProfPic;
 
+    @BindView(R.id.listView)
+    ListView listView;
+
     @BindView(R.id.navigationView)
     BottomNavigationView bottomNavigationView;
 
@@ -59,45 +67,86 @@ public class UserInfoActivity extends AppCompatActivity {
     private MenuItem miActionProgressItem;
     private ScoreAdapter mAdapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_info);
-        ButterKnife.bind(this);
-        mContext = this;
+    private OnUserInfoListener mListener;
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_map:
-                        Intent intent1 = new Intent(mContext, MapActivity.class);
-                        startActivity(intent1);
-                        return true;
-                    case R.id.navigation_user:
-                        //do nothing, already on page
-                        return true;
-                    case R.id.navigation_board:
-                        Intent intent2 = new Intent(mContext, LeaderboardActivity.class);
-                        startActivity(intent2);
-                        return true;
-                }
-                return false;
-            }
-        });
+    public UserInfoFragment() {
+    }
+
+    public static UserInfoFragment newInstance() {
+        UserInfoFragment fragment = new UserInfoFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_user_info, container, false);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        mContext = context;
+        super.onAttach(context);
+        if (context instanceof OnUserInfoListener) {
+            mListener = (OnUserInfoListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnUserInfoListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ButterKnife.bind(this, view);
+        super.onViewCreated(view, savedInstanceState);
         setupUserInfo();
     }
 
+    @OnClick(R.id.btn_edit)
+    public void goToEdit() {
+        mListener.goToEdit(mGoals);
+    }
 
+    public void setGoals(List<Goal> g){
+        mGoals.clear();
+        mGoals.addAll(g);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void refreshUserData(){
+        mUser = ParseUser.getCurrentUser();
+        tvName.setText(mUser.getUsername());
+        ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
+        if (smallerPhoto != null) {
+            String url = smallerPhoto.getUrl();
+            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+        } else {
+            ParseFile photo = mUser.getParseFile("photo");
+            if (photo != null) {
+                String url = photo.getUrl();
+                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+            } else {
+                GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+            }
+        }
+    }
 
     private void setupUserInfo() {
-        showProgressBar();
-        mContext = this;
         mUser = ParseUser.getCurrentUser();
-        if (mUser == null) {
-            redirectToLogin();
-            return;
-        }
 
         Object username = mUser.get("original_username"); //check if exists first
         if(username != null){
@@ -129,7 +178,6 @@ public class UserInfoActivity extends AppCompatActivity {
 
             @Override
             public void done(List<ParseUser> objects, com.parse.ParseException e) {
-                hideProgressBar();
                 if (e == null) {
                     if (objects.size() < 1) {
                         Toast.makeText(mContext, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
@@ -150,10 +198,8 @@ public class UserInfoActivity extends AppCompatActivity {
                     if (mGoals == null) {
                         mGoals = new ArrayList<>();
                     }
-
                     mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
-                    ListView listview = findViewById(R.id.listView);
-                    listview.setAdapter(mAdapter);
+                    listView.setAdapter(mAdapter);
                 } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
                     Toast.makeText(mContext, getString(R.string.session_error), Toast.LENGTH_LONG).show();
                 } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
@@ -166,76 +212,13 @@ public class UserInfoActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        ProgressBar v = (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
-        setupUserInfo();
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @OnClick(R.id.btn_edit)
-    public void goToEdit() {
-        Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
-        startActivityForResult(i, 30);
-    }
-
     @OnClick(R.id.btn_goals)
     public void goToGoals() {
-        Intent i = new Intent(UserInfoActivity.this, GoalActivity.class);
         if (mGoals == null) {
             Toast.makeText(mContext, getString(R.string.wait_content), Toast.LENGTH_SHORT).show();
             return;
         }
-        i.putExtra("GOALS", mGoals);
-        startActivityForResult(i, 31);
+        mListener.goToGoals(mGoals);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //update user info page with new info
-        if (resultCode != RESULT_OK) return;
-        if (requestCode == 31 && data != null) {
-            List<Goal> g = data.getParcelableArrayListExtra("GOALS");
-            mGoals.clear();
-            mGoals.addAll(g);
-            mAdapter.notifyDataSetChanged();
-        } else if (requestCode == 30) {
-            mUser = ParseUser.getCurrentUser();
-            tvName.setText(mUser.getUsername());
-            ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
-            if (smallerPhoto != null) {
-                String url = smallerPhoto.getUrl();
-                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-            } else {
-                ParseFile photo = mUser.getParseFile("photo");
-                if (photo != null) {
-                    String url = photo.getUrl();
-                    GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-                } else {
-                    GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
-                }
-            }
-        }
-    }
-
-    private void redirectToLogin() {
-        Intent i = new Intent(mContext, LoginActivity.class);
-        mContext.startActivity(i);
-        finish();
-    }
-
-    private void showProgressBar() {
-        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
-    }
-
-    private void hideProgressBar() {
-        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
-    }
 }
