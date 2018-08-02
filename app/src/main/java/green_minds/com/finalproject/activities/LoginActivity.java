@@ -368,12 +368,6 @@ public class LoginActivity extends AppCompatActivity {
         finishActivity(requestCode);
     }
 
-    public void gotoSignup(View v) {
-        v.setEnabled(false);
-        final Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-        startActivity(intent);
-    }
-
     private class ProfileAsync extends AsyncTask<String, String, String> {
         public Bitmap bitmap;
         String url, email, username;
