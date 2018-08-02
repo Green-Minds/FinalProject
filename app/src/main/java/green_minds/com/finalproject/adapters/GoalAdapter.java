@@ -1,126 +1,75 @@
 package green_minds.com.finalproject.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.parse.DeleteCallback;
-import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
-import green_minds.com.finalproject.fragments.GoalListFragment;
+import green_minds.com.finalproject.activities.GoalDetailActivity;
+import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.CustomProgressBar;
 import green_minds.com.finalproject.model.Goal;
-import green_minds.com.finalproject.model.CategoryHelper;
 
-public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.ViewHolder> {
-    private ArrayList<Goal> mGoals;
+public class GoalAdapter extends ArrayAdapter<Goal> {
+
     private Context mContext;
     private ParseUser mUser;
-    private GoalListFragment.OnGoalListListener mListener;
+    private ArrayList<Goal> mGoals;
 
-    public GoalAdapter(ArrayList<Goal> goals, GoalListFragment.OnGoalListListener listener) {
-        mGoals = goals;
-        mListener = listener;
+    public GoalAdapter(Context context, ArrayList<Goal> items) {
+        super(context, R.layout.item_goal, items);
+        this.mContext = context;
+        this.mUser = ParseUser.getCurrentUser();
+        this.mGoals = items;
     }
 
-    @Override
     @NonNull
-    public GoalAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        mContext = viewGroup.getContext();
-        mUser = ParseUser.getCurrentUser();
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        View goalView = inflater.inflate(R.layout.item_goal, viewGroup, false);
-        return new GoalAdapter.ViewHolder(goalView);
-    }
-
     @Override
-    public void onBindViewHolder(@NonNull GoalAdapter.ViewHolder holder, int i) {
-        final Goal goal = mGoals.get(i);
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        holder.tvName.setText(CategoryHelper.listOfCategories[goal.getType()]);
-        holder.progressBar.setGoal(goal, mUser);
-        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeGoal(goal);
-            }
-        });
-        holder.btnEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.openEditFragment(goal);
-            }
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return mGoals.size();
-    }
-
-    private void removeGoal(final Goal goal) {
-        mListener.setNetworkCallInProgress(true);
-        final ArrayList<Goal> tempGoalArray = mGoals; //keep copy to revert back to in case of error
-        mGoals.remove(goal);
-        mUser.put("goals", mGoals);
-        mUser.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                goal.deleteInBackground(new DeleteCallback() {
-                    @Override
-                    public void done(com.parse.ParseException e) {
-                        mListener.setNetworkCallInProgress(false);
-                        if (e != null) {
-                            mGoals = tempGoalArray;
-                            e.printStackTrace();
-                            if (e.getCode() == ParseException.CONNECTION_FAILED) {
-                                Toast.makeText(mContext, mContext.getString(R.string.network_error), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(mContext, mContext.getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(mContext, mContext.getString(R.string.removed), Toast.LENGTH_SHORT).show();
-                            notifyDataSetChanged();
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.tv_name)
-        TextView tvName;
-
-        @BindView(R.id.progress)
-        CustomProgressBar progressBar;
-
-        @BindView(R.id.btn_delete)
-        Button btnDelete;
-
-        @BindView(R.id.btn_edit)
-        Button btnEdit;
-
-        @BindView(R.id.btn_details)
-        Button btnDetails;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        if(convertView==null) {
+            LayoutInflater vi = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView=vi.inflate(R.layout.item_score, null);
         }
+
+        Goal goal = mGoals.get(position);
+
+        int type = goal.getType();
+        TextView tvIdentifier = convertView.findViewById(R.id.tv_description);
+        tvIdentifier.setText(CategoryHelper.getPinIdentifier(type));
+        final int checkins = mUser.getInt(CategoryHelper.getTypeKey(type));
+
+        CustomProgressBar progressBar = convertView.findViewById(R.id.progress);
+        if(goal == null){
+            progressBar.setVisibility(View.GONE);
+            convertView.findViewById(R.id.tv_details).setVisibility(View.GONE);
+        } else{
+            progressBar.setGoal(goal, mUser);
+            progressBar.setVisibility(View.VISIBLE);
+            convertView.findViewById(R.id.tv_details).setVisibility(View.VISIBLE);
+            final Goal finalGoal = goal;
+            convertView.findViewById(R.id.tv_details).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(mContext, GoalDetailActivity.class);
+                    i.putExtra("GOAL", finalGoal);
+                    i.putExtra("CHECKINS", checkins);
+                    mContext.startActivity(i);
+                }
+            });
+
+        }
+
+        return convertView;
     }
 }

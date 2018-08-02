@@ -13,7 +13,7 @@
                 <corners
                     android:radius="5dip" />
                 <gradient
-                    android:startColor="@color/colorLightGreyBlue"
+                    android:startColor="@color/colorTeal"
                     android:endColor="@color/colorPrimary"
                     android:angle="0" />
             </shape>

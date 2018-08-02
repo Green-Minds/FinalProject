@@ -27,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.adapters.GoalAdapter;
 import green_minds.com.finalproject.adapters.ScoreAdapter;
 import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.GlideApp;
@@ -53,7 +54,8 @@ public class UserInfoActivity extends AppCompatActivity {
     private ArrayList<Goal> mGoals;
     private Context mContext;
     private MenuItem miActionProgressItem;
-    private ScoreAdapter mAdapter;
+    private GoalAdapter mGoalAdapter;
+    private ScoreAdapter mScoreAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +126,10 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         }
 
+        mScoreAdapter = new ScoreAdapter(mContext, CategoryHelper.categories);
+        ListView scoreListView = findViewById(R.id.stat_list);
+        scoreListView.setAdapter(mScoreAdapter);
+
         ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
         userQuery.include("goals");
         userQuery.whereEqualTo("objectId", mUser.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
@@ -151,9 +157,9 @@ public class UserInfoActivity extends AppCompatActivity {
                         mGoals = new ArrayList<>();
                     }
 
-                    mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
-                    ListView listview = findViewById(R.id.listView);
-                    listview.setAdapter(mAdapter);
+                    mGoalAdapter = new GoalAdapter(mContext, mGoals);
+                    ListView listview = findViewById(R.id.goal_list);
+                    listview.setAdapter(mGoalAdapter);
                 } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
                     Toast.makeText(mContext, getString(R.string.session_error), Toast.LENGTH_LONG).show();
                 } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
@@ -189,7 +195,7 @@ public class UserInfoActivity extends AppCompatActivity {
             List<Goal> g = data.getParcelableArrayListExtra("GOALS");
             mGoals.clear();
             mGoals.addAll(g);
-            mAdapter.notifyDataSetChanged();
+            mGoalAdapter.notifyDataSetChanged();
         } else if (requestCode == 30) {
             mUser = ParseUser.getCurrentUser();
             tvName.setText(mUser.getUsername());
