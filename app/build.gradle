@@ -68,4 +68,5 @@ dependencies {
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.+'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.15'
     implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 }

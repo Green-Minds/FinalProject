@@ -6,13 +6,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -24,7 +29,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.ScoreAdapter;
-import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.Goal;
 
@@ -46,10 +50,7 @@ public class UserInfoFragment extends Fragment {
     @BindView(R.id.tv_score)
     TextView tvScore;
 
-    @BindView(R.id.btn_edit)
-    TextView btnEdit;
-
-    @BindView(R.id.tv_pin)
+//    @BindView(R.id.tv_pin)
     TextView tvPin;
 
     @BindView(R.id.iv_prof_pic)
@@ -57,6 +58,9 @@ public class UserInfoFragment extends Fragment {
 
     @BindView(R.id.goal_list)
     ListView listView;
+
+    @BindView(R.id.btn_popup)
+    ImageButton btnPopup;
 
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
@@ -76,6 +80,34 @@ public class UserInfoFragment extends Fragment {
         return fragment;
     }
 
+    @OnClick(R.id.btn_popup)
+    public void showPopUp() {
+        //Creating the instance of PopupMenu
+        PopupMenu popup = new PopupMenu(getContext(), btnPopup);
+        //Inflating the Popup using xml file
+        popup.getMenuInflater()
+                .inflate(R.menu.popup_user, popup.getMenu());
+
+        //registering popup with OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                //TODO - add to strings.xml
+                String[] ids = getResources().getResourceName(item.getItemId()).split("\\/");
+                String id = ids[1];
+                if (id.equals("mi_logout")) {
+                    logOut();
+                } else if (id.equals("mi_edit_prof")) {
+                    goToEdit();
+                } else {
+                    goToGoals();
+                }
+                return true;
+            }
+        });
+
+        popup.show(); //showing popup menu
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         mUser = getArguments().getParcelable("user");
@@ -83,7 +115,8 @@ public class UserInfoFragment extends Fragment {
         if (mGoals == null) {
             mGoals = new ArrayList<>();
         }
-        mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
+        //mAdapter = new ScoreAdapter(mContext, CategoryHelper.categories, mGoals);
+
         super.onCreate(savedInstanceState);
     }
 
@@ -245,7 +278,7 @@ public class UserInfoFragment extends Fragment {
 //        });
 //    }
 
-    @OnClick(R.id.btn_goals)
+//    @OnClick(R.id.btn_goals)
     public void goToGoals() {
         if (mGoals == null) {
             Toast.makeText(mContext, getString(R.string.wait_content), Toast.LENGTH_SHORT).show();
@@ -254,9 +287,23 @@ public class UserInfoFragment extends Fragment {
         mListener.goToGoals(mGoals);
     }
 
-    @OnClick(R.id.btnLogout)
-    public void logout() {
-        mListener.logout();
+//    @OnClick(R.id.btnLogout)
+//    public void logout() {
+//        mListener.logout();
+//    }
+
+    public void logOut() {
+        if (AccessToken.getCurrentAccessToken() != null) {
+            LoginManager.getInstance().logOut();
+            ParseUser.logOut();
+        } else {
+            ParseUser.logOut();
+        }
+        redirectToLogin();
+    }
+
+    private void redirectToLogin() {
+        //do something
     }
 
 }
