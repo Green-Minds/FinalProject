@@ -1,5 +1,6 @@
 package green_minds.com.finalproject.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -21,11 +22,11 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.Pin;
-import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.RelativePositionPin;
-import green_minds.com.finalproject.R;
 
 public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
     ArrayList<RelativePositionPin> mPins;
@@ -76,16 +77,20 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
                 pin.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
-                        Toast.makeText(context, "Checked in!", Toast.LENGTH_LONG).show();
                         int numtimes  = pin.getCheckincount();
                         checkin.setText("Visited " + numtimes + " times.");
 
-                        user.put("points", user.getInt("points") + 1);
-
+                        user.increment("points");
                         String cat_key = CategoryHelper.getTypeKey(pin.getCategory());
-                        user.put(cat_key, user.getInt(cat_key) + 1);
+                        user.increment(cat_key);
 
-                        user.saveInBackground();
+                        user.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                Toast.makeText(context, "Checked in!", Toast.LENGTH_LONG).show();
+                                ((Activity)context).finish();
+                            }
+                        });
                     }
                 });
             }
