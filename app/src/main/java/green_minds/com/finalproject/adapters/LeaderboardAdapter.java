@@ -1,7 +1,6 @@
 package green_minds.com.finalproject.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -59,14 +58,14 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         ParseUser user = mUsers.get(position);
+
         holder.tvPosition.setText(String.valueOf(position + 1));
         holder.tvUserLeaderbaord.setText(user.getString("original_username"));
         holder.tvPts.setText(String.valueOf(user.getInt("points")) + " points");
         if (user.getInt("points") == 1) holder.tvPts.setText(String.valueOf(user.getInt("points")) + " point");
         if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername()))
-            holder.itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.colorLightPurpleTransparent));
 
         GlideApp.with(context)
                 .load(user.getParseFile("smaller_photo").getUrl())
