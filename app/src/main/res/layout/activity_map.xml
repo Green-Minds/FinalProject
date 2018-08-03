@@ -42,17 +42,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
                 >
-                    <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/fab4"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_alignTop="@+id/fab"
-                        android:layout_gravity="bottom|end"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignParentBottom="true"
-                        app:backgroundTint="@android:color/background_light"
-                        app:rippleColor="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_battery" />
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab4"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_alignTop="@+id/fab"
+                    android:layout_gravity="bottom|end"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    app:backgroundTint="@android:color/background_light"
+                    app:rippleColor="@android:color/transparent"
+                    app:srcCompat="@drawable/ic_battery" />
 
 
                 <android.support.design.widget.FloatingActionButton
@@ -67,42 +67,42 @@
                     app:rippleColor="@android:color/transparent"
                     app:srcCompat="@drawable/ic_money" />
 
-                    <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/fab2"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_alignTop="@+id/fab"
-                        android:layout_gravity="bottom|end"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignParentBottom="true"
-                        app:backgroundTint="@android:color/background_light"
-                        app:rippleColor="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_cycling" />
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab2"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_alignTop="@+id/fab"
+                    android:layout_gravity="bottom|end"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    app:backgroundTint="@android:color/background_light"
+                    app:rippleColor="@android:color/transparent"
+                    app:srcCompat="@drawable/ic_cycling" />
 
-                    <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/fab1"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_alignTop="@+id/fab"
-                        android:layout_gravity="bottom|end"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignParentBottom="true"
-                        app:backgroundTint="@android:color/background_light"
-                        app:rippleColor="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_drop" />
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab1"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_alignTop="@+id/fab"
+                    android:layout_gravity="bottom|end"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    app:backgroundTint="@android:color/background_light"
+                    app:rippleColor="@android:color/transparent"
+                    app:srcCompat="@drawable/ic_drop" />
 
 
-                    <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/fab0"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_alignTop="@+id/fab"
-                        android:layout_alignParentBottom="true"
-                        android:layout_gravity="bottom"
-                        android:layout_centerHorizontal="true"
-                        app:backgroundTint="@android:color/background_light"
-                        app:rippleColor="@android:color/background_light"
-                        app:srcCompat="@drawable/ic_recycling_bin" />
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab0"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_alignTop="@+id/fab"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="bottom"
+                    android:layout_centerHorizontal="true"
+                    app:backgroundTint="@android:color/background_light"
+                    app:rippleColor="@android:color/background_light"
+                    app:srcCompat="@drawable/ic_recycling_bin" />
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/fab"

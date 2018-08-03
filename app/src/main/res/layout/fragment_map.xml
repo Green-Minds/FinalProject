@@ -54,7 +54,7 @@
                         android:layout_gravity="bottom|end"
                         android:layout_centerHorizontal="true"
                         android:layout_alignParentBottom="true"
-                        app:backgroundTint="@android:color/background_light"
+                        app:backgroundTint="@color/colorPrimaryDark"
                         app:rippleColor="@android:color/transparent"
                         app:srcCompat="@drawable/ic_battery" />
 
@@ -67,7 +67,7 @@
                         android:layout_alignTop="@+id/fab"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="bottom|end"
-                        app:backgroundTint="@android:color/background_light"
+                        app:backgroundTint="@color/colorPrimaryDark"
                         app:rippleColor="@android:color/transparent"
                         app:srcCompat="@drawable/ic_money" />
 
@@ -79,7 +79,7 @@
                         android:layout_gravity="bottom|end"
                         android:layout_centerHorizontal="true"
                         android:layout_alignParentBottom="true"
-                        app:backgroundTint="@android:color/background_light"
+                        app:backgroundTint="@color/colorPrimaryDark"
                         app:rippleColor="@android:color/transparent"
                         app:srcCompat="@drawable/ic_cycling" />
 
@@ -91,7 +91,7 @@
                         android:layout_gravity="bottom|end"
                         android:layout_centerHorizontal="true"
                         android:layout_alignParentBottom="true"
-                        app:backgroundTint="@android:color/background_light"
+                        app:backgroundTint="@color/colorPrimaryDark"
                         app:rippleColor="@android:color/transparent"
                         app:srcCompat="@drawable/ic_drop" />
 
@@ -104,8 +104,8 @@
                         android:layout_alignParentBottom="true"
                         android:layout_gravity="bottom"
                         android:layout_centerHorizontal="true"
-                        app:backgroundTint="@android:color/background_light"
-                        app:rippleColor="@android:color/background_light"
+                        app:backgroundTint="@color/colorPrimaryDark"
+                        app:rippleColor="@android:color/transparent"
                         app:srcCompat="@drawable/ic_recycling_bin" />
 
                     <android.support.design.widget.FloatingActionButton
