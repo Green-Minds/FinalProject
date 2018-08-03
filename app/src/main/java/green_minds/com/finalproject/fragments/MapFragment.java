@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
@@ -224,6 +225,12 @@ public class MapFragment extends Fragment implements
         }
 
         @Override
+        protected int getColor(int clusterSize) {
+            return getResources().getColor(R.color.colorPrimary);
+        }
+
+
+        @Override
         protected void onBeforeClusterItemRendered(MyItem item, MarkerOptions markerOptions) {
             markerOptions.icon(bitmapDescriptorFromVector(mContext, item.getTypeIcon()));
         }
@@ -282,8 +289,6 @@ public class MapFragment extends Fragment implements
             mapUiSettings.setZoomControlsEnabled(true);
             map.setMinZoomPreference(6.0f);
 
-            // Toast.makeText(this, "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
-
             getMyLocationWithPermissionCheck(this);
             startLocationUpdatesWithPermissionCheck(this);
 
@@ -317,12 +322,6 @@ public class MapFragment extends Fragment implements
         }
 
     }
-
-    // @Override
-    // public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    //     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-     //    onRequestPermissionsResult(this, requestCode, grantResults);
-    // }
 
     @OnClick(R.id.fab)
     protected void onFab() {
@@ -358,13 +357,6 @@ public class MapFragment extends Fragment implements
     @OnClick(R.id.newPinBtn)
     protected void goToNewPin() {
         mListener.goToNewPin(mCurrentLocation);
-                // Intent log = new Intent(mContext, LoginActivity.class);
-
-            //  Intent intent = new Intent(mContext, NewPinActivity.class);
-            // Log.d("MapActivity", "Pin at " + mCurrentLocation.getLatitude());
-            // intent.putExtra("latitude", mCurrentLocation.getLatitude());
-            // intent.putExtra("longitude", mCurrentLocation.getLongitude());
-            //  startActivityForResult(intent, REQUEST_CODE);
     }
 
 
@@ -392,61 +384,6 @@ public class MapFragment extends Fragment implements
                     }
                 });
     }
-
-    /* @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-    */
-
-    /* private boolean isGooglePlayServicesAvailable() {
-        // Check that Google Play services is available
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        // If Google Play services is available
-        if (ConnectionResult.SUCCESS == resultCode) {
-            // In debug mode, log the status
-            Log.d("Location Updates", "Google Play services is available.");
-            return true;
-        } else {
-            // Get the error dialog from Google Play services
-            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
-                    CONNECTION_FAILURE_RESOLUTION_REQUEST);
-
-            // If Google Play services can provide an error dialog
-            if (errorDialog != null) {
-                // Create a new DialogFragment for the error dialog
-                MapActivity.ErrorDialogFragment errorFragment = new MapActivity.ErrorDialogFragment();
-                errorFragment.setDialog(errorDialog);
-                // errorFragment.show(getSupportFragmentManager(), "Location Updates");
-            }
-
-            return false;
-        }
-    }
-    */
-
-    /* @Override
-    public void onResume() {
-        super.onResume();
-
-        // Display the connection status
-
-        if (mCurrentLocation != null) {
-            Toast.makeText(mContext, "GPS location was found!", Toast.LENGTH_SHORT).show();
-            LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-            map.animateCamera(cameraUpdate);
-        } else {
-            Toast.makeText(mContext, "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
-        }
-        startLocationUpdatesWithPermissionCheck(this);
-    }
-    */
 
     @SuppressLint("MissingPermission")
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
@@ -521,9 +458,6 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onCameraIdle() {
-        Toast.makeText(mContext, "The camera has stopped moving.",
-                Toast.LENGTH_SHORT).show();
-
         // this piece is here because otherwise infowindows instantly dissappear
         if (tapEvent) {
             tapEvent = false; }
@@ -547,7 +481,20 @@ public class MapFragment extends Fragment implements
                 showAll();
             }
         }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Display the connection status
+
+        if (mCurrentLocation != null) {
+            LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+            map.animateCamera(cameraUpdate);
+        } else {
+        }
+        startLocationUpdatesWithPermissionCheck(this);
     }
 
     @Override
@@ -777,13 +724,13 @@ public class MapFragment extends Fragment implements
         Log.d("MapAcgtivity", "after click fab0 selected " + fab0.isSelected());
         if (!fab0.isSelected()) {
             fab0.setSelected(true);
-            fab0.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            fab0.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(0);
             unselectOthers(0);
         }
         else if (fab0.isSelected()) {
             fab0.setSelected(false);
-            fab0.setBackgroundTintList(ColorStateList.valueOf(-1));
+            fab0.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
             showAll();
         }
     }
@@ -792,12 +739,12 @@ public class MapFragment extends Fragment implements
     protected void onFab1() {
         if (!fab1.isSelected()) {
             fab1.setSelected(true);
-            fab1.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            fab1.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(1);
             unselectOthers(1);
         } else if (fab1.isSelected()) {
             fab1.setSelected(false);
-            fab1.setBackgroundTintList(ColorStateList.valueOf(-1));
+            fab1.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
             showAll();
         }
     }
@@ -806,13 +753,13 @@ public class MapFragment extends Fragment implements
     protected void onFab2() {
         if (!fab2.isSelected()) {
             fab2.setSelected(true);
-            fab2.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            fab2.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(2);
             unselectOthers(2);
         }
         else if (fab2.isSelected()) {
             fab2.setSelected(false);
-            fab2.setBackgroundTintList(ColorStateList.valueOf(-1));
+            fab2.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
             showAll();
         }
     }
@@ -821,13 +768,13 @@ public class MapFragment extends Fragment implements
     protected void onFab3() {
         if (!fab3.isSelected()) {
             fab3.setSelected(true);
-            fab3.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            fab3.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(3);
             unselectOthers(3);
         }
         else if (fab3.isSelected()) {
             fab3.setSelected(false);
-            fab3.setBackgroundTintList(ColorStateList.valueOf(-1));
+            fab3.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
             showAll();
         }
     }
@@ -836,13 +783,13 @@ public class MapFragment extends Fragment implements
     protected void onFab4() {
         if (!fab4.isSelected()) {
             fab4.setSelected(true);
-            fab4.setBackgroundTintList(ColorStateList.valueOf(-16777216));
+            fab4.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(4);
             unselectOthers(4);
         }
         else if (fab4.isSelected()) {
             fab4.setSelected(false);
-            fab4.setBackgroundTintList(ColorStateList.valueOf(-1));
+            fab4.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
             showAll();
         }
     }
