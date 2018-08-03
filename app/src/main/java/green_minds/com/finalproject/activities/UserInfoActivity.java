@@ -225,7 +225,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         mGoals = new ArrayList<>();
                     }
 
-                    mGoalAdapter = new GoalAdapter(mContext, mGoals);
+                    mGoalAdapter = new GoalAdapter(mContext, mGoals, null);
                     ListView listview = findViewById(R.id.goal_list);
                     listview.setAdapter(mGoalAdapter);
                 } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {

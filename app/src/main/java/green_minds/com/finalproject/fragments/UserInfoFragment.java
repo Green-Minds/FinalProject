@@ -53,6 +53,10 @@ public class UserInfoFragment extends Fragment {
 
         void goToEdit();
 
+        void openGoalEditPage(Goal g, ArrayList<Goal> goals);
+
+        void goToDetail(Goal g);
+
         void showProgressBar();
 
         void hideProgressBar();
@@ -275,7 +279,7 @@ public class UserInfoFragment extends Fragment {
     }
 
     private void setUpGoals() {
-        mGoalAdapter = new GoalAdapter(mContext, mGoals);
+        mGoalAdapter = new GoalAdapter(mContext, mGoals, mListener);
         goalList.setAdapter(mGoalAdapter);
     }
 

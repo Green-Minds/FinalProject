@@ -223,6 +223,24 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         startActivityForResult(i, 30);
     }
 
+    public void goToDetail(Goal g){
+        Intent i = new Intent(this, GoalDetailActivity.class);
+        i.putExtra("GOAL", g);
+        startActivity(i);
+    }
+
+    public void openGoalEditPage(Goal g, ArrayList<Goal> goals){
+        Intent i = new Intent(this, EditGoalActivity.class);
+        boolean beingEdited = false;
+        i.putExtra("GOALS", goals);
+        if(g != null){
+            beingEdited = true;
+            i.putExtra("GOAL", g);
+        }
+        i.putExtra("beingedited", beingEdited);
+        startActivityForResult(i, 31);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //update user info page with new info
