@@ -40,7 +40,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         if (convertView == null) {
             LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -75,7 +75,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
         convertView.findViewById(R.id.btn_edit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.openGoalEditPage(finalGoal, mGoals);
+                mListener.openGoalEditPage(position, mGoals);
             }
         });
 

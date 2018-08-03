@@ -2,6 +2,7 @@ package green_minds.com.finalproject.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.model.CategoryHelper;
@@ -66,6 +68,7 @@ public class EditGoalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_goal);
         mContext = this;
+        ButterKnife.bind(this);
 
         mUser = ParseUser.getCurrentUser();
         mBeingEdited = getIntent().getBooleanExtra("beingedited", false);
@@ -75,7 +78,8 @@ public class EditGoalActivity extends AppCompatActivity {
         mCurrentGoal = null;
         //set values appropriately if editing goal and not making new one
         if (mBeingEdited) {
-            mCurrentGoal = getIntent().getParcelableExtra("GOAL");
+            int pos = getIntent().getIntExtra("GOAL", 0);
+            mCurrentGoal = mGoals.get(pos);
             int position = mCurrentGoal.getType();
             numberOf.setText(mCurrentGoal.getGoal() + "");
             mSelectedDate = mCurrentGoal.getDeadline();
@@ -170,6 +174,7 @@ public class EditGoalActivity extends AppCompatActivity {
             //if NOT being overwritten, add to array bc it's new
             mGoals.add(goal);
         }
+
         mUser.put("goals", mGoals);
 
         mUser.saveInBackground(new SaveCallback() {
@@ -191,7 +196,10 @@ public class EditGoalActivity extends AppCompatActivity {
     }
 
     void onNewGoal(Goal goal) {
-        //go back to user info
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("GOALS", mGoals);
+        setResult(RESULT_OK, i);
+        finish();
     }
 
     private void doFieldChecks() throws Exception {

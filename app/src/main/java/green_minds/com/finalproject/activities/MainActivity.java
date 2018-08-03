@@ -230,13 +230,13 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         startActivity(i);
     }
 
-    public void openGoalEditPage(Goal g, ArrayList<Goal> goals){
+    public void openGoalEditPage(int pos, ArrayList<Goal> goals){
         Intent i = new Intent(this, EditGoalActivity.class);
         boolean beingEdited = false;
         i.putExtra("GOALS", goals);
-        if(g != null){
+        if(pos >= 0){
             beingEdited = true;
-            i.putExtra("GOAL", g);
+            i.putExtra("GOAL", pos);
         }
         i.putExtra("beingedited", beingEdited);
         startActivityForResult(i, 31);

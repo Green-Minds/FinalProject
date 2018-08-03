@@ -1,9 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="20dp"
     tools:context=".activities.EditGoalActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <Spinner
+        android:id="@+id/category_dropdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_title"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Making new goal"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:id="@+id/tv_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/et_numberof"
+        android:layout_alignStart="@+id/category_dropdown"
+        android:text="I want to save"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/et_numberof"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/category_dropdown"
+        android:ems="10"
+        android:hint="# of"
+        android:inputType="number"
+        android:layout_toRightOf="@+id/tv_text"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/tv_text"
+        android:layout_toEndOf="@+id/tv_type"
+        android:text="  by"
+        android:textSize="16sp" />
+
+    <CalendarView
+        android:id="@+id/calendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_by"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/tv_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/tv_text"
+        android:layout_toEndOf="@+id/et_numberof"
+        android:text="bottles"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/category_dropdown"
+        android:text="make new goal!" />
+
+</RelativeLayout>

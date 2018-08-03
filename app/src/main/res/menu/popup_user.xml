@@ -8,8 +8,4 @@
         android:id="@+id/mi_edit_prof"
         android:title="Edit Profile"/>
 
-    <item
-        android:id="@+id/mit_edit_goal"
-        android:title="Edit Goals"/>
-
 </menu>
