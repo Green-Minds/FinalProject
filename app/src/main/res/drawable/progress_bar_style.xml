@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape>
-            <solid android:color="@color/grey_5_30_transparent"/>
+            <solid android:color="@color/grey_7_75_transparent"/>
         </shape>
     </item>
     <item
@@ -10,11 +10,9 @@
         >
         <clip>
             <shape>
-                <corners
-                    android:radius="5dip" />
                 <gradient
                     android:startColor="@color/colorTeal"
-                    android:endColor="@color/colorPrimary"
+                    android:endColor="@color/colorTrueBlueLight"
                     android:angle="0" />
             </shape>
         </clip>

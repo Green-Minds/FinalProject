@@ -103,6 +103,11 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
     }
 
+    public void goToEdit() {
+        Intent i = new Intent(this, EditProfileActivity.class);
+        startActivityForResult(i, 30);
+    }
+
     @Override
     public void goToCheckin(Location currentLocation) {
         parseUser = ParseUser.getCurrentUser();
@@ -203,8 +208,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         return true;
     }
 
-    @Override
-    public void goToGoals(ArrayList<Goal> g) {
+    public void goToGoals(Goal g) {
         Intent i = new Intent(MainActivity.this, GoalActivity.class);
         if (goals == null) {
             Toast.makeText(context, getString(R.string.wait_content), Toast.LENGTH_SHORT).show();
@@ -214,10 +218,28 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         startActivityForResult(i, 31);
     }
 
-    @Override
     public void goToEdit(ArrayList<Goal> g) {
         Intent i = new Intent(MainActivity.this, EditProfileActivity.class);
         startActivityForResult(i, 30);
+    }
+
+    public void goToDetail(Goal g, int checkins){
+        Intent i = new Intent(this, GoalDetailActivity.class);
+        i.putExtra("GOAL", g);
+        i.putExtra("CHECKINS", checkins);
+        startActivity(i);
+    }
+
+    public void openGoalEditPage(Goal g, ArrayList<Goal> goals){
+        Intent i = new Intent(this, EditGoalActivity.class);
+        boolean beingEdited = false;
+        i.putExtra("GOALS", goals);
+        if(g != null){
+            beingEdited = true;
+            i.putExtra("GOAL", g);
+        }
+        i.putExtra("beingedited", beingEdited);
+        startActivityForResult(i, 31);
     }
 
     @Override
@@ -227,7 +249,6 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         if (requestCode == 31 && data != null) {
             List<Goal> g = data.getParcelableArrayListExtra("GOALS");
             userInfoFragment.setGoals(g);
-            scoreAdapter.notifyDataSetChanged();
         } else if (requestCode == 30) {
             userInfoFragment.refreshUserData();
         } else if (requestCode == 20) {

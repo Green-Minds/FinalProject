@@ -1,7 +1,6 @@
 package green_minds.com.finalproject.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,13 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.parse.DeleteCallback;
+import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 
 import green_minds.com.finalproject.R;
-import green_minds.com.finalproject.activities.GoalDetailActivity;
+import green_minds.com.finalproject.fragments.UserInfoFragment;
 import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.CustomProgressBar;
 import green_minds.com.finalproject.model.Goal;
@@ -25,51 +28,87 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
     private Context mContext;
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
+    private UserInfoFragment.OnUserInfoListener mListener;
 
-    public GoalAdapter(Context context, ArrayList<Goal> items) {
+    public GoalAdapter(Context context, ArrayList<Goal> items, UserInfoFragment.OnUserInfoListener listener) {
         super(context, R.layout.item_goal, items);
         this.mContext = context;
         this.mUser = ParseUser.getCurrentUser();
         this.mGoals = items;
+        this.mListener = listener;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        if(convertView==null) {
-            LayoutInflater vi = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView=vi.inflate(R.layout.item_score, null);
+        if (convertView == null) {
+            LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = vi.inflate(R.layout.item_goal, null);
         }
 
         Goal goal = mGoals.get(position);
-
         int type = goal.getType();
+
         TextView tvIdentifier = convertView.findViewById(R.id.tv_description);
         tvIdentifier.setText(CategoryHelper.getPinIdentifier(type));
-        final int checkins = mUser.getInt(CategoryHelper.getTypeKey(type));
 
         CustomProgressBar progressBar = convertView.findViewById(R.id.progress);
-        if(goal == null){
-            progressBar.setVisibility(View.GONE);
-            convertView.findViewById(R.id.tv_details).setVisibility(View.GONE);
-        } else{
-            progressBar.setGoal(goal, mUser);
-            progressBar.setVisibility(View.VISIBLE);
-            convertView.findViewById(R.id.tv_details).setVisibility(View.VISIBLE);
-            final Goal finalGoal = goal;
-            convertView.findViewById(R.id.tv_details).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(mContext, GoalDetailActivity.class);
-                    i.putExtra("GOAL", finalGoal);
-                    i.putExtra("CHECKINS", checkins);
-                    mContext.startActivity(i);
-                }
-            });
+        progressBar.setGoal(goal, mUser);
+        progressBar.setVisibility(View.VISIBLE);
 
-        }
+        final int checkins = mUser.getInt(CategoryHelper.getTypeKey(type));
+
+        final Goal finalGoal = goal;
+        convertView.findViewById(R.id.btn_detail).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.goToDetail(finalGoal, checkins);
+            }
+        });
+        convertView.findViewById(R.id.btn_remove).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeGoal(finalGoal);
+            }
+        });
+        convertView.findViewById(R.id.btn_edit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.openGoalEditPage(finalGoal, mGoals);
+            }
+        });
 
         return convertView;
+    }
+
+    private void removeGoal(final Goal goal) {
+        //mListener.setNetworkCallInProgress(true);
+        final ArrayList<Goal> tempGoalArray = mGoals; //keep copy to revert back to in case of error
+        mGoals.remove(goal);
+        mUser.put("goals", mGoals);
+        mUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                goal.deleteInBackground(new DeleteCallback() {
+                    @Override
+                    public void done(com.parse.ParseException e) {
+                        //mListener.setNetworkCallInProgress(false);
+                        if (e != null) {
+                            mGoals = tempGoalArray;
+                            e.printStackTrace();
+                            if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                                Toast.makeText(mContext, mContext.getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, mContext.getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(mContext, mContext.getString(R.string.removed), Toast.LENGTH_SHORT).show();
+                            notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
+        });
     }
 }

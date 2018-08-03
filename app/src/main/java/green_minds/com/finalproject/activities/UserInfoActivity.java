@@ -2,6 +2,7 @@ package green_minds.com.finalproject.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -14,6 +15,21 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.renderer.XAxisRenderer;
+import com.github.mikephil.charting.utils.MPPointF;
+import com.github.mikephil.charting.utils.Transformer;
+import com.github.mikephil.charting.utils.Utils;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -49,6 +65,9 @@ public class UserInfoActivity extends AppCompatActivity {
 
     @BindView(R.id.btn_popup)
     ImageButton btnPopup;
+
+    @BindView(R.id.chart)
+    BarChart chart;
 
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
@@ -94,8 +113,61 @@ public class UserInfoActivity extends AppCompatActivity {
         popup.show(); //showing popup menu
     }
 
+    private void setUpGraph(){
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(10f);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(false);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return (int)value + "";
+            }
+        });
+        chart.setXAxisRenderer(new CustomXAxisRenderer(chart.getViewPortHandler(), chart.getXAxis(), chart.getTransformer(YAxis.AxisDependency.LEFT)));
+        chart.setDrawBorders(false);
+        chart.setExtraBottomOffset(18);
+
+        YAxis leftAxis = chart.getAxisLeft();
+        YAxis rightAxis = chart.getAxisRight();
+        leftAxis.setEnabled(false);
+        rightAxis.setEnabled(false);
+        chart.setDrawBorders(false);
+
+        mUser = ParseUser.getCurrentUser();
+
+        List<BarEntry> entries = new ArrayList<>();
+
+        for(int i = 0; i < 6; i++){
+            int checkins = mUser.getInt(CategoryHelper.getTypeKey(i));
+            entries.add(new BarEntry(i, checkins));
+        }
+
+        chart.getLegend().setEnabled(false);
+        chart.setDescription(null);
+
+        BarDataSet set = new BarDataSet(entries, "BarDataSet");
+        set.setColor(getResources().getColor(R.color.colorTeal));
+
+        BarData data = new BarData(set);
+        data.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                return ((int)value) + "";
+            }
+        });
+        data.setValueTextSize(14);
+        data.setBarWidth(0.8f); // set custom bar width
+        chart.setData(data);
+        chart.setFitBars(true); // make the x-axis fit exactly all bars
+        chart.invalidate(); // refresh
+    }
+
     private void setupUserInfo() {
         showProgressBar();
+        setUpGraph();
         mContext = this;
         mUser = ParseUser.getCurrentUser();
         if (mUser == null) {
@@ -126,10 +198,6 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         }
 
-        mScoreAdapter = new ScoreAdapter(mContext, CategoryHelper.categories);
-        ListView scoreListView = findViewById(R.id.stat_list);
-        scoreListView.setAdapter(mScoreAdapter);
-
         ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
         userQuery.include("goals");
         userQuery.whereEqualTo("objectId", mUser.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
@@ -157,7 +225,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         mGoals = new ArrayList<>();
                     }
 
-                    mGoalAdapter = new GoalAdapter(mContext, mGoals);
+                    mGoalAdapter = new GoalAdapter(mContext, mGoals, null);
                     ListView listview = findViewById(R.id.goal_list);
                     listview.setAdapter(mGoalAdapter);
                 } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
@@ -237,5 +305,22 @@ public class UserInfoActivity extends AppCompatActivity {
             ParseUser.logOut();
         }
         redirectToLogin();
+    }
+
+    public class CustomXAxisRenderer extends XAxisRenderer {
+        public CustomXAxisRenderer(ViewPortHandler viewPortHandler, XAxis xAxis, Transformer trans) {
+            super(viewPortHandler, xAxis, trans);
+        }
+
+        @Override
+        protected void drawLabel(Canvas c, String formattedLabel, float x, float y, MPPointF anchor, float angleDegrees) {
+            //String line[] = formattedLabel.split("\n");
+            //Utils.drawXAxisValue(c, line[0], x, y, mAxisLabelPaint, anchor, angleDegrees);
+            int i = Integer.parseInt(formattedLabel);
+            Utils.drawImage(c, CategoryHelper.getIconResource(i, mContext), (int)x, (int)y + 24, 64, 64);
+//            if(line.length > 1){
+//                Utils.drawXAxisValue(c, line[1], x + mAxisLabelPaint.getTextSize(), y + mAxisLabelPaint.getTextSize(), mAxisLabelPaint, anchor, angleDegrees);
+//            }
+        }
     }
 }

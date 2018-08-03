@@ -53,10 +53,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.UserInfoActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".activities.CameraActivity"
             android:screenOrientation="portrait" />
@@ -112,8 +113,10 @@
         <activity
             android:name=".activities.PinDetailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.LoginActivity"
+        <activity
+            android:name=".activities.LoginActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".activities.EditGoalActivity"></activity>
     </application>
 
 </manifest>
