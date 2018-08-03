@@ -53,11 +53,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.MainActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.UserInfoActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".activities.CameraActivity"
             android:screenOrientation="portrait" />
@@ -94,7 +94,12 @@
         </activity>
         <activity
             android:name=".activities.EditProfileActivity"
-            android:screenOrientation="portrait" />
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
         <activity
             android:name=".activities.GoalActivity"
             android:screenOrientation="portrait" />
@@ -116,7 +121,14 @@
         <activity
             android:name=".activities.LoginActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.EditGoalActivity"></activity>
+        <activity
+            android:name=".activities.EditGoalActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

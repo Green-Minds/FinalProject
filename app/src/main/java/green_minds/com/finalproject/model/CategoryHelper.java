@@ -12,9 +12,18 @@ public class CategoryHelper {
             "Water Fountain",
             "Bike Rack",
             "Coffee shop with discount",
+            "Batteries / Electronic Waste"
+    };
+
+    public static String[] getListOfCategoriesWPin ={
+            "Bottles / Cans",
+            "Water Fountain",
+            "Bike Rack",
+            "Coffee shop with discount",
             "Batteries / Electronic Waste",
             "Pins Made"
     };
+
     public static String[] shortCategories ={
             "Bottles",
             "Water\nFountain",

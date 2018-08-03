@@ -12,8 +12,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -83,6 +85,13 @@ public class EditProfileActivity extends AppCompatActivity {
             String url = photo.getUrl();
             GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
         }
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar a = getSupportActionBar();
+        // Enable the Up button
+        a.setDisplayHomeAsUpEnabled(true);
+        a.setTitle("Edit Profile Info");
     }
 
     @Override

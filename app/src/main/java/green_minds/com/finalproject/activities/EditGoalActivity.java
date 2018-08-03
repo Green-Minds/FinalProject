@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -39,6 +41,7 @@ public class EditGoalActivity extends AppCompatActivity {
     private Context mContext;
     private ParseUser mUser;
     private Goal mCurrentGoal;
+    private ActionBar mActionBar;
     private Date mSelectedDate;
     private boolean mBeingEdited;
 
@@ -60,15 +63,18 @@ public class EditGoalActivity extends AppCompatActivity {
     @BindView(R.id.btn_save)
     Button btnSave;
 
-    @BindView(R.id.tv_title)
-    TextView tvTitle;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_goal);
         mContext = this;
         ButterKnife.bind(this);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        // Get a support ActionBar corresponding to this toolbar
+        mActionBar = getSupportActionBar();
+        // Enable the Up button
+        mActionBar.setDisplayHomeAsUpEnabled(true);
 
         mUser = ParseUser.getCurrentUser();
         mBeingEdited = getIntent().getBooleanExtra("beingedited", false);
@@ -88,7 +94,7 @@ public class EditGoalActivity extends AppCompatActivity {
             description.setText(CategoryHelper.categories[position].getDescription());
             type.setText(CategoryHelper.categories[position].getUnit());
             String title = getString(R.string.edit_goal_title) + CategoryHelper.getPinIdentifier(position);
-            tvTitle.setText(title);
+            mActionBar.setTitle(title);
             //dropdown is turned off - user shouldn't be able to change the category when they're editing the goal.
             dropdown.setVisibility(View.GONE);
         } else {
@@ -107,7 +113,7 @@ public class EditGoalActivity extends AppCompatActivity {
     }
 
     private void initFields() {
-        tvTitle.setText(R.string.new_goal_title);
+        mActionBar.setTitle("New Goal");
         btnSave.setText(R.string.button_new_text);
         mSelectedDate = new Date(calendar.getDate());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, CategoryHelper.listOfCategories);
