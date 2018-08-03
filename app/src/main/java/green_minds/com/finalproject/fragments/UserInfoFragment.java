@@ -262,7 +262,12 @@ public class UserInfoFragment extends Fragment {
 
     public void refreshUserData() {
         mUser = ParseUser.getCurrentUser();
-        tvName.setText(mUser.getUsername());
+        Object username = mUser.get("original_username"); //check if exists first
+        if (username != null) {
+            tvName.setText((String) username);
+        } else {
+            tvName.setText(mUser.getUsername());
+        }
         ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
         if (smallerPhoto != null) {
             String url = smallerPhoto.getUrl();
