@@ -253,6 +253,8 @@ public class UserInfoFragment extends Fragment {
         chart.setDrawBorders(false);
         chart.setExtraBottomOffset(18);
         chart.setDescription(null);
+        chart.setDoubleTapToZoomEnabled(false);
+        chart.setPinchZoom(false);
         chart.setFitBars(true);
         chart.invalidate(); // refresh
     }
