@@ -64,20 +64,17 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+
                     case R.id.navigation_map:
-                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_map).isChecked()) {
-                            showMap();
-                        }
+                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_map).isChecked()) reloadMap();
                         return true;
+
                     case R.id.navigation_user:
-                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_user).isChecked()) {
-                            getUserInfo();
-                        }
+                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_user).isChecked()) getUserInfo();
                         return true;
+
                     case R.id.navigation_board:
-                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_board).isChecked()) {
-                            loadUsers();
-                        }
+                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_board).isChecked()) loadUsers();
                         return true;
                 }
                 return false;
@@ -114,11 +111,11 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         if (parseUser == null) {
             Intent log = new Intent(MainActivity.this, LoginActivity.class);
         }
+        
         Intent intent = new Intent(MainActivity.this, CheckInActivity.class);
         intent.putExtra("latitude", currentLocation.getLatitude());
         intent.putExtra("longitude", currentLocation.getLongitude());
         startActivity(intent);
-
     }
 
     @Override
@@ -127,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         if (parseUser == null) {
             Intent log = new Intent(MainActivity.this, LoginActivity.class);
         }
+
         Intent intent = new Intent(MainActivity.this, NewPinActivity.class);
         intent.putExtra("latitude", currentLocation.getLatitude());
         intent.putExtra("longitude", currentLocation.getLongitude());
@@ -152,12 +150,15 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
             LoginManager.getInstance().logOut();
         }
         ParseUser.logOut();
+
         startActivity(new Intent(MainActivity.this, SplashActivity.class));
         finish();
     }
 
     private void reloadMap() {
         ft = getSupportFragmentManager().beginTransaction();
+        if (leaderboardFragment != null) ft.hide(leaderboardFragment);
+        if (userInfoFragment != null) ft.hide(userInfoFragment);
         ft.show(mapFragment);
         ft.commit();
     }
@@ -165,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     private void showMap() {
         mapFragment = mapFragment.newInstance();
         ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, mapFragment);
+        ft.add(R.id.fragment_container_map, mapFragment);
         ft.commit();
     }
 
@@ -186,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
 
                         leaderboardFragment = leaderboardFragment.newInstance(users);
                         ft = getSupportFragmentManager().beginTransaction();
+                        ft.hide(mapFragment);
                         ft.replace(R.id.fragment_container, leaderboardFragment.newInstance(users));
                         ft.commit();
                     } else {
@@ -277,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
 
                     userInfoFragment = userInfoFragment.newInstance(parseUser);
                     ft = getSupportFragmentManager().beginTransaction();
+                    ft.hide(mapFragment);
                     ft.replace(R.id.fragment_container, userInfoFragment);
                     ft.commit();
 

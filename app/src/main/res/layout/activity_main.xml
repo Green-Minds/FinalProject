@@ -27,4 +27,11 @@
         android:id="@+id/fragment_container"
         android:layout_marginBottom="?attr/actionBarSize">
     </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_container_map"
+        android:layout_marginBottom="?attr/actionBarSize">
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>
