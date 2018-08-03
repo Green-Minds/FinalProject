@@ -31,7 +31,7 @@ public class SplashActivity extends AppCompatActivity {
         appName.setVisibility(View.VISIBLE);
 
         if (ParseUser.getCurrentUser() != null) {
-            stopLogo(1000);
+            //stopLogo(1000);
             scheduleSplashScreen(2000);
         } else {
             btnLoginPage.setVisibility(View.VISIBLE);
