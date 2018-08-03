@@ -79,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.fbLoginButton) public LoginButton fbLoginButton;
     private  Map<String, String> authData = new HashMap<>();
     private ProgressDialog pd;
+    private String connection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,22 +122,8 @@ public class LoginActivity extends AppCompatActivity {
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
-                    @Override
-                    public void done(ParseUser user, ParseException e) {
-                        if (user == null) {
-
-                        } else if (!user.isNew()) {
-                            btnLogin.setEnabled(false);
-                            fbLoginButton.setEnabled(false);
-                            getUserDetailsFromParse();
-                        } else if (user.isNew()) {
-                            btnLogin.setEnabled(false);
-                            fbLoginButton.setEnabled(false);
-                            getUserDetailFromFB();
-                        }
-                    }
-                });
+                if (!isOnline()) return;
+                facebookSignupDisplayer();
             }
         });
     }
@@ -174,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
                     hideProgressDialog();
                     btnLogin.setEnabled(true);
                     fbLoginButton.setEnabled(true);
-                    etPasswordLogin.startAnimation(invalidCredentials());
+                    //etPasswordLogin.startAnimation(invalidCredentials());
                     tvIncorrectInfo.setText(e.getMessage().toString());
                     tvIncorrectInfo.setVisibility(View.VISIBLE);
                     e.printStackTrace();
@@ -274,20 +261,49 @@ public class LoginActivity extends AppCompatActivity {
         alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if (atvSchoolNameAlert.getText().toString().length() > 1 && school != null) {
-                            ParseUser user = ParseUser.getCurrentUser();
-                            user.put("connection", atvSchoolNameAlert.getText().toString());
-                            user.saveInBackground();
+                        ParseUser user = ParseUser.getCurrentUser();
+                        connection = atvSchoolNameAlert.getText().toString();
 
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
-                        }
+                        ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
+                            @Override
+                            public void done(ParseUser user, ParseException e) {
+                                if (user == null) {
+
+                                } else if (!user.isNew()) {
+                                    btnLogin.setEnabled(false);
+                                    fbLoginButton.setEnabled(false);
+                                    getUserDetailsFromParse();
+                                } else if (user.isNew()) {
+                                    btnLogin.setEnabled(false);
+                                    fbLoginButton.setEnabled(false);
+                                    getUserDetailFromFB();
+                                }
+                            }
+                        });
                     }
                 });
-        AlertDialog b = alertDialogBuilder.create();
-        b.show();
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+        alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+        atvSchoolNameAlert.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (atvSchoolNameAlert.getText().toString().length() > 1 && school[0] != null) {
+                    alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
+            }
+        });
     }
 
     private TranslateAnimation invalidCredentials() {
@@ -373,7 +389,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             // Fetching data from URI and storing in bitmap
-            bitmap = DownloadImageBitmap(url);
+            bitmap = downloadImageBitmap(url);
             return null;
         }
 
@@ -384,7 +400,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private static Bitmap DownloadImageBitmap(String url) {
+    private static Bitmap downloadImageBitmap(String url) {
         Bitmap bm = null;
         try {
             URL aURL = new URL(url);
@@ -409,6 +425,7 @@ public class LoginActivity extends AppCompatActivity {
         user.put("original_username", username);
         user.setEmail(email);
         user.put("location", getLocation());
+        user.put("connection", connection);
 
         final ParseFile smallerParseFile = getSmallerParseFile(image);
         smallerParseFile.saveInBackground(new SaveCallback() {
@@ -424,7 +441,7 @@ public class LoginActivity extends AppCompatActivity {
                             Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
                             try {
                                 parseUserTask.waitForCompletion();
-                                facebookSignupDisplayer();
+                                alertDisplayer("Successful Login","Welcome " + user.getString("original_username") + "!");
                             } catch (InterruptedException err) {
                                 err.printStackTrace();
                             }

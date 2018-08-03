@@ -118,7 +118,6 @@ public class SecondSignupActivity extends AppCompatActivity {
         intent.setClass(SecondSignupActivity.this, ThirdSignupActivity.class);
         hideProgressDialog();
         startActivity(intent);
-        finish();
     }
 
     private void showProgressDialog() {

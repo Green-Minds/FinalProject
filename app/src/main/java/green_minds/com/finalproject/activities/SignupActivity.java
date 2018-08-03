@@ -88,7 +88,7 @@ public class SignupActivity extends AppCompatActivity {
                 btnInfoNext.setEnabled(false);
                 ParseQuery usernameQuery = ParseUser.getQuery();
                 ParseQuery emailQuery = ParseUser.getQuery();
-                usernameQuery.whereEqualTo("lowercase_username", etUsernameInput.getText().toString().toLowerCase());
+                usernameQuery.whereEqualTo("username", etUsernameInput.getText().toString().toLowerCase());
                 emailQuery.whereEqualTo("email", etEmailInput.getText().toString());
                 List<ParseQuery<ParseUser>> queries = new ArrayList<>();
                 queries.add(usernameQuery);
@@ -144,7 +144,6 @@ public class SignupActivity extends AppCompatActivity {
         intent.putExtra("original_username", etUsernameInput.getText().toString());
         hideProgressDialog();
         startActivity(intent);
-        finish();
     }
 
     private void showProgressDialog() {
