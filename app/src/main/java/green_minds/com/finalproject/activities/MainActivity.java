@@ -223,9 +223,10 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         startActivityForResult(i, 30);
     }
 
-    public void goToDetail(Goal g){
+    public void goToDetail(Goal g, int checkins){
         Intent i = new Intent(this, GoalDetailActivity.class);
         i.putExtra("GOAL", g);
+        i.putExtra("CHECKINS", checkins);
         startActivity(i);
     }
 

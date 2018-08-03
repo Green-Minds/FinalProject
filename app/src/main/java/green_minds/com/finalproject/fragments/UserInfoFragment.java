@@ -55,7 +55,7 @@ public class UserInfoFragment extends Fragment {
 
         void openGoalEditPage(Goal g, ArrayList<Goal> goals);
 
-        void goToDetail(Goal g);
+        void goToDetail(Goal g, int c);
 
         void showProgressBar();
 

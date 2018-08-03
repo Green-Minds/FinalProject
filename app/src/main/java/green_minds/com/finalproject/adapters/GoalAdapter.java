@@ -57,11 +57,13 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
         progressBar.setGoal(goal, mUser);
         progressBar.setVisibility(View.VISIBLE);
 
+        final int checkins = mUser.getInt(CategoryHelper.getTypeKey(type));
+
         final Goal finalGoal = goal;
         convertView.findViewById(R.id.btn_detail).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.goToDetail(finalGoal);
+                mListener.goToDetail(finalGoal, checkins);
             }
         });
         convertView.findViewById(R.id.btn_remove).setOnClickListener(new View.OnClickListener() {
