@@ -69,7 +69,13 @@ public class EditProfileActivity extends AppCompatActivity {
         mUser = ParseUser.getCurrentUser();
         mContext = this;
         ButterKnife.bind(this);
-        etUsername.setText(mUser.getUsername());
+        Object username = mUser.get("original_username"); //check if exists first
+        if (username != null) {
+            etUsername.setText((String) username);
+        } else {
+            etUsername.setText(mUser.getUsername());
+        }
+
         ParseFile photo = mUser.getParseFile("photo");
         if (photo == null) {
             GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
@@ -95,12 +101,12 @@ public class EditProfileActivity extends AppCompatActivity {
     @OnClick({R.id.btn_save})
     public void save() {
         showProgressBar();
-        checkUsernameFirst(etUsername.getText().toString());
+        checkUsernameFirst(etUsername.getText().toString().toLowerCase());
     }
 
     private void checkUsernameFirst(String username) {
 
-        if (username.equals(mUser.getUsername())) {
+        if (username.equals(mUser.getUsername().toLowerCase())) {
             saveChanges();
         } else if (etUsername.getText().toString().isEmpty()) {
             Toast.makeText(mContext, getString(R.string.username_empty), Toast.LENGTH_SHORT).show();
@@ -130,7 +136,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private void saveChanges() {
         mUser.setUsername(etUsername.getText().toString().toLowerCase());
         mUser.put("original_username", etUsername.getText().toString());
-        mUser.setUsername(etUsername.getText().toString());
         if (mNewPic != null) {
             mNewPic.saveInBackground(new SaveCallback() {
                 @Override

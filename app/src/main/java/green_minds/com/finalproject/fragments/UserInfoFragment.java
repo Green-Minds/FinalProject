@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,11 +50,10 @@ import green_minds.com.finalproject.model.Goal;
 public class UserInfoFragment extends Fragment {
 
     public interface OnUserInfoListener {
-        void goToGoals(Goal g);
 
         void goToEdit();
 
-        void openGoalEditPage(Goal g, ArrayList<Goal> goals);
+        void openGoalEditPage(int pos, ArrayList<Goal> goals);
 
         void goToDetail(Goal g, int c);
 
@@ -86,6 +86,9 @@ public class UserInfoFragment extends Fragment {
 
     @BindView(R.id.goal_list)
     ListView goalList;
+
+    @BindView(R.id.btn_add_goal)
+    ImageButton btnAddGoal;
 
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
@@ -121,7 +124,7 @@ public class UserInfoFragment extends Fragment {
                 } else if (id.equals("mi_edit_prof")) {
                     mListener.goToEdit();
                 } else {
-                    //do nothing, going to delete this option later
+                    Log.e("USER INFO", "popup menu error");
                 }
                 return true;
             }
@@ -262,7 +265,12 @@ public class UserInfoFragment extends Fragment {
 
     public void refreshUserData() {
         mUser = ParseUser.getCurrentUser();
-        tvName.setText(mUser.getUsername());
+        Object username = mUser.get("original_username"); //check if exists first
+        if (username != null) {
+            tvName.setText((String) username);
+        } else {
+            tvName.setText(mUser.getUsername());
+        }
         ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
         if (smallerPhoto != null) {
             String url = smallerPhoto.getUrl();
@@ -281,6 +289,13 @@ public class UserInfoFragment extends Fragment {
     private void setUpGoals() {
         mGoalAdapter = new GoalAdapter(mContext, mGoals, mListener);
         goalList.setAdapter(mGoalAdapter);
+
+        btnAddGoal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.openGoalEditPage(-1, mGoals);
+            }
+        });
     }
 
     private class CustomXAxisRenderer extends XAxisRenderer {

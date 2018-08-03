@@ -173,12 +173,12 @@
             android:padding="8dp">
 
             <ImageButton
-                android:tint="@color/colorPrimary"
-                android:id="@+id/imageButton5"
+                android:id="@+id/btn_add_goal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/transparent"
                 android:layout_alignParentRight="true"
+                android:background="@color/transparent"
+                android:tint="@color/colorPrimary"
                 app:srcCompat="@drawable/ic_add" />
 
             <TextView
