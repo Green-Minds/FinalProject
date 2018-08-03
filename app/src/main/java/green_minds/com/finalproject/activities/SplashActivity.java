@@ -31,8 +31,7 @@ public class SplashActivity extends AppCompatActivity {
         appName.setVisibility(View.VISIBLE);
 
         if (ParseUser.getCurrentUser() != null) {
-            //stopLogo(1000);
-            scheduleSplashScreen(2000);
+            scheduleSplashScreen(1000);
         } else {
             btnLoginPage.setVisibility(View.VISIBLE);
             btnSignupPage.setVisibility(View.VISIBLE);
@@ -51,25 +50,22 @@ public class SplashActivity extends AppCompatActivity {
         }, duration);
     }
 
-    private void stopLogo(int duration) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                GifDrawable logo = (GifDrawable)splashscreen.getDrawable();
-                logo.stop();
-                //appName.setVisibility(View.VISIBLE);
-            }
-        }, duration);
-    }
-
     public void gotoSignup(View v) {
         v.setEnabled(false);
-        startActivity(new Intent(this, SignupActivity.class));
+        btnLoginPage.setEnabled(false);
+        startActivityForResult(new Intent(this, SignupActivity.class), 3);
     }
 
     public void gotoLogin(View v) {
         v.setEnabled(false);
-        startActivity(new Intent(this, LoginActivity.class));
+        btnSignupPage.setEnabled(false);
+        startActivityForResult(new Intent(this, LoginActivity.class), 3);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        btnSignupPage.setEnabled(true);
+        btnLoginPage.setEnabled(true);
     }
 
 }
