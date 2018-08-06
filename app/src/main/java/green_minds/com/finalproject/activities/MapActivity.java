@@ -830,10 +830,10 @@ public class MapActivity extends AppCompatActivity implements
 
                 break;
             case 2:
-                imageName = "ic_cycling";
+                imageName = "ic_bicycle";
                 break;
             case 3:
-                imageName = "ic_money";
+                imageName = "ic_coins";
                 break;
             case 4:
                 imageName = "ic_battery";
