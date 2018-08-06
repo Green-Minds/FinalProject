@@ -281,7 +281,7 @@ public class MapFragment extends Fragment implements
                 if (loc != null ) {
                     LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
-                    map.animateCamera(cameraUpdate);
+                    map.moveCamera(cameraUpdate);
                 }
             }
 
@@ -302,7 +302,7 @@ public class MapFragment extends Fragment implements
                 Toast.makeText(mContext, "GPS location was found!", Toast.LENGTH_SHORT).show();
                 LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-                map.animateCamera(cameraUpdate);
+                map.moveCamera(cameraUpdate);
             }
 
             onCameraIdle();
@@ -311,7 +311,7 @@ public class MapFragment extends Fragment implements
                 if (loc != null ) {
                     LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
-                    map.animateCamera(cameraUpdate);
+                    map.moveCamera(cameraUpdate);
                     showAll();
                 }
             }
@@ -491,7 +491,7 @@ public class MapFragment extends Fragment implements
         if (mCurrentLocation != null) {
             LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-            map.animateCamera(cameraUpdate);
+            map.moveCamera(cameraUpdate);
         } else {
         }
         startLocationUpdatesWithPermissionCheck(this);
@@ -608,83 +608,63 @@ public class MapFragment extends Fragment implements
                         lon = mNewPin.getLatLng().getLongitude();
                         type = mNewPin.getCategory();
                         pins.add(mNewPin);
-                        // new cool map view with adjusting the pin position
+
                         CameraUpdate cameraNewPin = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 17);
-                        map.animateCamera(cameraNewPin);
-                        buttonsVisibilityBefore();
-                        adjustBtn.setOnClickListener(new View.OnClickListener() {
+                        map.moveCamera(cameraNewPin);
+
+                        Log.d("MapActivity", "added new Pin at " + lat);
+                        mNewPin.setLatLng(new ParseGeoPoint(lat, lon));
+
+                        ParseFile photo = mNewPin.getPhoto();
+                        if(photo != null){
+                            image = photo.getUrl();
+                        }
+                        final int drawableId = getIcon(mNewPin.getCategory());
+
+                        LatLng listingPosition = new LatLng(lat, lon);
+                        // Create the marker on the fragment
+                        final Marker mapMarker = map.addMarker(new MarkerOptions()
+                                .position(listingPosition)
+                                .title("checkins: " + mNewPin.getCheckincount())
+                                .snippet(mNewPin.getComment())
+                                .icon(bitmapDescriptorFromVector(mContext, drawableId)));
+
+                        final android.os.Handler handler = new android.os.Handler();
+                        final long start = SystemClock.uptimeMillis();
+                        final long duration = 5000;
+
+                        // Use the bounce interpolator
+                        final android.view.animation.Interpolator interpolator =
+                                new BounceInterpolator();
+
+                        // Animate marker with a bounce updating its position every 15ms
+                        handler.post(new Runnable() {
                             @Override
-                            public void onClick(View view) {
-                                CameraPosition currentCameraPosition = map.getCameraPosition();
-                                currentLoc = currentCameraPosition.target;
-                                lat = currentLoc.latitude;
-                                lon = currentLoc.longitude;
+                            public void run() {
+                                long elapsed = SystemClock.uptimeMillis() - start;
+                                // Calculate t for bounce based on elapsed time
+                                float t = Math.max(
+                                        1 - interpolator.getInterpolation((float) elapsed
+                                                / duration), 0);
+                                // Set the anchor
+                                mapMarker.setAnchor(0.5f, 1.0f + 14 * t);
 
-                                Log.d("MapActivity", "added new Pin at " + lat);
-                                mNewPin.setLatLng(new ParseGeoPoint(lat, lon));
-
-                                ParseFile photo = mNewPin.getPhoto();
-                                if(photo != null){
-                                    image = photo.getUrl();
+                                if (t > 0.0) {
+                                    // Post this event again 15ms from now.
+                                    handler.postDelayed(this, 150);
+                                } else { // done elapsing, show window
+                                    mapMarker.remove();
+                                    MyItem item = new MyItem(lat, lon, drawableId);
+                                    item.setTitle("checkins: " + mNewPin.getCheckincount());
+                                    item.setSnippet(mNewPin.getComment());
+                                    item.setImage(image);
+                                    item.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                    mClusterManager.addItem(item);
+                                    items.add(item);
+                                    mClusterManager.cluster();
                                 }
-                                final int drawableId = getIcon(mNewPin.getCategory());
-
-                                LatLng listingPosition = new LatLng(lat, lon);
-                                // Create the marker on the fragment
-                                final Marker mapMarker = map.addMarker(new MarkerOptions()
-                                        .position(listingPosition)
-                                        .title("checkins: " + mNewPin.getCheckincount())
-                                        .snippet(mNewPin.getComment())
-                                        .icon(bitmapDescriptorFromVector(mContext, drawableId)));
-
-                                dropPinEffect(mapMarker);
-
-                                final android.os.Handler handler = new android.os.Handler();
-                                final long start = SystemClock.uptimeMillis();
-                                final long duration = 5000;
-
-                                // Use the bounce interpolator
-                                final android.view.animation.Interpolator interpolator =
-                                        new BounceInterpolator();
-
-                                // Animate marker with a bounce updating its position every 15ms
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        long elapsed = SystemClock.uptimeMillis() - start;
-                                        // Calculate t for bounce based on elapsed time
-                                        float t = Math.max(
-                                                1 - interpolator.getInterpolation((float) elapsed
-                                                        / duration), 0);
-                                        // Set the anchor
-                                        mapMarker.setAnchor(0.5f, 1.0f + 14 * t);
-
-                                        if (t > 0.0) {
-                                            // Post this event again 15ms from now.
-                                            handler.postDelayed(this, 150);
-                                        } else { // done elapsing, show window
-                                            mapMarker.remove();
-                                            MyItem item = new MyItem(lat, lon, drawableId);
-                                            item.setTitle("checkins: " + mNewPin.getCheckincount());
-                                            item.setSnippet(mNewPin.getComment());
-                                            item.setImage(image);
-                                            item.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
-                                            mClusterManager.addItem(item);
-                                            items.add(item);
-                                            mClusterManager.cluster();
-                                            mNewPin.saveInBackground(new SaveCallback() {
-                                                @Override
-                                                public void done(ParseException e) {
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
-
-                                buttonsVisibilityAfter();
                             }
                         });
-
                     }
 
                 } else {
@@ -706,10 +686,10 @@ public class MapFragment extends Fragment implements
 
                 break;
             case 2:
-                imageName = "ic_cycling";
+                imageName = "ic_bicycle";
                 break;
             case 3:
-                imageName = "ic_money";
+                imageName = "ic_coins";
                 break;
             case 4:
                 imageName = "ic_battery";

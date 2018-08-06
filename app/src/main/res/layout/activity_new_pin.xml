@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".activities.NewPinActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:theme="@style/ToolbarColoredBackArrow"
+        app:titleTextColor="@color/white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
     <TextView
         android:id="@+id/tv_header"
         android:layout_width="wrap_content"
@@ -29,6 +39,13 @@
         android:text="Pin it!"
         tools:layout_editor_absoluteX="148dp"
         tools:layout_editor_absoluteY="435dp" />
+
+    <Button
+        android:id="@+id/locBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="ADJUST THE POSITION" />
 
     <EditText
         android:id="@+id/et_comment"
@@ -131,5 +148,14 @@
         android:padding="10dp"
         android:scaleType="fitXY"
         app:srcCompat="@drawable/camera" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_container"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+    </FrameLayout>
 
 </RelativeLayout>
