@@ -9,7 +9,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,6 +64,9 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     @BindView(R.id.rb_categories)
     RadioGroup rbCategories;
 
+    @BindView(R.id.my_toolbar)
+    Toolbar myToolbar;
+
     private Bitmap mCurrentBitmap;
     private Context context;
     private ParseUser currentUser;
@@ -88,6 +93,13 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         context = this;
         saving = false;
 
+        setSupportActionBar(myToolbar);
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar a = getSupportActionBar();
+        // Enable the Up button
+        a.setDisplayHomeAsUpEnabled(true);
+        a.setTitle("Please describe your new pin");
+
         if (ParseUser.getCurrentUser() == null) {
             redirectToLogin();
         } else {
@@ -100,14 +112,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         Bitmap bmp = null;
         String filepath = data.getStringExtra("image");
         bmp = BitmapFactory.decodeFile(filepath);
-//        int wid = bmp.getWidth();
-//        int hei = bmp.getHeight();
-//
-//        ivPreview.requestLayout();
-//        wid = ivPreview.getLayoutParams().width * wid / hei;
-//        ivPreview.getLayoutParams().width = wid;
-//        ivPreview.setImageBitmap(bmp);
-
         GlideApp.with(getApplicationContext())
                 .load(bmp)
                 .placeholder(R.drawable.placeholder)
@@ -145,10 +149,11 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         lat = getIntent().getDoubleExtra("latitude", 0.0);
         lon = getIntent().getDoubleExtra("longitude", 0.0);
         ParseGeoPoint location = new ParseGeoPoint(lat, lon);
-        // savePin(location);
 
         btnPin.setVisibility(View.GONE);
         locBtn.setVisibility(View.GONE);
+        ActionBar a = getSupportActionBar();
+        a.setTitle("Adjust the position of the pin");
         adjustPinFragment= adjustPinFragment.newInstance(lat, lon);
         ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.fragment_container, adjustPinFragment);
@@ -169,7 +174,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         pin.setComment(comment);
         pin.setCheckincount(0);
         pin.setLatLng(location);
-        //saveRestOfPin(pin);
 
         final ParseFile photo = ImageHelper.getParseFile(mCurrentBitmap);
         final ParseFile smallerPhoto = ImageHelper.getSmallerParseFile(mCurrentBitmap);
@@ -189,11 +193,9 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
                             saveRestOfPin(pin);
                         }
                     });
-
                 }
             }
         });
-
     }
 
     private void saveRestOfPin(final Pin pin) {
@@ -278,6 +280,8 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         adjusted = true;
         btnPin.setVisibility(View.VISIBLE);
         locBtn.setVisibility(View.VISIBLE);
+        ActionBar a = getSupportActionBar();
+        a.setTitle("Please describe your new pin");
     }
 
 

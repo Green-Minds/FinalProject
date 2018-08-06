@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".activities.NewPinActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:theme="@style/ToolbarColoredBackArrow"
+        app:titleTextColor="@color/white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
     <TextView
         android:id="@+id/tv_header"
         android:layout_width="wrap_content"

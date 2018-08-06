@@ -608,7 +608,7 @@ public class MapFragment extends Fragment implements
                         lon = mNewPin.getLatLng().getLongitude();
                         type = mNewPin.getCategory();
                         pins.add(mNewPin);
-                        // new cool map view with adjusting the pin position
+
                         CameraUpdate cameraNewPin = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 17);
                         map.moveCamera(cameraNewPin);
 
