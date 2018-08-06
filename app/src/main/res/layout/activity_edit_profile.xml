@@ -40,10 +40,10 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/molengo"
                 android:text="Username"
                 android:textColor="@color/colorPrimary"
                 android:textSize="20sp"
-                android:textStyle="bold"
                 tools:layout_editor_absoluteX="36dp"
                 tools:layout_editor_absoluteY="32dp" />
 
@@ -76,10 +76,10 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/molengo"
                 android:text="Profile Picture"
                 android:textColor="@color/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textSize="20sp" />
 
             <RelativeLayout
                 android:layout_width="104dp"

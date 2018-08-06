@@ -57,6 +57,9 @@ public class EditGoalActivity extends AppCompatActivity {
     @BindView(R.id.tv_text)
     TextView description;
 
+    @BindView(R.id.divider)
+    View divider;
+
     @BindView(R.id.et_numberof)
     EditText numberOf;
 
@@ -97,6 +100,7 @@ public class EditGoalActivity extends AppCompatActivity {
             mActionBar.setTitle(title);
             //dropdown is turned off - user shouldn't be able to change the category when they're editing the goal.
             dropdown.setVisibility(View.GONE);
+            divider.setVisibility(View.GONE);
         } else {
             //else make the dropdown menu visible and init fields to default
             initFields();

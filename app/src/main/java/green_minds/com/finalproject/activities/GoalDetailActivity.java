@@ -1,7 +1,9 @@
 package green_minds.com.finalproject.activities;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.parse.ParseUser;
@@ -35,6 +37,14 @@ public class GoalDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_goal_detail);
         Goal g = getIntent().getParcelableExtra("GOAL");
         ButterKnife.bind(this);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar a = getSupportActionBar();
+        // Enable the Up button
+        a.setDisplayHomeAsUpEnabled(true);
+        a.setTitle("Viewing Goal Details");
 
         SimpleDateFormat format = new SimpleDateFormat("MMMM dd, YY");
 
