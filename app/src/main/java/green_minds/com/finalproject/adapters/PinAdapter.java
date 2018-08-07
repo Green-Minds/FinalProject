@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -67,15 +68,14 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
             holder.tv_type.setTextColor(white);
             holder.tv_checkin_count.setTextColor(white);
             holder.tv_comment.setTextColor(white);
-//            int dp = (int)Utils.convertPixelsToDp(80);
-//            holder.itemView.setPadding( dp, 0, dp, 0);
+            holder.checkmark.setVisibility(View.VISIBLE);
+
         } else{
             int black = context.getResources().getColor(R.color.black);
             holder.tv_miles_away.setTextColor(black);
             holder.tv_type.setTextColor(black);
             holder.tv_checkin_count.setTextColor(black);
-//            holder.tv_comment.setTextColor(black);
-//            holder.itemView.setPadding( 0, 0, 0, 0);
+            holder.checkmark.setVisibility(View.GONE);
         }
         holder.tv_comment.setText(pin.getComment());
 
@@ -118,6 +118,11 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
         @BindView(R.id.tv_checkin_count)
         TextView tv_checkin_count;
 
+        @BindView(R.id.container)
+        RelativeLayout container;
+
+        @BindView(R.id.iv_checkmark)
+        ImageView checkmark;
 
         public ViewHolder(View itemView) {
             super(itemView);
