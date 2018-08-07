@@ -226,7 +226,7 @@ public class MapFragment extends Fragment implements
 
         @Override
         protected int getColor(int clusterSize) {
-            return getResources().getColor(R.color.colorPrimary);
+            return getResources().getColor(R.color.colorAccent);
         }
 
 
@@ -950,14 +950,12 @@ public class MapFragment extends Fragment implements
         @Override
         public View getInfoWindow(Marker marker) {
             TextView title = myContentsView.findViewById(R.id.title);
-            TextView description = myContentsView.findViewById(R.id.description);
             TextView distance = myContentsView.findViewById(R.id.distance);
             ImageView img = myContentsView.findViewById(R.id.img);
             ImageButton unfoldBtn = myContentsView.findViewById(R.id.unfoldBtn);
 
             if (clickedClusterItem != null) {
                 title.setText(clickedClusterItem.getTitle());
-                description.setText(clickedClusterItem.getSnippet());
                 distance.setText("distance: " + clickedClusterItem.getDistance());
                 GlideApp.with(mContext).load(clickedClusterItem.getImageUrl()).centerCrop().into(img);
                 unfoldBtn.setOnClickListener(new View.OnClickListener() {
@@ -970,36 +968,6 @@ public class MapFragment extends Fragment implements
             return myContentsView;
         }
     }
-
-    private void buttonsVisibilityBefore() {
-        ivAdjust.setVisibility(View.VISIBLE);
-        adjustBtn.setVisibility(View.VISIBLE);
-        tvAdjust.setVisibility(View.VISIBLE);
-        newPinBtn.setVisibility(View.GONE);
-        checkinBtn.setVisibility(View.GONE);
-        fab.setVisibility(View.GONE);
-        fab0.setVisibility(View.GONE);
-        fab1.setVisibility(View.GONE);
-        fab2.setVisibility(View.GONE);
-        fab3.setVisibility(View.GONE);
-        fab4.setVisibility(View.GONE);
-    }
-
-    private  void buttonsVisibilityAfter() {
-        adjustBtn.setVisibility(View.GONE);
-        ivAdjust.setVisibility(View.GONE);
-        tvAdjust.setVisibility(View.GONE);
-        newPinBtn.setVisibility(View.VISIBLE);
-        checkinBtn.setVisibility(View.VISIBLE);
-        fab.setVisibility(View.VISIBLE);
-        fab0.setVisibility(View.VISIBLE);
-        fab1.setVisibility(View.VISIBLE);
-        fab2.setVisibility(View.VISIBLE);
-        fab3.setVisibility(View.VISIBLE);
-        fab4.setVisibility(View.VISIBLE);
-    }
-
-
 
     @Override
     public void onAttach(Context context) {

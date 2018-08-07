@@ -38,11 +38,9 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         for (MyItem item : mItems) {
             TextView title = view.findViewById(R.id.title);
-            TextView description = view.findViewById(R.id.description);
             TextView distance = view.findViewById(R.id.distance);
             ImageView img = view.findViewById(R.id.img);
             title.setText(marker.getTitle());
-            description.setText(marker.getSnippet());
             distance.setText("distance: " + item.getDistance());
             GlideApp.with(context).load(item.getImageUrl()).centerCrop().into(img);
         }

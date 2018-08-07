@@ -60,7 +60,6 @@ public class AdjustPinFragment extends Fragment {
 
     @BindView(R.id.ivAdjust) public ImageView ivAdjust;
     @BindView(R.id.adjustBtn) public Button adjustBtn;
-    @BindView(R.id.tvAdjust) public TextView tvAdjust;
 
     public AdjustPinFragment() {
         // Required empty public constructor

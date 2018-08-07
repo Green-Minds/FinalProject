@@ -69,4 +69,7 @@ dependencies {
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.15'
     implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+
 }

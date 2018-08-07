@@ -15,6 +15,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.model.GlideApp;
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
+
+import static green_minds.com.finalproject.model.GlideOptions.bitmapTransform;
 
 public class PinDetailActivity extends AppCompatActivity {
 
@@ -40,7 +44,7 @@ public class PinDetailActivity extends AppCompatActivity {
         tvPin.setText(mCheckin);
         tvComment.setText(mComment);
         tvDistance.setText("distance: " + mDistance);
-        GlideApp.with(PinDetailActivity.this).load(mImage).centerCrop().into(ivImage);
+        GlideApp.with(PinDetailActivity.this).load(mImage).centerCrop().apply(bitmapTransform(new RoundedCornersTransformation(50, 0, RoundedCornersTransformation.CornerType.ALL))).into(ivImage);
 
     }
 
