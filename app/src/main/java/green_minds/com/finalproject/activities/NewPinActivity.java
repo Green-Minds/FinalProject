@@ -4,11 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,9 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseException;
@@ -35,7 +30,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.fragments.AdjustPinFragment;
-import green_minds.com.finalproject.fragments.UserInfoFragment;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.ImageHelper;
 import green_minds.com.finalproject.model.Pin;
@@ -57,9 +51,9 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
 
     @BindView(R.id.iv_preview)
     ImageView ivPreview;
-
-    @BindView(R.id.tv_upload)
-    TextView tvUpload;
+//
+//    @BindView(R.id.tv_upload)
+//    TextView tvUpload;
 
     @BindView(R.id.rb_categories)
     RadioGroup rbCategories;
@@ -105,6 +99,35 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         } else {
             currentUser = ParseUser.getCurrentUser();
         }
+
+        lat = getIntent().getDoubleExtra("latitude", 0.0);
+        lon = getIntent().getDoubleExtra("longitude", 0.0);
+        ParseGeoPoint location = new ParseGeoPoint(lat, lon);
+
+        adjustPinFragment= adjustPinFragment.newInstance(lat, lon);
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.fragment_container, adjustPinFragment);
+        ft.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_w_checkmark, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem m = menu.findItem(R.id.miConfirm);
+        m.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                uploadPin();
+                return true;
+            }
+        });
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -119,7 +142,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
                 .into(ivPreview);
 
         mCurrentBitmap = bmp;
-        tvUpload.setVisibility(View.GONE);
+        //tvUpload.setVisibility(View.GONE);
     }
 
     @OnClick(R.id.btn_pin)
@@ -143,22 +166,22 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     }
 
 
-    @OnClick(R.id.locBtn)
-    public void onLocBtn() {
-
-        lat = getIntent().getDoubleExtra("latitude", 0.0);
-        lon = getIntent().getDoubleExtra("longitude", 0.0);
-        ParseGeoPoint location = new ParseGeoPoint(lat, lon);
-
-        btnPin.setVisibility(View.GONE);
-        locBtn.setVisibility(View.GONE);
-        ActionBar a = getSupportActionBar();
-        a.setTitle("Adjust the position of the pin");
-        adjustPinFragment= adjustPinFragment.newInstance(lat, lon);
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.fragment_container, adjustPinFragment);
-        ft.commit();
-    }
+//    @OnClick(R.id.locBtn)
+//    public void onLocBtn() {
+//
+//        lat = getIntent().getDoubleExtra("latitude", 0.0);
+//        lon = getIntent().getDoubleExtra("longitude", 0.0);
+//        ParseGeoPoint location = new ParseGeoPoint(lat, lon);
+//
+//        btnPin.setVisibility(View.GONE);
+//        locBtn.setVisibility(View.GONE);
+//        ActionBar a = getSupportActionBar();
+//        a.setTitle("Adjust the position of the pin");
+//        adjustPinFragment= adjustPinFragment.newInstance(lat, lon);
+//        ft = getSupportFragmentManager().beginTransaction();
+//        ft.add(R.id.fragment_container, adjustPinFragment);
+//        ft.commit();
+//    }
 
     private void savePin(ParseGeoPoint location) {
         saving = true;
@@ -246,20 +269,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     private void redirectToLogin() {
         Intent i = new Intent(this, green_minds.com.finalproject.activities.UserInfoActivity.class);
         startActivity(i);
-    }
-
-    //progress icon setup
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        ProgressBar v = (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
-        return super.onPrepareOptionsMenu(menu);
     }
 
     private void showProgressBar() {
