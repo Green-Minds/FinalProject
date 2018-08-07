@@ -297,4 +297,8 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
             }
         });
     }
+
+    public void showNoDataMessage(){
+        userInfoFragment.showNoDataMessage();
+    }
 }

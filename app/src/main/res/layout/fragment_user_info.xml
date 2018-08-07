@@ -157,6 +157,7 @@
         style="@style/FloatingCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_weight="0"
         android:orientation="vertical">
 
@@ -193,6 +194,16 @@
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
             android:background="@color/colorLightPurple" />
+
+        <TextView
+            android:id="@+id/tv_nodata"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="No Goals Set."
+            android:textStyle="italic"
+            android:visibility="gone" />
 
         <ListView
             android:id="@+id/goal_list"

@@ -62,6 +62,8 @@ public class UserInfoFragment extends Fragment {
         void hideProgressBar();
 
         void logout();
+
+        void showNoDataMessage();
     }
 
     private static final String ARG_PARAM1 = "user";
@@ -89,6 +91,9 @@ public class UserInfoFragment extends Fragment {
 
     @BindView(R.id.btn_add_goal)
     ImageButton btnAddGoal;
+
+    @BindView(R.id.tv_nodata)
+    TextView tvNodata;
 
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
@@ -263,6 +268,11 @@ public class UserInfoFragment extends Fragment {
         mGoals.clear();
         mGoals.addAll(g);
         mGoalAdapter.notifyDataSetChanged();
+        if (g.size() <= 0) {
+            tvNodata.setVisibility(View.VISIBLE);
+        } else {
+            tvNodata.setVisibility(View.GONE);
+        }
     }
 
     public void refreshUserData() {
@@ -298,6 +308,11 @@ public class UserInfoFragment extends Fragment {
                 mListener.openGoalEditPage(-1, mGoals);
             }
         });
+        if (mGoals.size() <= 0) {
+            tvNodata.setVisibility(View.VISIBLE);
+        } else {
+            tvNodata.setVisibility(View.GONE);
+        }
     }
 
     private class CustomXAxisRenderer extends XAxisRenderer {
@@ -310,6 +325,10 @@ public class UserInfoFragment extends Fragment {
             int i = Integer.parseInt(formattedLabel);
             Utils.drawImage(c, CategoryHelper.getIconResource(i, mContext), (int) x, (int) y + 24, 64, 64);
         }
+    }
+
+    public void showNoDataMessage() {
+        tvNodata.setVisibility(View.VISIBLE);
     }
 
 }
