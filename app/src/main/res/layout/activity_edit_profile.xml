@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorLightPurpleTransparent"
     tools:context=".activities.EditProfileActivity">
 
     <android.support.v7.widget.Toolbar
@@ -19,70 +20,138 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/my_toolbar">
+        android:layout_below="@+id/my_toolbar"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:gravity="center_horizontal">
 
-        <EditText
-            android:id="@+id/tv_username"
+        <LinearLayout
+            android:id="@+id/layout_prof"
+            style="@style/FloatingCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp"
+            android:paddingLeft="48dp"
+            android:paddingRight="48dp"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/molengo"
+                android:text="Username"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                tools:layout_editor_absoluteX="36dp"
+                tools:layout_editor_absoluteY="32dp" />
+
+            <EditText
+                android:id="@+id/tv_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Username"
+                android:inputType="textPersonName"
+                tools:layout_editor_absoluteX="36dp"
+                tools:layout_editor_absoluteY="53dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/FloatingCard"
+            android:id="@+id/pic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_prof"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="16dp"
+            android:paddingLeft="48dp"
+            android:paddingRight="48dp"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/molengo"
+                android:text="Profile Picture"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_imageview">
+
+                <ImageView
+                    android:id="@+id/img_prof_pic"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/anon" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btn_edit_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/imageButton"
+                    android:background="@color/transparent"
+                    android:tint="@color/primaryGrey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_pencil" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/imageButton"
+                    android:text="  Upload New"
+                    android:textColor="@color/primaryGrey" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/img_prof_pic"
-            android:layout_marginTop="61dp"
-            android:ems="10"
-            android:hint="Username"
-            android:inputType="textPersonName"
-            tools:layout_editor_absoluteX="36dp"
-            tools:layout_editor_absoluteY="53dp" />
+            android:layout_centerInParent="true"
+            android:layout_marginTop="8sp"
+            android:layout_below="@+id/pic"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/img_prof_pic"
-            android:layout_alignStart="@+id/img_prof_pic"
-            android:layout_marginBottom="-61dp"
-            android:text="Edit Information"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:layout_editor_absoluteX="36dp"
-            tools:layout_editor_absoluteY="32dp" />
+            <Button
+                android:id="@+id/btn_cancel"
+                style="@style/PurpleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="Cancel" />
 
-        <ImageView
-            android:id="@+id/img_prof_pic"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="54dp"
-            android:layout_marginTop="138dp"
-            app:srcCompat="@drawable/q_mark"
-            tools:layout_editor_absoluteX="36dp"
-            tools:layout_editor_absoluteY="120dp" />
+            <Button
+                android:id="@+id/btn_save"
+                style="@style/PurpleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_weight="1"
+                android:text="Save" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_edit_pic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/img_prof_pic"
-            android:layout_toEndOf="@+id/img_prof_pic"
-            android:text="Edit profile picture"
-            tools:layout_editor_absoluteX="161dp"
-            tools:layout_editor_absoluteY="120dp" />
-
-        <Button
-            android:id="@+id/btn_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/textView"
-            android:layout_alignParentBottom="true"
-            android:text="Save Changes!" />
-
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toEndOf="@+id/textView"
-            android:text="Cancel" />
     </RelativeLayout>
 </RelativeLayout>

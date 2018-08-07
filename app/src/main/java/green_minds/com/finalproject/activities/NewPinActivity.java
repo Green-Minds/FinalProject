@@ -4,9 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,17 +34,23 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.fragments.AdjustPinFragment;
+import green_minds.com.finalproject.fragments.UserInfoFragment;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.ImageHelper;
 import green_minds.com.finalproject.model.Pin;
 
-public class NewPinActivity extends AppCompatActivity {
+public class NewPinActivity extends AppCompatActivity implements AdjustPinFragment.OnFragmentInteractionListener{
 
     @BindView(R.id.btn_camera)
     ImageButton btnCamera;
 
     @BindView(R.id.btn_pin)
     Button btnPin;
+
+    @BindView(R.id.locBtn)
+    Button locBtn;
+
 
     @BindView(R.id.et_comment)
     EditText etComment;
@@ -53,14 +64,24 @@ public class NewPinActivity extends AppCompatActivity {
     @BindView(R.id.rb_categories)
     RadioGroup rbCategories;
 
+    @BindView(R.id.my_toolbar)
+    Toolbar myToolbar;
+
     private Bitmap mCurrentBitmap;
     private Context context;
     private ParseUser currentUser;
     private MenuItem miActionProgressItem;
     private boolean saving;
+    private boolean adjusted = false;
 
     final public static String CODE_KEY = "REQUEST_CODE";
     final public static int REQUEST_CODE = 31;
+
+    private AdjustPinFragment adjustPinFragment;
+    private FragmentTransaction ft;
+
+    private Double lat;
+    private Double lon;
 
 
     @Override
@@ -71,6 +92,13 @@ public class NewPinActivity extends AppCompatActivity {
         mCurrentBitmap = null;
         context = this;
         saving = false;
+
+        setSupportActionBar(myToolbar);
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar a = getSupportActionBar();
+        // Enable the Up button
+        a.setDisplayHomeAsUpEnabled(true);
+        a.setTitle("Please describe your new pin");
 
         if (ParseUser.getCurrentUser() == null) {
             redirectToLogin();
@@ -84,14 +112,6 @@ public class NewPinActivity extends AppCompatActivity {
         Bitmap bmp = null;
         String filepath = data.getStringExtra("image");
         bmp = BitmapFactory.decodeFile(filepath);
-//        int wid = bmp.getWidth();
-//        int hei = bmp.getHeight();
-//
-//        ivPreview.requestLayout();
-//        wid = ivPreview.getLayoutParams().width * wid / hei;
-//        ivPreview.getLayoutParams().width = wid;
-//        ivPreview.setImageBitmap(bmp);
-
         GlideApp.with(getApplicationContext())
                 .load(bmp)
                 .placeholder(R.drawable.placeholder)
@@ -113,10 +133,31 @@ public class NewPinActivity extends AppCompatActivity {
             return;
         }
 
-        Double lat = getIntent().getDoubleExtra("latitude", 0.0);
-        Double lon = getIntent().getDoubleExtra("longitude", 0.0);
+        if (!adjusted) {
+            Toast.makeText(this, "Please adjust the position of the pin first!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        savePin(new ParseGeoPoint(lat, lon));
+
+    }
+
+
+    @OnClick(R.id.locBtn)
+    public void onLocBtn() {
+
+        lat = getIntent().getDoubleExtra("latitude", 0.0);
+        lon = getIntent().getDoubleExtra("longitude", 0.0);
         ParseGeoPoint location = new ParseGeoPoint(lat, lon);
-        savePin(location);
+
+        btnPin.setVisibility(View.GONE);
+        locBtn.setVisibility(View.GONE);
+        ActionBar a = getSupportActionBar();
+        a.setTitle("Adjust the position of the pin");
+        adjustPinFragment= adjustPinFragment.newInstance(lat, lon);
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.fragment_container, adjustPinFragment);
+        ft.commit();
     }
 
     private void savePin(ParseGeoPoint location) {
@@ -133,7 +174,6 @@ public class NewPinActivity extends AppCompatActivity {
         pin.setComment(comment);
         pin.setCheckincount(0);
         pin.setLatLng(location);
-        //saveRestOfPin(pin);
 
         final ParseFile photo = ImageHelper.getParseFile(mCurrentBitmap);
         final ParseFile smallerPhoto = ImageHelper.getSmallerParseFile(mCurrentBitmap);
@@ -153,7 +193,6 @@ public class NewPinActivity extends AppCompatActivity {
                             saveRestOfPin(pin);
                         }
                     });
-
                 }
             }
         });
@@ -230,4 +269,20 @@ public class NewPinActivity extends AppCompatActivity {
     private void hideProgressBar() {
         if(miActionProgressItem !=null) miActionProgressItem.setVisible(false);
     }
+
+    @Override
+    public void adjustLoc(Double latitude, Double longitude) {
+        lat = latitude;
+        lon = longitude;
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.hide(adjustPinFragment);
+        ft.commit();
+        adjusted = true;
+        btnPin.setVisibility(View.VISIBLE);
+        locBtn.setVisibility(View.VISIBLE);
+        ActionBar a = getSupportActionBar();
+        a.setTitle("Please describe your new pin");
+    }
+
+
 }

@@ -11,11 +11,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -25,6 +28,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +39,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.PinAdapter;
+import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.model.RelativePositionPin;
 
@@ -55,10 +60,15 @@ public class CheckInActivity extends AppCompatActivity {
     @BindView(R.id.rv_pins)
     RecyclerView rvPins;
 
+    @BindView(R.id.btn_checkin)
+    Button btnCheckin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
+
+
 
         //for testing purposes
         user = ParseUser.getCurrentUser();
@@ -66,11 +76,21 @@ public class CheckInActivity extends AppCompatActivity {
             redirectToLogin();
         }
         ButterKnife.bind(this);
+        btnCheckin.bringToFront();
+        btnCheckin.setEnabled(false);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar a = getSupportActionBar();
+        // Enable the Up button
+        a.setDisplayHomeAsUpEnabled(true);
+        a.setTitle("Check in to location");
 
         //set up adapter
         mPins = new ArrayList<>();
-        adapter = new PinAdapter(mPins);
         context = this;
+        adapter = new PinAdapter(mPins, context);
         rvPins.setLayoutManager(new LinearLayoutManager(this));
         rvPins.setAdapter(adapter);
 
@@ -131,70 +151,97 @@ public class CheckInActivity extends AppCompatActivity {
     }
 
     private void getListOfPins() {
-    ParseGeoPoint current_location = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
-    ParseQuery<Pin> query = ParseQuery.getQuery(Pin.class);
-    query.getQuery(Pin.class).whereWithinMiles("latlng", current_location, 0.5)
-        .findInBackground(
-            new FindCallback<Pin>() {
-              @Override
-              public void done(List<Pin> objects, ParseException e) {
+        ParseGeoPoint current_location = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
+        ParseQuery<Pin> query = ParseQuery.getQuery(Pin.class);
+        query.getQuery(Pin.class).whereWithinMiles("latlng", current_location, 0.125)
+                .findInBackground(
+                        new FindCallback<Pin>() {
+                            @Override
+                            public void done(List<Pin> objects, ParseException e) {
 
-                if (e == null) {
-                  ArrayList<RelativePositionPin> rpList = new ArrayList<>();
-                  for (Pin pin : objects) {
-                    RelativePositionPin rpPin = (convert(pin, lastLocation));
-                    Location pinLoc = getLocationFromPin(pin);
-                    rpPin.setDistanceAway((double) lastLocation.distanceTo(pinLoc));
-                    rpList.add(rpPin);
-                  }
-                  Collections.sort(rpList);
-                  mPins.clear();
-                  mPins.addAll(rpList);
-                  adapter.notifyDataSetChanged();
-                  hideProgressBar();
-                } else {
-                  e.printStackTrace();
-                }
-              }
-            });
-  }
-
-  private RelativePositionPin convert(Pin pin, Location currLocation) {
-    RelativePositionPin rp = new RelativePositionPin(pin);
-    Location pinLoc = getLocationFromPin(pin);
-    rp.setDistanceAway((double) currLocation.distanceTo(pinLoc));
-    return rp;
-  }
-
-  private Location getLocationFromPin(Pin pin) {
-    ParseGeoPoint gp = pin.getLatLng();
-    Location resLoc = new Location("");
-    resLoc.setLatitude(gp.getLatitude());
-    resLoc.setLongitude(gp.getLongitude());
-    return resLoc;
-  }
-
-  private void redirectToLogin() {
-    Intent i = new Intent(this, green_minds.com.finalproject.activities.UserInfoActivity.class);
-    startActivity(i);
-  }
-
-  public class MyLocationListener implements LocationListener {
-    @Override
-    public void onLocationChanged(Location location) {
-        // should i update in the background all the time, or only when needed?
-      lastLocation = location;
+                                if (e == null) {
+                                    ArrayList<RelativePositionPin> rpList = new ArrayList<>();
+                                    for (Pin pin : objects) {
+                                        RelativePositionPin rpPin = (convert(pin, lastLocation));
+                                        Location pinLoc = getLocationFromPin(pin);
+                                        rpPin.setDistanceAway((double) lastLocation.distanceTo(pinLoc));
+                                        rpList.add(rpPin);
+                                    }
+                                    Collections.sort(rpList);
+                                    mPins.clear();
+                                    mPins.addAll(rpList);
+                                    adapter.notifyDataSetChanged();
+                                    hideProgressBar();
+                                } else {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
+    @OnClick(R.id.btn_checkin)
+    public void checkin() {
+        final Pin pin = mPins.get(adapter.mSelectedPos).getPin();
+        pin.increment("checkincount");
+        pin.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                int numtimes = pin.getCheckincount();
 
-    @Override
-    public void onProviderEnabled(String provider) {}
+                user.increment("points");
+                String cat_key = CategoryHelper.getTypeKey(pin.getCategory());
+                user.increment(cat_key);
 
-    @Override
-    public void onProviderDisabled(String provider) {}
-  }
+                user.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        Toast.makeText(context, "Checked in!", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                });
+            }
+        });
+    }
+
+    private RelativePositionPin convert(Pin pin, Location currLocation) {
+        RelativePositionPin rp = new RelativePositionPin(pin);
+        Location pinLoc = getLocationFromPin(pin);
+        rp.setDistanceAway((double) currLocation.distanceTo(pinLoc));
+        return rp;
+    }
+
+    private Location getLocationFromPin(Pin pin) {
+        ParseGeoPoint gp = pin.getLatLng();
+        Location resLoc = new Location("");
+        resLoc.setLatitude(gp.getLatitude());
+        resLoc.setLongitude(gp.getLongitude());
+        return resLoc;
+    }
+
+    private void redirectToLogin() {
+        Intent i = new Intent(this, green_minds.com.finalproject.activities.UserInfoActivity.class);
+        startActivity(i);
+    }
+
+    public class MyLocationListener implements LocationListener {
+        @Override
+        public void onLocationChanged(Location location) {
+            // should i update in the background all the time, or only when needed?
+            lastLocation = location;
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+    }
 
     //progress icon setup
     @Override
@@ -211,11 +258,15 @@ public class CheckInActivity extends AppCompatActivity {
     }
 
     private void showProgressBar() {
-        if(miActionProgressItem !=null) miActionProgressItem.setVisible(true);
+        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
     }
 
     private void hideProgressBar() {
-        if(miActionProgressItem !=null) miActionProgressItem.setVisible(false);
+        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
+    }
+
+    public void activateButton(){
+        btnCheckin.setEnabled(true);
     }
 
     //TODO - consider what happens if user navigates away while network call still in progress

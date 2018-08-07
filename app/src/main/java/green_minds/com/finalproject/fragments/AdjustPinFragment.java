@@ -11,27 +11,42 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterManager;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.MyItem;
+
+import static green_minds.com.finalproject.fragments.MapFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck;
+import static green_minds.com.finalproject.fragments.MapFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck;
 
 
 public class AdjustPinFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
+    private static final String ARG_PARAM1 = "lat";
+    private static final String ARG_PARAM2 = "lon";
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private double lat;
+    private double lon;
 
     private OnFragmentInteractionListener mListener;
     private Context mContext;
@@ -41,6 +56,10 @@ public class AdjustPinFragment extends Fragment {
     private final static String KEY_LOCATION = "location";
     private LocationRequest mLocationRequest;
     public Location mCurrentLocation;
+    private LatLng currentLoc;
+
+    @BindView(R.id.ivAdjust) public ImageView ivAdjust;
+    @BindView(R.id.adjustBtn) public Button adjustBtn;
 
     public AdjustPinFragment() {
         // Required empty public constructor
@@ -49,17 +68,14 @@ public class AdjustPinFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment AdjustPinFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdjustPinFragment newInstance(String param1, String param2) {
+    public static AdjustPinFragment newInstance(Double lat, Double lon) {
         AdjustPinFragment fragment = new AdjustPinFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putDouble(ARG_PARAM1, lat);
+        args.putDouble(ARG_PARAM2, lon);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,8 +84,8 @@ public class AdjustPinFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            lat = getArguments().getDouble(ARG_PARAM1);
+            lon = getArguments().getDouble(ARG_PARAM2);
         }
     }
 
@@ -102,7 +118,7 @@ public class AdjustPinFragment extends Fragment {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(GoogleMap map) {
-                    // loadMap(map);
+                    loadMap(map);
                     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 }
             });
@@ -110,9 +126,27 @@ public class AdjustPinFragment extends Fragment {
             Toast.makeText(mContext, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    protected void loadMap(GoogleMap googleMap) {
+        map = googleMap;
+        if (map != null) {
+            // Map is ready
+
+            UiSettings mapUiSettings = map.getUiSettings();
+            mapUiSettings.setZoomControlsEnabled(true);
+            map.setMinZoomPreference(6.0f);
+            CameraUpdate cameraNewPin = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 17);
+            map.moveCamera(cameraNewPin);
+            } else {
+            Toast.makeText(mContext, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
+
+        }
+
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -127,6 +161,14 @@ public class AdjustPinFragment extends Fragment {
         mListener = null;
     }
 
+    @OnClick(R.id.adjustBtn)
+    protected void onAdjustClick() {
+        CameraPosition currentCameraPosition = map.getCameraPosition();
+        currentLoc = currentCameraPosition.target;
+        lat = currentLoc.latitude;
+        lon = currentLoc.longitude;
+        mListener.adjustLoc(lat, lon);
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -138,7 +180,6 @@ public class AdjustPinFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void adjustLoc(Double lat, Double lon);
     }
 }

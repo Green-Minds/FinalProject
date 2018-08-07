@@ -830,10 +830,10 @@ public class MapActivity extends AppCompatActivity implements
 
                 break;
             case 2:
-                imageName = "ic_cycling";
+                imageName = "ic_bicycle";
                 break;
             case 3:
-                imageName = "ic_money";
+                imageName = "ic_coins";
                 break;
             case 4:
                 imageName = "ic_battery";
@@ -1094,14 +1094,12 @@ public class MapActivity extends AppCompatActivity implements
         @Override
         public View getInfoWindow(Marker marker) {
             TextView title = myContentsView.findViewById(R.id.title);
-            TextView description = myContentsView.findViewById(R.id.description);
             TextView distance = myContentsView.findViewById(R.id.distance);
             ImageView img = myContentsView.findViewById(R.id.img);
             ImageButton unfoldBtn = myContentsView.findViewById(R.id.unfoldBtn);
 
             if (clickedClusterItem != null) {
                  title.setText(clickedClusterItem.getTitle());
-                 description.setText(clickedClusterItem.getSnippet());
                  distance.setText("distance: " + clickedClusterItem.getDistance());
                  GlideApp.with(MapActivity.this).load(clickedClusterItem.getImageUrl()).centerCrop().into(img);
                  unfoldBtn.setOnClickListener(new View.OnClickListener() {

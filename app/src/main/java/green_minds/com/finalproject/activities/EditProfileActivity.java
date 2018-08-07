@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.request.RequestOptions;
@@ -58,7 +59,7 @@ public class EditProfileActivity extends AppCompatActivity {
     ImageView ivProfPic;
 
     @BindView(R.id.btn_edit_pic)
-    Button btnEditPic;
+    RelativeLayout btnEditPic;
 
     @BindView(R.id.btn_save)
     Button btnSave;
@@ -77,6 +78,7 @@ public class EditProfileActivity extends AppCompatActivity {
         } else {
             etUsername.setText(mUser.getUsername());
         }
+        etUsername.setSelection(etUsername.getText().length());
 
         ParseFile photo = mUser.getParseFile("photo");
         if (photo == null) {
@@ -192,7 +194,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_cancel)
     public void cancel() {
-        if (mNewPic != null || !(etUsername.getText().toString().equals(mUser.getUsername()))) {
+        if (mNewPic != null || !(etUsername.getText().toString().toLowerCase().equals(mUser.getUsername()))) {
             AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog_Alert);

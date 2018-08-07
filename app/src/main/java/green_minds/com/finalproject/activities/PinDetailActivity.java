@@ -15,6 +15,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.model.GlideApp;
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
+
+import static green_minds.com.finalproject.model.GlideOptions.bitmapTransform;
 
 public class PinDetailActivity extends AppCompatActivity {
 
@@ -23,7 +27,6 @@ public class PinDetailActivity extends AppCompatActivity {
     @BindView(R.id.tvComment) public TextView tvComment;
     @BindView(R.id.tvDistance) public TextView tvDistance;
     @BindView(R.id.backBtn) public ImageButton backBtn;
-    @BindView(R.id.navigationView) public BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,35 +44,8 @@ public class PinDetailActivity extends AppCompatActivity {
         tvPin.setText(mCheckin);
         tvComment.setText(mComment);
         tvDistance.setText("distance: " + mDistance);
-        GlideApp.with(PinDetailActivity.this).load(mImage).centerCrop().into(ivImage);
+        GlideApp.with(PinDetailActivity.this).load(mImage).centerCrop().apply(bitmapTransform(new RoundedCornersTransformation(50, 0, RoundedCornersTransformation.CornerType.ALL))).into(ivImage);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_map:
-                        gotoMap();
-                        return true;
-                    case R.id.navigation_user:
-                        gotoProfile();
-                        return true;
-                    case R.id.navigation_board:
-                        gotoLeaderboard();
-                        return true;
-                }
-                return false;
-            }
-        });
-    }
-    private void gotoLeaderboard() {
-        startActivity(new Intent(this, MainActivity.class));
-    }
-
-    private void gotoProfile() {
-        startActivity(new Intent(this, UserInfoActivity.class));
-    }
-    private void gotoMap() {
-        startActivity(new Intent(this, MapActivity.class));
     }
 
     @OnClick(R.id.backBtn)
