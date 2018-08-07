@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/row_background">
 
     <ImageView
         android:id="@+id/iv_preview"
@@ -21,48 +22,65 @@
         android:padding="15dp"
         android:layout_alignParentTop="true">
 
-        <TextView
-            android:id="@+id/tv_comment"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/tv_type"
-            android:layout_below="@+id/tv_checkin_count"
-            android:text="description" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tv_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="type"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tv_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="type"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tv_miles_away"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:text=" miles away"
-            android:textStyle="italic" />
+            <TextView
+                android:id="@+id/tv_miles_away"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_weight="0"
+                android:text=" miles away"
+                android:textStyle="italic" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_checkin_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/tv_type"
-            android:layout_below="@+id/tv_type"
+            android:layout_alignStart="@+id/title"
+            android:layout_below="@+id/title"
             android:text="Visited 0 times."
-            android:layout_marginBottom="15dp"
             android:textStyle="italic" />
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="4dp"
+            android:layout_below="@+id/tv_checkin_count"
+            android:background="@color/colorLightPurpleTransparent" />
+        <TextView
+            android:id="@+id/tv_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tv_checkin_count"
+            android:layout_below="@+id/divider1"
+            android:text="description" />
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/btn_checkin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/iv_preview"
-        android:layout_alignParentEnd="true"
-        android:text="check in" />
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_below="@id/iv_preview"
+        android:background="@color/colorLightPurpleTransparent" />
 
 </RelativeLayout>

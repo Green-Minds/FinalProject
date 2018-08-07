@@ -91,12 +91,13 @@ public class EditGoalActivity extends AppCompatActivity {
             mCurrentGoal = mGoals.get(pos);
             int position = mCurrentGoal.getType();
             numberOf.setText(mCurrentGoal.getGoal() + "");
+            numberOf.setSelection(numberOf.getText().length());
             mSelectedDate = mCurrentGoal.getDeadline();
             calendar.setDate(mSelectedDate.getTime());
             btnSave.setText(R.string.button_save_text);
             description.setText(CategoryHelper.categories[position].getDescription());
             type.setText(CategoryHelper.categories[position].getUnit());
-            String title = getString(R.string.edit_goal_title) + CategoryHelper.getPinIdentifier(position);
+            String title = getString(R.string.edit_goal_title) + " " + CategoryHelper.getPinIdentifier(position);
             mActionBar.setTitle(title);
             //dropdown is turned off - user shouldn't be able to change the category when they're editing the goal.
             dropdown.setVisibility(View.GONE);
