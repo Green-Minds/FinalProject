@@ -34,27 +34,32 @@
 
     <Button
         android:id="@+id/btnLoginPage"
-        android:layout_width="190dp"
-        android:layout_height="wrap_content"
+        android:layout_width="115dp"
+        android:layout_height="45dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:background="@android:color/white"
         android:onClick="gotoLogin"
-        android:text="Login"
-        android:visibility="gone" />
+        android:text="Login" />
 
     <Button
         android:id="@+id/btnSignupPage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="115dp"
+        android:layout_height="45dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginLeft="4dp"
-        android:layout_toRightOf="@+id/btnLoginPage"
         android:background="@android:color/white"
         android:onClick="gotoSignup"
-        android:text="SignUp"
-        android:visibility="gone" />
+        android:text="SignUp" />
+
+    <Button
+        android:id="@+id/btnLoginviaFB"
+        android:layout_width="115dp"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/white"
+        android:text="Login with Facebook" />
 
     <TextView
         android:id="@+id/textView4"

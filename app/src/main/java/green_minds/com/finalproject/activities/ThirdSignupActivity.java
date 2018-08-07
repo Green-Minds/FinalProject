@@ -58,6 +58,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
     private Bitmap imageBitmap;
     private ProgressDialog pd;
     private android.support.v7.app.ActionBar actionBar;
+
     @BindView(R.id.ivUserPic)
     public ImageView ivUserPic;
     @BindView(R.id.set_container)
@@ -179,7 +180,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
                             alertDisplayer("Signup Successful","Welcome " + originalUsername + "!");
                         } else {
                             e.printStackTrace();
-                            if (e.getCode() == 202 || e.getCode() == 203) {
+                            if (e.getCode() == ParseException.USERNAME_TAKEN || e.getCode() == ParseException.EMAIL_TAKEN) {
                                 hideProgressDialog();
                                 intent.putExtra("code", e.getCode());
                                 intent.putExtra("activity", ThirdSignupActivity.class.getName());

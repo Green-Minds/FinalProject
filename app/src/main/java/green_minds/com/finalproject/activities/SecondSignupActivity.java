@@ -32,6 +32,7 @@ public class SecondSignupActivity extends AppCompatActivity {
     private String[] school = {null};
     private ProgressDialog pd;
     private android.support.v7.app.ActionBar actionBar;
+
     @BindView(R.id.rgSelection)
     public RadioGroup rgSelection;
     @BindView(R.id.rbWork)
