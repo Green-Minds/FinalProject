@@ -289,7 +289,7 @@ public class UserInfoFragment extends Fragment {
     }
 
     private void setUpGoals() {
-        mGoalAdapter = new GoalAdapter(mContext, mGoals, mListener);
+        mGoalAdapter = new GoalAdapter(mContext, mUser, mGoals, mListener);
         goalList.setAdapter(mGoalAdapter);
 
         btnAddGoal.setOnClickListener(new View.OnClickListener() {
