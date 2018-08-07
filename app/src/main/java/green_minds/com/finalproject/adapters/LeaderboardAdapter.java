@@ -65,7 +65,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         holder.tvPts.setText(String.valueOf(user.getInt("points")) + " points");
         if (user.getInt("points") == 1) holder.tvPts.setText(String.valueOf(user.getInt("points")) + " point");
         if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
-            holder.itemView.setElevation(5);
+            //holder.itemView.layout(R.style.FloatingCardLeaderboard);
         }
 
         GlideApp.with(context)

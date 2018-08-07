@@ -124,7 +124,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="76dp"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/button_toggle"
         android:enabled="false"
         android:text="Next"
         android:textColor="@android:color/white" />

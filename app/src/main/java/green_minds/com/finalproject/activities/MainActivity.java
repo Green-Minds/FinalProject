@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
 
     @Override
     public void logout() {
+        if (!isOnline()) return;
         if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logOut();
         }

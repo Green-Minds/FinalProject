@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if ((etUsernameLogin.getText().toString() != null) && (etPasswordLogin.getText().toString() != null)){
+                if ((etUsernameLogin.getText().toString().length() > 1) && (etPasswordLogin.getText().toString().length() > 1)) {
                     btnLogin.setEnabled(true);
                 }
             }
