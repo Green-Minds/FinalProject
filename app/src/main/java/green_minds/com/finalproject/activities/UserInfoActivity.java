@@ -1,20 +1,16 @@
 package green_minds.com.finalproject.activities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.facebook.login.LoginManager;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -41,7 +37,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.GoalAdapter;
 import green_minds.com.finalproject.adapters.ScoreAdapter;
@@ -69,12 +64,18 @@ public class UserInfoActivity extends AppCompatActivity {
     @BindView(R.id.chart)
     BarChart chart;
 
+    @BindView(R.id.profileToolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.tvTitle)
+    TextView tvTitle;
+
     private ParseUser mUser;
     private ArrayList<Goal> mGoals;
     private Context mContext;
-    private MenuItem miActionProgressItem;
     private GoalAdapter mGoalAdapter;
     private ScoreAdapter mScoreAdapter;
+    private android.support.v7.app.ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,36 +83,42 @@ public class UserInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_info);
         ButterKnife.bind(this);
         mContext = this;
+
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        mUser = getIntent().getParcelableExtra("user");
         setupUserInfo();
     }
 
-    @OnClick(R.id.btn_popup)
-    public void showPopUp() {
-        //Creating the instance of PopupMenu
-        PopupMenu popup = new PopupMenu(UserInfoActivity.this, btnPopup);
-        //Inflating the Popup using xml file
-        popup.getMenuInflater()
-                .inflate(R.menu.popup_user, popup.getMenu());
-
-        //registering popup with OnMenuItemClickListener
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            public boolean onMenuItemClick(MenuItem item) {
-                //TODO - add to strings.xml
-                String[] ids = getResources().getResourceName(item.getItemId()).split("\\/");
-                String id = ids[1];
-                if (id.equals("mi_logout")) {
-                    logOut();
-                } else if (id.equals("mi_edit_prof")) {
-                    goToEdit();
-                } else {
-                    goToGoals();
-                }
-                return true;
-            }
-        });
-
-        popup.show(); //showing popup menu
-    }
+//    @OnClick(R.id.btn_popup)
+//    public void showPopUp() {
+//        //Creating the instance of PopupMenu
+//        PopupMenu popup = new PopupMenu(UserInfoActivity.this, btnPopup);
+//        //Inflating the Popup using xml file
+//        popup.getMenuInflater()
+//                .inflate(R.menu.popup_user, popup.getMenu());
+//
+//        //registering popup with OnMenuItemClickListener
+//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//            public boolean onMenuItemClick(MenuItem item) {
+//                //TODO - add to strings.xml
+//                String[] ids = getResources().getResourceName(item.getItemId()).split("\\/");
+//                String id = ids[1];
+//                if (id.equals("mi_logout")) {
+//                    logOut();
+//                } else if (id.equals("mi_edit_prof")) {
+//                    goToEdit();
+//                } else {
+//                    goToGoals();
+//                }
+//                return true;
+//            }
+//        });
+//
+//        popup.show(); //showing popup menu
+//    }
 
     private void setUpGraph(){
 
@@ -135,8 +142,6 @@ public class UserInfoActivity extends AppCompatActivity {
         leftAxis.setEnabled(false);
         rightAxis.setEnabled(false);
         chart.setDrawBorders(false);
-
-        mUser = ParseUser.getCurrentUser();
 
         List<BarEntry> entries = new ArrayList<>();
 
@@ -166,12 +171,12 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void setupUserInfo() {
-        showProgressBar();
+        //showProgressBar();
         setUpGraph();
         mContext = this;
-        mUser = ParseUser.getCurrentUser();
+
         if (mUser == null) {
-            redirectToLogin();
+            //redirectToLogin();
             return;
         }
 
@@ -225,7 +230,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         mGoals = new ArrayList<>();
                     }
 
-                    mGoalAdapter = new GoalAdapter(mContext, mGoals, null);
+                    mGoalAdapter = new GoalAdapter(UserInfoActivity.this, mUser, mGoals, null);
                     ListView listview = findViewById(R.id.goal_list);
                     listview.setAdapter(mGoalAdapter);
                 } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
@@ -240,72 +245,74 @@ public class UserInfoActivity extends AppCompatActivity {
         });
     }
 
-    public void goToEdit() {
-        Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
-        startActivityForResult(i, 30);
-    }
+//    public void goToEdit() {
+//        Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
+//        startActivityForResult(i, 30);
+//    }
+//
+//    public void goToGoals() {
+//        Intent i = new Intent(UserInfoActivity.this, GoalActivity.class);
+//        if (mGoals == null) {
+//            Toast.makeText(mContext, getString(R.string.wait_content), Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        i.putExtra("GOALS", mGoals);
+//        startActivityForResult(i, 31);
+//    }
 
-    public void goToGoals() {
-        Intent i = new Intent(UserInfoActivity.this, GoalActivity.class);
-        if (mGoals == null) {
-            Toast.makeText(mContext, getString(R.string.wait_content), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        i.putExtra("GOALS", mGoals);
-        startActivityForResult(i, 31);
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        //update user info page with new info
+//        if (resultCode != RESULT_OK) return;
+//
+//        if (requestCode == 31 && data != null) {
+//            List<Goal> g = data.getParcelableArrayListExtra("GOALS");
+//            mGoals.clear();
+//            mGoals.addAll(g);
+//            mGoalAdapter.notifyDataSetChanged();
+//        } else if (requestCode == 30) {
+//            tvName.setText(mUser.getUsername());
+//            ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
+//
+//            if (smallerPhoto != null) {
+//                String url = smallerPhoto.getUrl();
+//                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+//            } else {
+//                ParseFile photo = mUser.getParseFile("photo");
+//
+//                if (photo != null) {
+//                    String url = photo.getUrl();
+//                    GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
+//                } else {
+//                    GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void redirectToLogin() {
+//        Intent i = new Intent(mContext, LoginActivity.class);
+//        mContext.startActivity(i);
+//        finish();
+//    }
+//
+//    private void showProgressBar() {
+//        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
+//    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //update user info page with new info
-        if (resultCode != RESULT_OK) return;
-        if (requestCode == 31 && data != null) {
-            List<Goal> g = data.getParcelableArrayListExtra("GOALS");
-            mGoals.clear();
-            mGoals.addAll(g);
-            mGoalAdapter.notifyDataSetChanged();
-        } else if (requestCode == 30) {
-            mUser = ParseUser.getCurrentUser();
-            tvName.setText(mUser.getUsername());
-            ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
-            if (smallerPhoto != null) {
-                String url = smallerPhoto.getUrl();
-                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-            } else {
-                ParseFile photo = mUser.getParseFile("photo");
-                if (photo != null) {
-                    String url = photo.getUrl();
-                    GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-                } else {
-                    GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
-                }
-            }
-        }
-    }
-
-    private void redirectToLogin() {
-        Intent i = new Intent(mContext, LoginActivity.class);
-        mContext.startActivity(i);
-        finish();
-    }
-
-    private void showProgressBar() {
-        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
-    }
-
-    private void hideProgressBar() {
-        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
-    }
-
-    public void logOut() {
-        if (AccessToken.getCurrentAccessToken() != null) {
-            LoginManager.getInstance().logOut();
-            ParseUser.logOut();
-        } else {
-            ParseUser.logOut();
-        }
-        redirectToLogin();
-    }
+//    private void hideProgressBar() {
+//        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
+//    }
+//
+//    public void logOut() {
+//        if (AccessToken.getCurrentAccessToken() != null) {
+//            LoginManager.getInstance().logOut();
+//            ParseUser.logOut();
+//        } else {
+//            ParseUser.logOut();
+//        }
+//        redirectToLogin();
+//    }
 
     public class CustomXAxisRenderer extends XAxisRenderer {
         public CustomXAxisRenderer(ViewPortHandler viewPortHandler, XAxis xAxis, Transformer trans) {

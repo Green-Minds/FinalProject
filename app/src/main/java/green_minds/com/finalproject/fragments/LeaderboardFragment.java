@@ -31,13 +31,16 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
 
     private static final String ARG_PARAM1 = "users";
     private OnFragmentInteractionListener mListener;
-
     private LeaderboardAdapter leaderboardAdapter;
     private ArrayList<ParseUser> users;
     private Context mContext;
-    @BindView(R.id.swipe_container_fragment) public SwipeRefreshLayout swipeContainer;
-    @BindView(R.id.rvUsersFragment) public RecyclerView rvUsers;
-    @BindView(R.id.connectionTitle) public TextView connectionTitle;
+
+    @BindView(R.id.swipe_container_fragment)
+    public SwipeRefreshLayout swipeContainer;
+    @BindView(R.id.rvUsersFragment)
+    public RecyclerView rvUsers;
+    @BindView(R.id.connectionTitle)
+    public TextView connectionTitle;
 
     public LeaderboardFragment() {
         // Required empty public constructor
@@ -109,8 +112,6 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     private class refreshTask extends AsyncTask<Void, Void, Void> {
-
-        ArrayList<ParseUser> temp_users = new ArrayList<>();
 
         @Override
         protected Void doInBackground(Void... params) {

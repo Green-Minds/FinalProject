@@ -1,6 +1,8 @@
 package green_minds.com.finalproject.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.activities.UserInfoActivity;
 import green_minds.com.finalproject.fragments.LeaderboardFragment;
 import green_minds.com.finalproject.model.GlideApp;
 
@@ -56,6 +59,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         return viewHolder;
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ParseUser user = mUsers.get(position);
@@ -63,9 +67,17 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         holder.tvPosition.setText(String.valueOf(position + 1));
         holder.tvUserLeaderbaord.setText(user.getString("original_username"));
         holder.tvPts.setText(String.valueOf(user.getInt("points")) + " points");
+
         if (user.getInt("points") == 1) holder.tvPts.setText(String.valueOf(user.getInt("points")) + " point");
         if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
-            //holder.itemView.layout(R.style.FloatingCardLeaderboard);
+            holder.itemView.setBackground(context.getDrawable(R.drawable.gradient));
+            holder.tvPts.setTextColor(context.getResources().getColor(R.color.white));
+            holder.tvPosition.setTextColor(context.getResources().getColor(R.color.white));
+            holder.tvUserLeaderbaord.setTextColor(context.getResources().getColor(R.color.white));
+            holder.tvUserLeaderbaord.setTextSize(20);
+            holder.tvPts.setTextSize(17);
+            holder.tvPosition.setTextSize(17);
+            holder.itemView.setClickable(false);
         }
 
         GlideApp.with(context)
@@ -79,7 +91,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     public int getItemCount() { return mUsers.size();}
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.tvPostion) TextView tvPosition;
         @BindView(R.id.ivUserImg) ImageView ivUserImg;
@@ -89,6 +101,19 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            // make sure the position is valid, i.e. actually exists in the view
+            if (position != RecyclerView.NO_POSITION) {
+                ParseUser parseUser = mUsers.get(position);
+                Intent intent = new Intent(context, UserInfoActivity.class);
+                intent.putExtra("user", parseUser);
+                context.startActivity(intent);
+            }
         }
     }
 }

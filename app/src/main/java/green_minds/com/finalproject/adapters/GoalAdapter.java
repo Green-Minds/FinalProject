@@ -18,6 +18,7 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.activities.UserInfoActivity;
 import green_minds.com.finalproject.fragments.UserInfoFragment;
 import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.CustomProgressBar;
@@ -30,10 +31,10 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
     private ArrayList<Goal> mGoals;
     private UserInfoFragment.OnUserInfoListener mListener;
 
-    public GoalAdapter(Context context, ArrayList<Goal> items, UserInfoFragment.OnUserInfoListener listener) {
+    public GoalAdapter(Context context, ParseUser user, ArrayList<Goal> items, UserInfoFragment.OnUserInfoListener listener) {
         super(context, R.layout.item_goal, items);
         this.mContext = context;
-        this.mUser = ParseUser.getCurrentUser();
+        this.mUser = user;
         this.mGoals = items;
         this.mListener = listener;
     }
@@ -44,7 +45,11 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
 
         if (convertView == null) {
             LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = vi.inflate(R.layout.item_goal, null);
+            if (mContext.getClass().equals(UserInfoActivity.class)) {
+                convertView = vi.inflate(R.layout.item_profile_goal, null);
+            } else {
+                convertView = vi.inflate(R.layout.item_goal, null);
+            }
         }
 
         Goal goal = mGoals.get(position);
@@ -60,24 +65,27 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
         final int checkins = mUser.getInt(CategoryHelper.getTypeKey(type));
 
         final Goal finalGoal = goal;
-        convertView.findViewById(R.id.btn_detail).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.goToDetail(finalGoal, checkins);
-            }
-        });
-        convertView.findViewById(R.id.btn_remove).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeGoal(finalGoal);
-            }
-        });
-        convertView.findViewById(R.id.btn_edit).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.openGoalEditPage(position, mGoals);
-            }
-        });
+
+        if (!mContext.getClass().equals(UserInfoActivity.class)) {
+            convertView.findViewById(R.id.btn_detail).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.goToDetail(finalGoal, checkins);
+                }
+            });
+            convertView.findViewById(R.id.btn_remove).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeGoal(finalGoal);
+                }
+            });
+            convertView.findViewById(R.id.btn_edit).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.openGoalEditPage(position, mGoals);
+                }
+            });
+        }
 
         return convertView;
     }

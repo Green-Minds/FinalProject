@@ -8,6 +8,28 @@
     android:orientation="vertical"
     tools:context=".activities.UserInfoActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/profileToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:background="@color/colorPrimary"
+        android:gravity="top"
+        app:theme="@style/ToolbarColoredBackArrow">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:gravity="top"
+            android:maxLines="2"
+            android:text=" "
+            android:title=" " />
+
+    </android.support.v7.widget.Toolbar>
+
     <FrameLayout
         android:id="@+id/profile"
         android:layout_width="match_parent"
@@ -25,6 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|right"
             android:background="@color/transparent"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_settings_work_tool" />
 
         <LinearLayout
@@ -173,12 +196,13 @@
             android:padding="8dp">
 
             <ImageButton
-                android:tint="@color/colorPrimary"
                 android:id="@+id/imageButton5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/transparent"
                 android:layout_alignParentRight="true"
+                android:background="@color/transparent"
+                android:tint="@color/colorPrimary"
+                android:visibility="gone"
                 app:srcCompat="@drawable/ic_add" />
 
             <TextView
