@@ -180,7 +180,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
                             alertDisplayer("Signup Successful","Welcome " + originalUsername + "!");
                         } else {
                             e.printStackTrace();
-                            if (e.getCode() == 202 || e.getCode() == 203) {
+                            if (e.getCode() == ParseException.USERNAME_TAKEN || e.getCode() == ParseException.EMAIL_TAKEN) {
                                 hideProgressDialog();
                                 intent.putExtra("code", e.getCode());
                                 intent.putExtra("activity", ThirdSignupActivity.class.getName());

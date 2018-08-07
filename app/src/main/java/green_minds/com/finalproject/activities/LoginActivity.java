@@ -72,20 +72,28 @@ import static green_minds.com.finalproject.model.ImageHelper.getSmallerParseFile
 public class LoginActivity extends AppCompatActivity {
 
     private final List < String > mPermissions = Arrays.asList("email", "public_profile");
+    private  Map<String, String> authData = new HashMap<>();
+    private ProgressDialog pd;
+    private String connection;
+    private Intent intent;
+
     @BindView(R.id.etUsernameLogin) public EditText etUsernameLogin;
     @BindView(R.id.etPasswordLogin) public EditText etPasswordLogin;
     @BindView(R.id.btnLogin) public Button btnLogin;
     @BindView(R.id.tvIncorrectInfo) public TextView tvIncorrectInfo;
     @BindView(R.id.fbLoginButton) public LoginButton fbLoginButton;
-    private  Map<String, String> authData = new HashMap<>();
-    private ProgressDialog pd;
-    private String connection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        intent = getIntent();
+        if (intent.getStringExtra("activity") != null
+                && intent.getStringExtra("activity") == this.getClass().getName()) {
+            fbLoginButton.performClick();
+        }
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -151,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
     private void login(final String username, String password) {
         showProgressDialog();
         btnLogin.setEnabled(false);
-        fbLoginButton.setEnabled(false);
+        //fbLoginButton.setEnabled(false);
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
@@ -161,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     hideProgressDialog();
                     btnLogin.setEnabled(true);
-                    fbLoginButton.setEnabled(true);
+                    //fbLoginButton.setEnabled(true);
                     //etPasswordLogin.startAnimation(invalidCredentials());
                     tvIncorrectInfo.setText(e.getMessage().toString());
                     tvIncorrectInfo.setVisibility(View.VISIBLE);
@@ -242,11 +250,11 @@ public class LoginActivity extends AppCompatActivity {
 
                                 } else if (!user.isNew()) {
                                     btnLogin.setEnabled(false);
-                                    fbLoginButton.setEnabled(false);
+                                    //fbLoginButton.setEnabled(false);
                                     getUserDetailsFromParse();
                                 } else if (user.isNew()) {
                                     btnLogin.setEnabled(false);
-                                    fbLoginButton.setEnabled(false);
+                                    //fbLoginButton.setEnabled(false);
                                     getUserDetailFromFB();
                                 }
                             }

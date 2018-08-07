@@ -18,10 +18,16 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class SplashActivity extends AppCompatActivity {
 
-    @BindView(R.id.splashscreen) public GifImageView splashscreen;
-    @BindView(R.id.btnLoginPage) public Button btnLoginPage;
-    @BindView(R.id.btnSignupPage) public Button btnSignupPage;
-    @BindView(R.id.appName) public TextView appName;
+    @BindView(R.id.splashscreen)
+    public GifImageView splashscreen;
+    @BindView(R.id.btnLoginPage)
+    public Button btnLoginPage;
+    @BindView(R.id.btnSignupPage)
+    public Button btnSignupPage;
+    @BindView(R.id.btnLoginviaFB)
+    public Button btnLoginviaFB;
+    @BindView(R.id.appName)
+    public TextView appName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,7 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             btnLoginPage.setVisibility(View.VISIBLE);
             btnSignupPage.setVisibility(View.VISIBLE);
+            btnLoginviaFB.setVisibility(View.VISIBLE);
         }
     }
 
@@ -55,19 +62,31 @@ public class SplashActivity extends AppCompatActivity {
     public void gotoSignup(View v) {
         v.setEnabled(false);
         btnLoginPage.setEnabled(false);
+        btnLoginviaFB.setEnabled(false);
         startActivityForResult(new Intent(this, SignupActivity.class), 3);
     }
 
     public void gotoLogin(View v) {
         v.setEnabled(false);
         btnSignupPage.setEnabled(false);
+        btnLoginviaFB.setEnabled(false);
         startActivityForResult(new Intent(this, LoginActivity.class), 3);
+    }
+
+    public void facebookLogin(View v) {
+        v.setEnabled(false);
+        btnSignupPage.setEnabled(false);
+        btnLoginPage.setEnabled(false);
+        startActivity(new Intent(this, LoginActivity.class)
+                .putExtra("activity", LoginActivity.class.getName()));
+        finish();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         btnSignupPage.setEnabled(true);
         btnLoginPage.setEnabled(true);
+        btnLoginviaFB.setEnabled(true);
     }
 
 }

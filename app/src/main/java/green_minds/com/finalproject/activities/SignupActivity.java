@@ -75,10 +75,10 @@ public class SignupActivity extends AppCompatActivity {
             int code = intent.getIntExtra("code", 0);
             btnInfoNext.setText("Complete Sign Up");
 
-            if (code == 202) {
+            if (code == ParseException.USERNAME_TAKEN) {
                 etEmailInput.setText(intent.getStringExtra("email").toString());
                 tvUsernameTaken.setText("Account with username already exists.");
-            } else if (code == 203) {
+            } else if (code == ParseException.EMAIL_TAKEN) {
                 etUsernameInput.setText(intent.getStringExtra("username"));
                 tvUsernameTaken.setText("Account with email address already exists.");
             }
