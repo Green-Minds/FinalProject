@@ -742,6 +742,7 @@ public class MapActivity extends AppCompatActivity implements
                                     currentLoc = currentCameraPosition.target;
                                     lat = currentLoc.latitude;
                                     lon = currentLoc.longitude;
+                                    // map.getProjection().getVisibleRegion().
 
                                     Log.d("MapActivity", "added new Pin at " + lat);
                                     mNewPin.setLatLng(new ParseGeoPoint(lat, lon));

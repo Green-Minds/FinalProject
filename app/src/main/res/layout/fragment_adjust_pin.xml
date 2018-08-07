@@ -30,16 +30,6 @@
             android:layout_centerInParent="true"
             app:srcCompat="@drawable/newpin" />
 
-        <Button
-            android:id="@+id/adjustBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="80dp"
-            android:text="CONFIRM"
-            style="@style/PurpleButton"/>
-
 
     </RelativeLayout>
 

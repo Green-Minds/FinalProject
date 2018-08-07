@@ -156,11 +156,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
             return;
         }
 
-        if (!adjusted) {
-            Toast.makeText(this, "Please adjust the position of the pin first!", Toast.LENGTH_LONG).show();
-            return;
-        }
-
+        adjustPinFragment.onAdjustClick();
         savePin(new ParseGeoPoint(lat, lon));
 
     }
@@ -283,14 +279,12 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     public void adjustLoc(Double latitude, Double longitude) {
         lat = latitude;
         lon = longitude;
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.hide(adjustPinFragment);
-        ft.commit();
+        // ft = getSupportFragmentManager().beginTransaction();
+        // ft.hide(adjustPinFragment);
+        // ft.commit();
         adjusted = true;
-        btnPin.setVisibility(View.VISIBLE);
-        locBtn.setVisibility(View.VISIBLE);
-        ActionBar a = getSupportActionBar();
-        a.setTitle("Please describe your new pin");
+        // ActionBar a = getSupportActionBar();
+        // a.setTitle("Please describe your new pin");
     }
 
 

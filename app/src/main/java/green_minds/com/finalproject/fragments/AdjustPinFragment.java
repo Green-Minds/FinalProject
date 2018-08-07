@@ -59,7 +59,6 @@ public class AdjustPinFragment extends Fragment {
     private LatLng currentLoc;
 
     @BindView(R.id.ivAdjust) public ImageView ivAdjust;
-    @BindView(R.id.adjustBtn) public Button adjustBtn;
 
     public AdjustPinFragment() {
         // Required empty public constructor
@@ -161,8 +160,7 @@ public class AdjustPinFragment extends Fragment {
         mListener = null;
     }
 
-    @OnClick(R.id.adjustBtn)
-    protected void onAdjustClick() {
+    public void onAdjustClick() {
         CameraPosition currentCameraPosition = map.getCameraPosition();
         currentLoc = currentCameraPosition.target;
         lat = currentLoc.latitude;
