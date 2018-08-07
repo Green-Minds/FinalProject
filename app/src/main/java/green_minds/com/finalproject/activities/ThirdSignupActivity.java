@@ -58,6 +58,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
     private Bitmap imageBitmap;
     private ProgressDialog pd;
     private android.support.v7.app.ActionBar actionBar;
+
     @BindView(R.id.ivUserPic)
     public ImageView ivUserPic;
     @BindView(R.id.set_container)

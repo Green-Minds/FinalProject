@@ -45,6 +45,7 @@ public class SignupActivity extends AppCompatActivity {
     private ProgressDialog pd;
     private Intent intent;
     private android.support.v7.app.ActionBar actionBar;
+
     @BindView(R.id.etUsernameInput)
     public EditText etUsernameInput;
     @BindView(R.id.etPasswordInput)

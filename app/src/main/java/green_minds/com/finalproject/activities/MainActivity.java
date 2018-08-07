@@ -50,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     private ArrayList<Goal> goals;
     private Context context;
     private ScoreAdapter scoreAdapter;
-    @BindView(R.id.bottomNavigation) public BottomNavigationView bottomNavigationView;
+
+    @BindView(R.id.bottomNavigation)
+    public BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -154,8 +156,10 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
             @Override
             public void done(ParseException e) {
-                startActivity(new Intent(MainActivity.this, SplashActivity.class));
-                finish();
+                if (ParseUser.getCurrentUser() == null) {
+                    startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                    finish();
+                }
             }
         });
     }
@@ -288,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
 
                 } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
                     Toast.makeText(context, getString(R.string.session_error), Toast.LENGTH_LONG).show();
+                    logout();
                 } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
                     Toast.makeText(context, getString(R.string.network_error), Toast.LENGTH_LONG).show();
                 } else {

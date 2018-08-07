@@ -92,34 +92,6 @@ public class UserInfoActivity extends AppCompatActivity {
         setupUserInfo();
     }
 
-//    @OnClick(R.id.btn_popup)
-//    public void showPopUp() {
-//        //Creating the instance of PopupMenu
-//        PopupMenu popup = new PopupMenu(UserInfoActivity.this, btnPopup);
-//        //Inflating the Popup using xml file
-//        popup.getMenuInflater()
-//                .inflate(R.menu.popup_user, popup.getMenu());
-//
-//        //registering popup with OnMenuItemClickListener
-//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//            public boolean onMenuItemClick(MenuItem item) {
-//                //TODO - add to strings.xml
-//                String[] ids = getResources().getResourceName(item.getItemId()).split("\\/");
-//                String id = ids[1];
-//                if (id.equals("mi_logout")) {
-//                    logOut();
-//                } else if (id.equals("mi_edit_prof")) {
-//                    goToEdit();
-//                } else {
-//                    goToGoals();
-//                }
-//                return true;
-//            }
-//        });
-//
-//        popup.show(); //showing popup menu
-//    }
-
     private void setUpGraph(){
 
         XAxis xAxis = chart.getXAxis();
@@ -245,75 +217,6 @@ public class UserInfoActivity extends AppCompatActivity {
         });
     }
 
-//    public void goToEdit() {
-//        Intent i = new Intent(UserInfoActivity.this, EditProfileActivity.class);
-//        startActivityForResult(i, 30);
-//    }
-//
-//    public void goToGoals() {
-//        Intent i = new Intent(UserInfoActivity.this, GoalActivity.class);
-//        if (mGoals == null) {
-//            Toast.makeText(mContext, getString(R.string.wait_content), Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//        i.putExtra("GOALS", mGoals);
-//        startActivityForResult(i, 31);
-//    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        //update user info page with new info
-//        if (resultCode != RESULT_OK) return;
-//
-//        if (requestCode == 31 && data != null) {
-//            List<Goal> g = data.getParcelableArrayListExtra("GOALS");
-//            mGoals.clear();
-//            mGoals.addAll(g);
-//            mGoalAdapter.notifyDataSetChanged();
-//        } else if (requestCode == 30) {
-//            tvName.setText(mUser.getUsername());
-//            ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
-//
-//            if (smallerPhoto != null) {
-//                String url = smallerPhoto.getUrl();
-//                GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-//            } else {
-//                ParseFile photo = mUser.getParseFile("photo");
-//
-//                if (photo != null) {
-//                    String url = photo.getUrl();
-//                    GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).into(ivProfPic);
-//                } else {
-//                    GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void redirectToLogin() {
-//        Intent i = new Intent(mContext, LoginActivity.class);
-//        mContext.startActivity(i);
-//        finish();
-//    }
-//
-//    private void showProgressBar() {
-//        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
-//    }
-
-//    private void hideProgressBar() {
-//        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
-//    }
-//
-//    public void logOut() {
-//        if (AccessToken.getCurrentAccessToken() != null) {
-//            LoginManager.getInstance().logOut();
-//            ParseUser.logOut();
-//        } else {
-//            ParseUser.logOut();
-//        }
-//        redirectToLogin();
-//    }
-
     public class CustomXAxisRenderer extends XAxisRenderer {
         public CustomXAxisRenderer(ViewPortHandler viewPortHandler, XAxis xAxis, Transformer trans) {
             super(viewPortHandler, xAxis, trans);
@@ -321,13 +224,8 @@ public class UserInfoActivity extends AppCompatActivity {
 
         @Override
         protected void drawLabel(Canvas c, String formattedLabel, float x, float y, MPPointF anchor, float angleDegrees) {
-            //String line[] = formattedLabel.split("\n");
-            //Utils.drawXAxisValue(c, line[0], x, y, mAxisLabelPaint, anchor, angleDegrees);
             int i = Integer.parseInt(formattedLabel);
             Utils.drawImage(c, CategoryHelper.getIconResource(i, mContext), (int)x, (int)y + 24, 64, 64);
-//            if(line.length > 1){
-//                Utils.drawXAxisValue(c, line[1], x + mAxisLabelPaint.getTextSize(), y + mAxisLabelPaint.getTextSize(), mAxisLabelPaint, anchor, angleDegrees);
-//            }
         }
     }
 }
