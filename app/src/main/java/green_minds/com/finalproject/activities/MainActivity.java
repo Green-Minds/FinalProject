@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.parse.FindCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         if (parseUser == null) {
             Intent log = new Intent(MainActivity.this, LoginActivity.class);
         }
-        
+
         Intent intent = new Intent(MainActivity.this, CheckInActivity.class);
         intent.putExtra("latitude", currentLocation.getLatitude());
         intent.putExtra("longitude", currentLocation.getLongitude());
@@ -149,10 +150,13 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logOut();
         }
-        ParseUser.logOut();
-
-        startActivity(new Intent(MainActivity.this, SplashActivity.class));
-        finish();
+        ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
+            @Override
+            public void done(ParseException e) {
+                startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                finish();
+            }
+        });
     }
 
     private void reloadMap() {
@@ -173,22 +177,20 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     public void loadUsers() {
         if (isOnline()) {
             ParseQuery query = ParseUser.getQuery();
-            query.orderByAscending("points").addAscendingOrder("pincount")
+            query.orderByDescending("points").addDescendingOrder("pincount")
                     .whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection"))
                     .setLimit(20).findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     ParseUser user = null;
                     if (e == null) {
-                        for (int i = objects.size() - 1; i >= 0; i--) {
-                            user = objects.get(i);
-                            users.add(user);
-                        }
+                        users.clear();
+                        users.addAll(objects);
 
                         leaderboardFragment = leaderboardFragment.newInstance(users);
                         ft = getSupportFragmentManager().beginTransaction();
                         ft.hide(mapFragment);
-                        ft.replace(R.id.fragment_container, leaderboardFragment.newInstance(users));
+                        ft.replace(R.id.fragment_container, leaderboardFragment);
                         ft.commit();
                     } else {
                         e.printStackTrace();

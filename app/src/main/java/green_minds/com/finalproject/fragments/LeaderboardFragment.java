@@ -53,10 +53,9 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mListener.showProgressBar();
         users = getArguments().getParcelableArrayList(ARG_PARAM1);
         leaderboardAdapter = new LeaderboardAdapter(users, mListener);
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -81,8 +80,8 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
 
     @Override
     public void onAttach(Context context) {
-        super.onAttach(context);
         mContext = context;
+        super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -95,7 +94,6 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        leaderboardAdapter.clear();
     }
 
     @Override
@@ -117,19 +115,15 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
         @Override
         protected Void doInBackground(Void... params) {
             ParseQuery query = ParseUser.getQuery();
-            query.orderByAscending("points").addAscendingOrder("pincount")
+            query.orderByDescending("points").addDescendingOrder("pincount")
                     .whereEqualTo("connection", ParseUser.getCurrentUser()
                             .getString("connection")).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     ParseUser user = null;
                     if(e == null){
-                        for (int i = objects.size() - 1; i >= 0; i--) {
-                            user = objects.get(i);
-                            temp_users.add(user);
-                        }
                         leaderboardAdapter.clear();
-                        users.addAll(temp_users);
+                        users.addAll(objects);
                         leaderboardAdapter.notifyDataSetChanged();
                         swipeContainer.setRefreshing(false);
                     } else {

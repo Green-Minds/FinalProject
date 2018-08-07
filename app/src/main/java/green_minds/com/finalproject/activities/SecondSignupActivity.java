@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,8 +29,9 @@ import green_minds.com.finalproject.model.DelayAutoCompleteTextView;
 public class SecondSignupActivity extends AppCompatActivity {
 
     private Intent intent;
-    private String school;
+    private String[] school = {null};
     private ProgressDialog pd;
+    private android.support.v7.app.ActionBar actionBar;
     @BindView(R.id.rgSelection)
     public RadioGroup rgSelection;
     @BindView(R.id.rbWork)
@@ -37,6 +42,8 @@ public class SecondSignupActivity extends AppCompatActivity {
     public DelayAutoCompleteTextView atvSchoolName;
     @BindView(R.id.btnConnectNext)
     public Button btnConnectNext;
+    @BindView(R.id.secondSignupToolbar)
+    public Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +51,11 @@ public class SecondSignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_second_signup);
         ButterKnife.bind(this);
         intent = getIntent();
+
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
 
         atvSchoolName.setThreshold(2);
         atvSchoolName.setAdapter(new SchoolAutoCompleteAdapter(this));
@@ -54,8 +66,8 @@ public class SecondSignupActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
-                school = (String) parent.getItemAtPosition(position);
-                atvSchoolName.setText(school);
+                school[0] = (String) parent.getItemAtPosition(position);
+                atvSchoolName.setText(school[0]);
             }
         });
 
@@ -72,7 +84,8 @@ public class SecondSignupActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (atvSchoolName.getText().toString().length() > 1 && school != null) {
+                if (!isOnline()) return;
+                if (atvSchoolName.getText().toString().length() > 1 && school[0] != null) {
                     btnConnectNext.setEnabled(true);
                 }
             }
@@ -109,6 +122,7 @@ public class SecondSignupActivity extends AppCompatActivity {
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(
                         Activity.INPUT_METHOD_SERVICE);
+        if (activity.getCurrentFocus() == null) return;
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
@@ -133,5 +147,16 @@ public class SecondSignupActivity extends AppCompatActivity {
     private void hideProgressDialog() {
         // Hide progress item
        pd.dismiss();
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
+
+        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
+            Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
     }
 }

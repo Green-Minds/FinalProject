@@ -6,11 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".activities.SecondSignupActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/secondSignupToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ToolbarColoredBackArrow">
+
+        <TextView
+            android:id="@+id/connectionTitle"
+            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:gravity="top"
+            android:maxLines="2"
+            android:title="Create Account"
+            android:text="Create Account"/>
+
+    </android.support.v7.widget.Toolbar>
+
     <TextView
         android:id="@+id/tvConnection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/secondSignupToolbar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:text="Set Connection"
@@ -24,9 +45,9 @@
         android:id="@+id/tvConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/tvConnection"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="50dp"
         android:text="Connect through: "
         android:textColor="@android:color/black" />
 
@@ -61,7 +82,6 @@
         android:layout_below="@+id/rgSelection"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
-        android:layout_marginTop="-173dp"
         android:ems="10"
         android:hint="Name of Company"
         android:inputType="textPersonName"
