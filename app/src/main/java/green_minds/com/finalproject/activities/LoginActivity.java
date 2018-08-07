@@ -143,6 +143,7 @@ public class LoginActivity extends AppCompatActivity {
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(
                         Activity.INPUT_METHOD_SERVICE);
+        if (activity.getCurrentFocus() == null) return;
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
@@ -188,36 +189,6 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog ok = builder.create();
         ok.show();
     }
-
-//    private void userPersistenceDisplayer(String title, String message) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this).setCancelable(false)
-//                .setTitle(title)
-//                .setMessage(message)
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(intent);
-//                        finish();
-//                    }
-//                })
-//                .setNegativeButton("Not you?", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        if (AccessToken.getCurrentAccessToken() != null) {
-//                            LoginManager.getInstance().logOut();
-//                            ParseUser.logOut();
-//                        } else {
-//                            ParseUser.logOut();
-//                        }
-//                        dialog.cancel();
-//                    }
-//                });
-//        AlertDialog ok = builder.create();
-//        ok.show();
-//    }
 
     private void facebookSignupDisplayer() {
         LayoutInflater layoutInflater = LayoutInflater.from(LoginActivity.this);

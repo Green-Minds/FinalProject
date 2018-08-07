@@ -29,9 +29,11 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
         appName.setVisibility(View.VISIBLE);
+        //ParseUser.logOut();
+        //GlideApp.with(this).load(R.drawable.optimized_earth).into(splashscreen);
 
         if (ParseUser.getCurrentUser() != null) {
-            scheduleSplashScreen(1000);
+            scheduleSplashScreen(3200);
         } else {
             btnLoginPage.setVisibility(View.VISIBLE);
             btnSignupPage.setVisibility(View.VISIBLE);

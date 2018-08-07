@@ -6,11 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".activities.ThirdSignupActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/thirdSignupToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ToolbarColoredBackArrow">
+
+        <TextView
+            android:id="@+id/connectionTitle"
+            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:gravity="top"
+            android:maxLines="2"
+            android:title="Create Account"
+            android:text="Create Account"/>
+
+    </android.support.v7.widget.Toolbar>
+
     <TextView
         android:id="@+id/tvImgHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/thirdSignupToolbar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:text="Set Profile Image"

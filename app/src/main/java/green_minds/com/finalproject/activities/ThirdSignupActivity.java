@@ -11,16 +11,20 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.request.RequestOptions;
 import com.parse.ParseException;
@@ -49,8 +53,11 @@ public class ThirdSignupActivity extends AppCompatActivity {
     private String originalUsername;
     private String email;
     private String connection;
+    private ParseFile parseFile;
+    private ParseFile smallerParseFile;
     private Bitmap imageBitmap;
     private ProgressDialog pd;
+    private android.support.v7.app.ActionBar actionBar;
     @BindView(R.id.ivUserPic)
     public ImageView ivUserPic;
     @BindView(R.id.set_container)
@@ -59,6 +66,8 @@ public class ThirdSignupActivity extends AppCompatActivity {
     public Button btnSignup;
     @BindView(R.id.tvUser)
     public TextView tvUser;
+    @BindView(R.id.thirdSignupToolbar)
+    public Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +75,10 @@ public class ThirdSignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_third_signup);
         ButterKnife.bind(this);
         intent = getIntent();
+
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         username = intent.getStringExtra("username");
         originalUsername = intent.getStringExtra("original_username");
@@ -133,13 +146,15 @@ public class ThirdSignupActivity extends AppCompatActivity {
     }
 
     private void signUp() {
+        if (!isOnline()) return;
+        getLocation();
         if (imageBitmap == null) {
             imageBitmap = ((BitmapDrawable) ivUserPic.getDrawable()).getBitmap();
         }
 
-        final ParseFile smallerParseFile = getSmallerParseFile(imageBitmap);
+        smallerParseFile = getSmallerParseFile(imageBitmap);
         smallerParseFile.saveInBackground();
-        final ParseFile parseFile = getParseFile(imageBitmap);
+        parseFile = getParseFile(imageBitmap);
         parseFile.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -157,11 +172,27 @@ public class ThirdSignupActivity extends AppCompatActivity {
                 user.signUpInBackground(new SignUpCallback() {
                     @Override
                     public void done(ParseException e) {
+                        String message;
+
                         if (e == null) {
                             hideProgressDialog();
                             alertDisplayer("Signup Successful","Welcome " + originalUsername + "!");
                         } else {
                             e.printStackTrace();
+                            if (e.getCode() == 202 || e.getCode() == 203) {
+                                hideProgressDialog();
+                                intent.putExtra("code", e.getCode());
+                                intent.putExtra("activity", ThirdSignupActivity.class.getName());
+                                intent.putExtra("username", username);
+                                intent.putExtra("password", password);
+                                intent.putExtra("email", email);
+                                intent.putExtra("connection", connection);
+                                intent.putExtra("location", getLocation());
+                                intent.putExtra("ParseFile", parseFile);
+                                intent.putExtra("SmallerParseFile", smallerParseFile);
+                                intent.setClass(ThirdSignupActivity.this, SignupActivity.class);
+                                startActivity(intent);
+                            }
                         }
                     }
                 });
@@ -169,11 +200,23 @@ public class ThirdSignupActivity extends AppCompatActivity {
         });
     }
 
-    private ParseGeoPoint getLocation() {
+    private boolean isOnline() {
+        ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
+
+        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
+            Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
+    public ParseGeoPoint getLocation() {
 
         ParseGeoPoint point = null;
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (location != null) {
                 double longitude = location.getLongitude();
@@ -184,7 +227,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
         return point;
     }
 
-    private void alertDisplayer(String title,String message){
+    private void alertDisplayer(String title, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(ThirdSignupActivity.this).setCancelable(false)
                 .setTitle(title)
                 .setMessage(message)

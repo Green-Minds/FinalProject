@@ -64,8 +64,9 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         holder.tvUserLeaderbaord.setText(user.getString("original_username"));
         holder.tvPts.setText(String.valueOf(user.getInt("points")) + " points");
         if (user.getInt("points") == 1) holder.tvPts.setText(String.valueOf(user.getInt("points")) + " point");
-        if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername()))
-            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.colorLightPurpleTransparent));
+        if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
+            holder.itemView.setElevation(5);
+        }
 
         GlideApp.with(context)
                 .load(user.getParseFile("smaller_photo").getUrl())

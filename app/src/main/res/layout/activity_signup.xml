@@ -6,11 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".activities.SignupActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/signupToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ToolbarColoredBackArrow">
+
+        <TextView
+            android:id="@+id/connectionTitle"
+            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:gravity="top"
+            android:maxLines="2"
+            android:title="Create Account"
+            android:text="Create Account"/>
+
+    </android.support.v7.widget.Toolbar>
+
     <TextView
         android:id="@+id/tvRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/signupToolbar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:text="Sign Up"
@@ -31,7 +52,7 @@
         android:ems="10"
         android:hint=" Username "
         android:inputType="textPersonName"
-        android:maxLength="10"/>
+        android:maxLength="30" />
 
     <EditText
         android:id="@+id/etEmailInput"
@@ -42,7 +63,7 @@
         android:layout_marginTop="28dp"
         android:background="@drawable/text_input_border"
         android:ems="10"
-        android:hint=" Email "
+        android:hint=" Email Address "
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -60,10 +81,10 @@
     <Button
         android:id="@+id/btnInfoNext"
         android:layout_width="218dp"
-        android:layout_height="33dp"
+        android:layout_height="32dp"
         android:layout_below="@+id/etPasswordInput"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="93dp"
+        android:layout_marginTop="95dp"
         android:background="@color/colorPrimary"
         android:enabled="false"
         android:text="Next"
