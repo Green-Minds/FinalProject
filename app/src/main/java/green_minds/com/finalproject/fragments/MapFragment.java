@@ -4,27 +4,22 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
@@ -34,8 +29,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -78,13 +74,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
-import green_minds.com.finalproject.activities.CheckInActivity;
-import green_minds.com.finalproject.activities.LoginActivity;
-import green_minds.com.finalproject.activities.MainActivity;
-import green_minds.com.finalproject.activities.MapActivity;
-import green_minds.com.finalproject.activities.NewPinActivity;
-import green_minds.com.finalproject.activities.PinDetailActivity;
-import green_minds.com.finalproject.activities.UserInfoActivity;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.InfoWindowData;
 import green_minds.com.finalproject.model.MyItem;
@@ -981,7 +970,7 @@ public class MapFragment extends Fragment implements
             if (clickedClusterItem != null) {
                 title.setText(clickedClusterItem.getTitle());
                 distance.setText("distance: " + clickedClusterItem.getDistance());
-                GlideApp.with(mContext).load(clickedClusterItem.getImageUrl()).centerCrop().into(img);
+                GlideApp.with(mContext).load(clickedClusterItem.getImageUrl()).apply(new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(8))).placeholder(R.drawable.placeholder).into(img);
                 unfoldBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
