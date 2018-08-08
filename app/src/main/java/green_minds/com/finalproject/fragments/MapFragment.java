@@ -816,6 +816,8 @@ public class MapFragment extends Fragment implements
                             item.setTitle("checkins: " + objects.get(i).getCheckincount());
                             item.setSnippet(objects.get(i).getComment());
                             item.setImage(image);
+                            item.setType(type);
+                            item.setCheckins(objects.get(i).getCheckincount());
                             item.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
                             mClusterManager.addItem(item);
                             mClusterManager.cluster();
@@ -901,6 +903,8 @@ public class MapFragment extends Fragment implements
 
                             MyItem item = new MyItem(lat, lon, drawableId);
                             item.setTitle("checkins: " + objects.get(i).getCheckincount());
+                            item.setType(type);
+                            item.setCheckins(objects.get(i).getCheckincount());
                             item.setSnippet(objects.get(i).getComment());
                             item.setImage(image);
                             item.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
