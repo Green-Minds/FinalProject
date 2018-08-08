@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorLightPurpleTransparent"
-    tools:context=".activities.NewPinActivity"
-    style="@style/FloatingCard">
+    tools:context=".activities.NewPinActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -14,139 +13,180 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ToolbarColoredBackArrow"
-        app:titleTextColor="@color/white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:titleTextColor="@color/white" />
 
-    <Button
-        android:id="@+id/btn_pin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:text="Pin it!"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="435dp"
-        style="@style/PurpleButton"/>
-
-    <Button
-        android:id="@+id/locBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        style="@style/PurpleButton"
-        android:text="ADJUST THE POSITION" />
-
-    <EditText
-        android:id="@+id/et_comment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_pin"
-        android:layout_centerHorizontal="true"
-        android:ems="10"
-        android:hint="comments"
-        android:inputType="textMultiLine" />
-
-    <RadioGroup
-        android:id="@+id/rb_categories"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="84dp">
-
-        <RadioButton
-            android:id="@+id/rb_bottles"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Bottles / Cans" />
-
-        <RadioButton
-            android:id="@+id/rb_water"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Water Fountains" />
-
-        <RadioButton
-            android:id="@+id/rb_bikes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Bike Racks" />
-
-        <RadioButton
-            android:id="@+id/rb_discount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Coffee shop with discount" />
-
-        <RadioButton
-            android:id="@+id/rb_battery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Batteries / Electronic Waste" />
-
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/tv_category"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/rb_categories"
-        android:layout_alignStart="@+id/et_comment"
-        android:layout_marginBottom="-84dp"
-        android:text="Please choose a category." />
-
-    <FrameLayout
-        android:id="@+id/img_frame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/et_comment"
-        android:layout_marginBottom="124dp">
-
-        <ImageView
-            android:id="@+id/iv_preview"
-            android:layout_width="125dp"
-            android:layout_height="125dp"
-            android:adjustViewBounds="true"
-            app:srcCompat="@android:color/darker_gray" />
-
-        <TextView
-            android:id="@+id/tv_upload"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="please upload an image."
-            android:textColor="#FFFFFF"
-            android:textStyle="italic" />
-    </FrameLayout>
-
-    <ImageButton
-        android:id="@+id/btn_camera"
-        android:layout_width="55dp"
-        android:layout_height="53dp"
-        android:layout_alignBottom="@+id/img_frame"
-        android:layout_alignEnd="@+id/locBtn"
-        android:layout_weight="1"
-        android:adjustViewBounds="true"
-        android:background="#00FFFFFF"
-        android:padding="10dp"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/camera" />
-
-    <FrameLayout
+    <green_minds.com.finalproject.model.CustomScrollview
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fragment_container"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:layout_below="@id/my_toolbar"
+        android:fadeScrollbars="false"
+        android:layout_height="match_parent">
 
-    </FrameLayout>
+        <LinearLayout
+            style="@style/FloatingCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tv_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Choose a category"
+                android:textSize="16sp" />
+
+            <RadioGroup
+                android:id="@+id/rb_categories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <RadioButton
+                    android:id="@+id/rb_bottles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Bottles / Cans" />
+
+                <RadioButton
+                    android:id="@+id/rb_water"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Water Fountains" />
+
+                <RadioButton
+                    android:id="@+id/rb_bikes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Bike Racks" />
+
+                <RadioButton
+                    android:id="@+id/rb_discount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Coffee shop with discount" />
+
+                <RadioButton
+                    android:id="@+id/rb_battery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Batteries / Electronic Waste" />
+
+            </RadioGroup>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="4dp"
+                android:background="@color/colorLightPurple" />
+
+            <Button
+                android:id="@+id/btn_pin"
+                style="@style/PurpleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                android:text="Pin it!"
+                android:visibility="gone"
+                tools:layout_editor_absoluteX="148dp"
+                tools:layout_editor_absoluteY="435dp" />
+
+            <Button
+                android:id="@+id/locBtn"
+                style="@style/PurpleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="ADJUST THE POSITION"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Please provide details"
+                android:textSize="16sp" />
+
+            <FrameLayout
+                android:id="@+id/img_frame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignStart="@+id/et_comment">
+
+                <ImageView
+                    android:id="@+id/iv_preview"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
+                    android:adjustViewBounds="true"
+                    app:srcCompat="@android:color/darker_gray" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="24dp"
+                    android:text="Upload an image."/>
+
+                <ImageButton
+                    android:id="@+id/btn_camera"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:tint="@color/white"
+                    android:adjustViewBounds="true"
+                    android:background="#00FFFFFF"
+                    android:padding="10dp"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@drawable/camera" />
+            </FrameLayout>
+
+            <EditText
+                android:id="@+id/et_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/btn_pin"
+                android:layout_centerHorizontal="true"
+                android:ems="10"
+                android:hint="comments"
+                android:inputType="textMultiLine"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="4dp"
+                android:background="@color/colorLightPurple" />
+
+            <TextView
+                android:id="@+id/r"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adjust the position of the pin"
+                android:textSize="16sp" />
+
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
+
+            </FrameLayout>
+        </LinearLayout>
+
+    </green_minds.com.finalproject.model.CustomScrollview>
 
 </RelativeLayout>

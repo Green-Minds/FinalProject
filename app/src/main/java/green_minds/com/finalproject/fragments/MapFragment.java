@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.clustering.Cluster;
@@ -612,7 +613,7 @@ public class MapFragment extends Fragment implements
                         CameraUpdate cameraNewPin = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 17);
                         map.moveCamera(cameraNewPin);
 
-                        Log.d("MapActivity", "added new Pin at " + lat);
+                        Log.d("MapFragment", "added new Pin at " + lat);
                         mNewPin.setLatLng(new ParseGeoPoint(lat, lon));
 
                         ParseFile photo = mNewPin.getPhoto();
@@ -621,6 +622,8 @@ public class MapFragment extends Fragment implements
                         }
                         final int drawableId = getIcon(mNewPin.getCategory());
 
+                        // map.clear();
+                        mClusterManager.clearItems();
                         LatLng listingPosition = new LatLng(lat, lon);
                         // Create the marker on the fragment
                         final Marker mapMarker = map.addMarker(new MarkerOptions()
@@ -641,6 +644,7 @@ public class MapFragment extends Fragment implements
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
+                                // mClusterManager.clearItems();
                                 long elapsed = SystemClock.uptimeMillis() - start;
                                 // Calculate t for bounce based on elapsed time
                                 float t = Math.max(
@@ -654,14 +658,15 @@ public class MapFragment extends Fragment implements
                                     handler.postDelayed(this, 150);
                                 } else { // done elapsing, show window
                                     mapMarker.remove();
-                                    MyItem item = new MyItem(lat, lon, drawableId);
-                                    item.setTitle("checkins: " + mNewPin.getCheckincount());
-                                    item.setSnippet(mNewPin.getComment());
-                                    item.setImage(image);
-                                    item.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
-                                    mClusterManager.addItem(item);
-                                    items.add(item);
-                                    mClusterManager.cluster();
+                                    // MyItem item = new MyItem(lat, lon, drawableId);
+                                    // item.setTitle("checkins: " + mNewPin.getCheckincount());
+                                    // item.setSnippet(mNewPin.getComment());
+                                    // item.setImage(image);
+                                    // item.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
+                                    // mClusterManager.addItem(item);
+                                    // items.add(item);
+                                    // mClusterManager.cluster();
+                                    showAll();
                                 }
                             }
                         });
@@ -784,7 +789,7 @@ public class MapFragment extends Fragment implements
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
         pinQuery.whereEqualTo("category", type);
-        pinQuery.whereWithinMiles("latlng", loc, radius(mZoom));
+        pinQuery.whereWithinMiles("latlng", loc, radius());
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
@@ -866,7 +871,7 @@ public class MapFragment extends Fragment implements
         pinQuery = new Pin.Query();
         pins = new ArrayList<>();
         pinQuery.getTop();
-        pinQuery.whereWithinMiles("latlng", loc, radius(mZoom));
+        pinQuery.whereWithinMiles("latlng", loc, radius());
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
@@ -899,8 +904,8 @@ public class MapFragment extends Fragment implements
                             item.setSnippet(objects.get(i).getComment());
                             item.setImage(image);
                             item.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
-                            Log.d("MapActivity", "user location lat: " + userloc.getLatitude() + " pin loc " + pin.getLatLng().getLatitude() + " distance in pin " + item.getDistance());
-                            Log.d("MapActivity", "does cluster item exist? " + (item != null) + " " + item.getTitle());
+                            Log.d("MapFragment", "user location lat: " + userloc.getLatitude() + " pin loc " + pin.getLatLng().getLatitude() + " distance in pin " + item.getDistance());
+                            Log.d("MapFragment", "does cluster item exist? " + (item != null) + " " + item.getTitle());
                             mClusterManager.addItem(item);
                             items.add(item);
                             mClusterManager.cluster();
@@ -914,23 +919,38 @@ public class MapFragment extends Fragment implements
     }
 
 
-    private int radius(float zoom) {
-        // the zoom units are obscure, 5 is whole japan, 20 is houses
-        // the limit is set to 6 so let's say if zoom < 10 show radius of 500 miles
-        // if 10 < zoom < 15 50 miles, > 15 5 miles
+    private double radius() {
+        double radius = 10;
 
-        int r = 10;
+        VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
 
-        if (zoom < 10) {
-            r = 500;
-        }
-        else if (zoom < 15) {
-            r = 50;
-        }
-        else {
-            r = 10;
-        }
-        return r;
+        LatLng farRight = visibleRegion.farRight;
+        LatLng farLeft = visibleRegion.farLeft;
+        LatLng nearRight = visibleRegion.nearRight;
+        LatLng nearLeft = visibleRegion.nearLeft;
+
+        float[] distanceWidth = new float[1];
+        float[] distanceHeight = new float[1];
+
+        Location.distanceBetween(
+                (farLeft.latitude + nearLeft.latitude) / 2,
+                farLeft.longitude,
+                (farRight.latitude + nearRight.latitude) / 2,
+                farRight.longitude,
+                distanceWidth
+        );
+
+        Location.distanceBetween(
+                farRight.latitude,
+                (farRight.longitude + farLeft.longitude) / 2,
+                nearRight.latitude,
+                (nearRight.longitude + nearLeft.longitude) / 2,
+                distanceHeight
+        );
+
+        radius = Math.sqrt(Math.pow(distanceWidth[0], 2) + Math.pow(distanceHeight[0], 2)) / 2;
+        return radius;
+
     }
 
     public class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter {

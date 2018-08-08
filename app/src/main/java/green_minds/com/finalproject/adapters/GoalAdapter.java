@@ -103,7 +103,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
                     public void done(com.parse.ParseException e) {
                         //mListener.setNetworkCallInProgress(false);
                         if (e != null) {
-                            mGoals = tempGoalArray;
+                            mGoals = tempGoalArray; //revert goal array to reflect true state
                             e.printStackTrace();
                             if (e.getCode() == ParseException.CONNECTION_FAILED) {
                                 Toast.makeText(mContext, mContext.getString(R.string.network_error), Toast.LENGTH_SHORT).show();
@@ -113,6 +113,9 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
                         } else {
                             Toast.makeText(mContext, mContext.getString(R.string.removed), Toast.LENGTH_SHORT).show();
                             notifyDataSetChanged();
+                            if(mGoals.size() <= 0){
+                                mListener.showNoDataMessage();
+                            }
                         }
                     }
                 });

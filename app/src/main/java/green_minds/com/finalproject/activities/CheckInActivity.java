@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,9 +17,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -54,21 +53,19 @@ public class CheckInActivity extends AppCompatActivity {
     private Context context;
     private MenuItem miActionProgressItem;
 
-    @BindView(R.id.btn_reload)
-    ImageView btnReload;
-
     @BindView(R.id.rv_pins)
     RecyclerView rvPins;
 
     @BindView(R.id.btn_checkin)
     Button btnCheckin;
 
+    @BindView(R.id.tv_nodata)
+    TextView tvNoData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
-
-
 
         //for testing purposes
         user = ParseUser.getCurrentUser();
@@ -117,10 +114,29 @@ public class CheckInActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick({R.id.btn_reload})
     public void reloadNearbyPins() {
-        showProgressBar();
+        //showProgressBar();
         getListOfPins();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_w_refresh, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem m = menu.findItem(R.id.miRefresh);
+        m.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                reloadNearbyPins();
+                return false;
+            }
+        });
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -171,6 +187,11 @@ public class CheckInActivity extends AppCompatActivity {
                                     mPins.clear();
                                     mPins.addAll(rpList);
                                     adapter.notifyDataSetChanged();
+                                    if(mPins.size() <= 0){
+                                        tvNoData.setVisibility(View.VISIBLE);
+                                    } else{
+                                        tvNoData.setVisibility(View.GONE);
+                                    }
                                     hideProgressBar();
                                 } else {
                                     e.printStackTrace();
@@ -241,20 +262,6 @@ public class CheckInActivity extends AppCompatActivity {
         @Override
         public void onProviderDisabled(String provider) {
         }
-    }
-
-    //progress icon setup
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        ProgressBar v = (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
-        return super.onPrepareOptionsMenu(menu);
     }
 
     private void showProgressBar() {
