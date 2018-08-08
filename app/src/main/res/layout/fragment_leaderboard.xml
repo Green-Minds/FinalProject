@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.LeaderboardFragment"
-    android:background="@color/colorLightPurpleTransparent">
+    tools:context=".fragments.LeaderboardFragment">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/thirdSignupToolbar"
@@ -32,22 +31,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/thirdSignupToolbar"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
         android:background="@color/white">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvUsersFragment"
-            style="@style/FloatingCard"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:scrollbars="vertical"
+            android:scrollbarSize="5dp"
             android:scrollbarThumbVertical="@android:color/darker_gray"
-            android:scrollbarSize="5dp"/>
+            android:background="@color/colorLightPurpleTransparent"
+            android:scrollbars="vertical" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

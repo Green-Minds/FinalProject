@@ -6,6 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".activities.LoginActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/loginToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ToolbarColoredBackArrow">
+
+        <TextView
+            android:id="@+id/titleTv"
+            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:gravity="top"
+            android:maxLines="2"
+            android:title="Sign up"
+            android:text="Sign up"/>
+
+    </android.support.v7.widget.Toolbar>
+
     <TextView
         android:id="@+id/tvAppName"
         android:layout_width="wrap_content"

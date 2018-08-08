@@ -42,6 +42,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.activities.UserInfoActivity;
 import green_minds.com.finalproject.adapters.GoalAdapter;
 import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.GlideApp;
@@ -171,6 +172,10 @@ public class UserInfoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
         super.onViewCreated(view, savedInstanceState);
+        if (getActivity().getClass().getName().equals(UserInfoActivity.class.getName())) {
+            btnAddGoal.setVisibility(View.GONE);
+            btnPopup.setVisibility(View.GONE);
+        }
         setUpProfile();
         setUpGraph();
         setUpGoals();

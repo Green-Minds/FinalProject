@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorLightPurpleTransparent"
     android:orientation="vertical"
     tools:context=".activities.UserInfoActivity">
 
@@ -31,210 +30,216 @@
     </android.support.v7.widget.Toolbar>
 
     <FrameLayout
-        android:id="@+id/profile"
+        android:id="@+id/fragment_container_user"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:layout_marginBottom="4dp"
-        android:background="@drawable/rect"
-        android:backgroundTint="@color/colorPrimary"
-        android:elevation="8dp"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/profileToolbar"/>
 
-        <ImageButton
-            android:id="@+id/btn_popup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|right"
-            android:background="@color/transparent"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_settings_work_tool" />
+    <!--<FrameLayout-->
+        <!--android:id="@+id/profile"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="0"-->
+        <!--android:layout_marginBottom="4dp"-->
+        <!--android:background="@drawable/rect"-->
+        <!--android:backgroundTint="@color/colorPrimary"-->
+        <!--android:elevation="8dp"-->
+        <!--android:padding="16dp">-->
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="4dp"
-            android:orientation="vertical">
+        <!--<ImageButton-->
+            <!--android:id="@+id/btn_popup"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="top|right"-->
+            <!--android:background="@color/transparent"-->
+            <!--android:visibility="gone"-->
+            <!--app:srcCompat="@drawable/ic_settings_work_tool" />-->
 
-            <RelativeLayout
-                android:layout_width="104dp"
-                android:layout_height="104dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/rounded_imageview">
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:layout_marginTop="4dp"-->
+            <!--android:orientation="vertical">-->
 
-                <ImageView
-                    android:id="@+id/iv_prof_pic"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:layout_centerInParent="true"
-                    android:background="@drawable/q_mark" />
-            </RelativeLayout>
+            <!--<RelativeLayout-->
+                <!--android:layout_width="104dp"-->
+                <!--android:layout_height="104dp"-->
+                <!--android:layout_gravity="center_horizontal"-->
+                <!--android:layout_marginBottom="8dp"-->
+                <!--android:background="@drawable/rounded_imageview">-->
 
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:fontFamily="@font/molengo"
-                android:text="name"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
+                <!--<ImageView-->
+                    <!--android:id="@+id/iv_prof_pic"-->
+                    <!--android:layout_width="96dp"-->
+                    <!--android:layout_height="96dp"-->
+                    <!--android:layout_centerInParent="true"-->
+                    <!--android:background="@drawable/q_mark" />-->
+            <!--</RelativeLayout>-->
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_margin="4dp"
-                android:background="@color/colorLightPurple" />
+            <!--<TextView-->
+                <!--android:id="@+id/tv_name"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center_horizontal"-->
+                <!--android:fontFamily="@font/molengo"-->
+                <!--android:text="name"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textSize="18sp" />-->
 
-            <TextView
-                android:id="@+id/tv_connection"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:text="Some College"
-                android:textColor="@color/colorLightPurple" />
-        </LinearLayout>
+            <!--<View-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="1dp"-->
+                <!--android:layout_margin="4dp"-->
+                <!--android:background="@color/colorLightPurple" />-->
 
-    </FrameLayout>
+            <!--<TextView-->
+                <!--android:id="@+id/tv_connection"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center_horizontal"-->
+                <!--android:layout_weight="1"-->
+                <!--android:text="Some College"-->
+                <!--android:textColor="@color/colorLightPurple" />-->
+        <!--</LinearLayout>-->
 
-    <LinearLayout
-        android:id="@+id/stats"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:orientation="horizontal"
-        android:layout_weight="0"
-        android:background="@drawable/rect_grey"
-        android:elevation="4dp">
+    <!--</FrameLayout>-->
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.25">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/stats"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="8dp"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_weight="0"-->
+        <!--android:background="@drawable/rect_grey"-->
+        <!--android:elevation="4dp">-->
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical">
+        <!--<FrameLayout-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="0.25">-->
 
-            <TextView
-                android:id="@+id/tvs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:fontFamily="@font/molengo"
-                android:text="Checkins"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+        <!--<RelativeLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:orientation="vertical">-->
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tvs"
-                android:layout_alignStart="@+id/tvs"
-                android:orientation="horizontal">
+            <!--<TextView-->
+                <!--android:id="@+id/tvs"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentStart="true"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:fontFamily="@font/molengo"-->
+                <!--android:text="Checkins"-->
+                <!--android:textColor="@color/colorPrimary"-->
+                <!--android:textSize="18sp"-->
+                <!--android:textStyle="bold" />-->
 
-                <TextView
-                    android:id="@+id/tv_score"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_weight="0"
-                    android:text="0"
-                    android:textSize="16sp"
-                    android:textStyle="italic" />
+            <!--<LinearLayout-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@+id/tvs"-->
+                <!--android:layout_alignStart="@+id/tvs"-->
+                <!--android:orientation="horizontal">-->
 
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text=" points"
-                    android:textStyle="italic" />
-            </LinearLayout>
+                <!--<TextView-->
+                    <!--android:id="@+id/tv_score"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignParentEnd="true"-->
+                    <!--android:layout_weight="0"-->
+                    <!--android:text="0"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:textStyle="italic" />-->
 
-        </RelativeLayout>
-        </FrameLayout>
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:background="@color/colorLightPurple" />
+                <!--<TextView-->
+                    <!--android:id="@+id/textView3"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="0"-->
+                    <!--android:text=" points"-->
+                    <!--android:textStyle="italic" />-->
+            <!--</LinearLayout>-->
 
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/chart"
-            android:layout_weight="0.75"
-            android:layout_width="0dp"
-            android:layout_height="136dp" />
+        <!--</RelativeLayout>-->
+        <!--</FrameLayout>-->
+        <!--<View-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginTop="4dp"-->
+            <!--android:layout_marginBottom="4dp"-->
+            <!--android:background="@color/colorLightPurple" />-->
 
-    </LinearLayout>
+        <!--<com.github.mikephil.charting.charts.BarChart-->
+            <!--android:id="@+id/chart"-->
+            <!--android:layout_weight="0.75"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="136dp" />-->
 
-    <LinearLayout
-        android:id="@+id/goals"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_weight="0"
-        android:background="@drawable/rect_grey"
-        android:elevation="4dp"
-        android:maxHeight="4dp"
-        android:orientation="vertical">
+    <!--</LinearLayout>-->
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/goals"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="16dp"-->
+        <!--android:layout_marginLeft="8dp"-->
+        <!--android:layout_marginRight="8dp"-->
+        <!--android:layout_marginTop="4dp"-->
+        <!--android:layout_weight="0"-->
+        <!--android:background="@drawable/rect_grey"-->
+        <!--android:elevation="4dp"-->
+        <!--android:maxHeight="4dp"-->
+        <!--android:orientation="vertical">-->
 
-            <ImageButton
-                android:id="@+id/imageButton5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:background="@color/transparent"
-                android:tint="@color/colorPrimary"
-                android:visibility="gone"
-                app:srcCompat="@drawable/ic_add" />
+        <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="8dp">-->
 
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:fontFamily="@font/molengo"
-                android:text="Goals"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+            <!--<ImageButton-->
+                <!--android:id="@+id/imageButton5"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:background="@color/transparent"-->
+                <!--android:tint="@color/colorPrimary"-->
+                <!--android:visibility="gone"-->
+                <!--app:srcCompat="@drawable/ic_add" />-->
 
-        </RelativeLayout>
+            <!--<TextView-->
+                <!--android:id="@+id/textView5"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginStart="8dp"-->
+                <!--android:fontFamily="@font/molengo"-->
+                <!--android:text="Goals"-->
+                <!--android:textColor="@color/colorPrimary"-->
+                <!--android:textSize="18sp"-->
+                <!--android:textStyle="bold" />-->
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:background="@color/colorLightPurple" />
+        <!--</RelativeLayout>-->
 
-        <ListView
-            android:id="@+id/goal_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/tv_name"
-            android:fadeScrollbars="false"
-            android:visibility="visible" />
+        <!--<View-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:layout_marginLeft="4dp"-->
+            <!--android:layout_marginRight="4dp"-->
+            <!--android:background="@color/colorLightPurple" />-->
 
-    </LinearLayout>
+        <!--<ListView-->
+            <!--android:id="@+id/goal_list"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_alignParentStart="true"-->
+            <!--android:layout_below="@+id/tv_name"-->
+            <!--android:fadeScrollbars="false"-->
+            <!--android:visibility="visible" />-->
+
+    <!--</LinearLayout>-->
 
 
-</LinearLayout>
+</RelativeLayout>
