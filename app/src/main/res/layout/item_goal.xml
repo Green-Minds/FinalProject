@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="4dp"
+        android:layout_marginLeft="0dp"
         android:text="Identifier"
         android:textColor="@color/primaryGrey"
         android:textSize="14sp" />
@@ -23,6 +23,7 @@
         android:id="@+id/details"
         android:layout_marginTop="12dp"
         android:layout_below="@+id/tv_description"
+        android:gravity="center_vertical"
         android:layout_height="wrap_content">
 
         <green_minds.com.finalproject.model.CustomProgressBar
