@@ -145,7 +145,9 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         intent.putExtra("comment", myItem.getSnippet());
         intent.putExtra("distance", myItem.getDistance());
         intent.putExtra("image", myItem.getImageUrl());
-        intent.putExtra("type", myItem.getTypeIcon());
+        intent.putExtra("typeicon", myItem.getTypeIcon());
+        intent.putExtra("type", myItem.getType());
+        intent.putExtra("checkins" , myItem.getCheckins());
         startActivity(intent);
 
     }
