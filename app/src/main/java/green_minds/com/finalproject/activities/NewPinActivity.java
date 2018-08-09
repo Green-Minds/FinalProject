@@ -172,7 +172,8 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         ViewGroup parent = (ViewGroup) fragmentContainer.getParent();
         parent.removeView(fragmentContainer);
 
-        getActionBar().setTitle("Adjust your pin");
+        ActionBar a = getSupportActionBar();
+        a.setTitle("Adjust your pin");
 
         fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         ViewGroup newParent = findViewById(R.id.mainLayout);
@@ -184,6 +185,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         m.setVisible(false);
         mapBtn.setVisibility(GONE);
         mMapMode = true;
+        a.setDisplayHomeAsUpEnabled(false);
 
 
     }
@@ -191,7 +193,9 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     @OnClick(R.id.btn_adjust)
     public void onAdjustBtn() {
 
-        getActionBar().setTitle("Please describe your new pin");
+        ActionBar a = getSupportActionBar();
+        a.setTitle("Please describe your new pin");
+        a.setDisplayHomeAsUpEnabled(true);
 
         btnAdjust.setVisibility(View.GONE);
         ViewGroup parent = (ViewGroup) fragmentContainer.getParent();
