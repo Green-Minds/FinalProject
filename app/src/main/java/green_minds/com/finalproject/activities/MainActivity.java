@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     @Override
     public void goToPinDetails(MyItem myItem) {
         Intent intent = new Intent(MainActivity.this, PinDetailActivity.class);
-        intent.putExtra("checkins", myItem.getTitle());
+        intent.putExtra("Title", myItem.getTitle());
         intent.putExtra("comment", myItem.getSnippet());
         intent.putExtra("distance", myItem.getDistance());
         intent.putExtra("image", myItem.getImageUrl());

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.GlideApp;
 
 public class PinDetailActivity extends AppCompatActivity {
@@ -33,7 +34,7 @@ public class PinDetailActivity extends AppCompatActivity {
         a.setDisplayHomeAsUpEnabled(true);
         a.setTitle("Pin Detail");
 
-        String mCheckin = getIntent().getStringExtra("checkins");
+        String mCheckin = getIntent().getStringExtra("Title");
         String mComment = getIntent().getStringExtra("comment");
         String mDistance = getIntent().getStringExtra("distance");
         String mImage = getIntent().getStringExtra("image");
@@ -43,7 +44,7 @@ public class PinDetailActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        tvPin.setText(identifier);
+        tvPin.setText(CategoryHelper.listOfCategories[mType]);
         tvCheckins.setText(mCheckin);
         tvComment.setText(mComment);
         tvDistance.setText("distance: " + mDistance);
