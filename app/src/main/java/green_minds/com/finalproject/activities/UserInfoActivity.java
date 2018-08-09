@@ -282,4 +282,8 @@ public class UserInfoActivity extends AppCompatActivity implements UserInfoFragm
 //            Utils.drawImage(c, CategoryHelper.getIconResource(i, mContext), (int)x, (int)y + 24, 64, 64);
 //        }
 //    }
+
+    public void setListViewHeight(){
+        userInfoFragment.setListViewHeight();
+    };
 }
