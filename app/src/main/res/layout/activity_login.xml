@@ -9,23 +9,13 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/loginToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:background="@color/colorPrimary"
-        app:theme="@style/ToolbarColoredBackArrow">
-
-        <TextView
-            android:id="@+id/titleTv"
-            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="18dp"
-            android:gravity="top"
-            android:maxLines="2"
-            android:title="Login"
-            android:text="Log In"/>
-
-    </android.support.v7.widget.Toolbar>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:title="Log In"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ToolbarColoredBackArrow"
+        app:titleTextColor="@color/white" />
 
     <TextView
         android:id="@+id/tvAppName"
@@ -33,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="150dp"
         android:fontFamily="@font/boogaloo"
         android:text="@string/app_name"
         android:textAllCaps="true"
@@ -41,32 +31,59 @@
         android:textSize="36sp"
         android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/etUsernameLogin"
-        style="@style/PrimaryEditText"
-        android:layout_below="@+id/tvAppName"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/usernameWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView8"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
-        android:ems="10"
-        android:hint=" Username"
-        android:inputType="textPersonName" />
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="-80dp"
+        android:theme="@style/TextLabel">
 
-    <EditText
-        android:id="@+id/etPasswordLogin"
-        style="@style/PrimaryEditText"
-        android:layout_below="@+id/etUsernameLogin"
+        <EditText
+            android:id="@+id/etUsernameLogin"
+            style="@style/PrimaryEditText"
+            android:layout_below="@+id/tvAppName"
+            android:layout_centerHorizontal="true"
+            android:ems="10"
+            android:hint=" Username"
+            android:inputType="textPersonName" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/passwordWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/usernameWrapper"
         android:layout_centerHorizontal="true"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
         android:layout_marginTop="10dp"
-        android:ems="10"
-        android:hint=" Password"
-        android:inputType="textPassword" />
+        android:theme="@style/TextLabel"
+        app:passwordToggleEnabled="true">
+
+        <EditText
+            android:id="@+id/etPasswordLogin"
+            style="@style/PrimaryEditText"
+            android:layout_below="@+id/etUsernameLogin"
+            android:layout_centerHorizontal="true"
+            android:ems="10"
+            android:hint=" Password"
+            android:inputType="textPassword" />
+
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/btnLogin"
         style="@style/SecondaryPurpleButton"
-        android:layout_below="@+id/etPasswordLogin"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp"
+        android:layout_marginBottom="76dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
         android:enabled="false"
         android:text="Log In " />
 
@@ -89,5 +106,13 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="40dp"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="132dp"
+        android:layout_marginTop="213dp" />
 
 </RelativeLayout>

@@ -9,64 +9,117 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/signupToolbar"
         android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:title="Create Account"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ToolbarColoredBackArrow"
+        app:titleTextColor="@color/white" />
+
+    <!--<EditText-->
+        <!--android:id="@+id/etUsernameInput"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/signupToolbar"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="100dp"-->
+        <!--android:ems="10"-->
+        <!--android:hint=" Username "-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:maxLength="30" />-->
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/usernameInputWrapper"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="top"
-        android:background="@color/colorPrimary"
-        app:theme="@style/ToolbarColoredBackArrow">
-
-        <TextView
-            android:id="@+id/connectionTitle"
-            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="18dp"
-            android:gravity="top"
-            android:maxLines="2"
-            android:title="Create Account"
-            android:text="Create Account"/>
-
-    </android.support.v7.widget.Toolbar>
-
-    <EditText
-        android:id="@+id/etUsernameInput"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/signupToolbar"
+        android:layout_above="@+id/emailInputWrapper"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:ems="10"
-        android:hint=" Username "
-        android:inputType="textPersonName"
-        android:maxLength="30" />
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:theme="@style/TextLabel"
+        app:counterEnabled="true"
+        app:counterMaxLength="30">
 
-    <EditText
-        android:id="@+id/etEmailInput"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/etUsernameInput"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
-        android:ems="10"
-        android:hint=" Email Address "
-        android:inputType="textEmailAddress" />
+        <EditText
+            android:id="@+id/etUsernameInput"
+            style="@style/PrimaryEditText"
+            android:ems="10"
+            android:hint=" Username "
+            android:inputType="text" />
 
-    <EditText
-        android:id="@+id/etPasswordInput"
-        android:layout_width="wrap_content"
+    </android.support.design.widget.TextInputLayout>
+
+    <!--<EditText-->
+        <!--android:id="@+id/etEmailInput"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/etUsernameInput"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="28dp"-->
+        <!--android:ems="10"-->
+        <!--android:hint=" Email Address "-->
+        <!--android:inputType="textEmailAddress" />-->
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/emailInputWrapper"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/etEmailInput"
+        android:layout_below="@+id/textView10"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:theme="@style/TextLabel">
+
+        <EditText
+            android:id="@+id/etEmailInput"
+            style="@style/PrimaryEditText"
+            android:ems="10"
+            android:hint=" Email Address "
+            android:inputType="textEmailAddress" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/passwordInputWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/emailInputWrapper"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
-        android:ems="10"
-        android:hint=" Password"
-        android:inputType="textPassword" />
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="25dp"
+        android:theme="@style/TextLabel"
+        app:passwordToggleEnabled="true">
+
+        <EditText
+            android:id="@+id/etPasswordInput"
+            style="@style/PrimaryEditText"
+            android:ems="10"
+            android:hint=" Password"
+            android:inputType="textPassword" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <!--<EditText-->
+        <!--android:id="@+id/etPasswordInput"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/etEmailInput"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="28dp"-->
+        <!--android:ems="10"-->
+        <!--android:hint=" Password"-->
+        <!--android:inputType="textPassword" />-->
 
     <Button
         android:id="@+id/btnInfoNext"
         style="@style/SecondaryPurpleButton"
-        android:layout_below="@+id/etPasswordInput"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="95dp"
+        android:layout_marginBottom="76dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
         android:enabled="false"
         android:text="Next" />
 
@@ -80,5 +133,12 @@
         android:text="TextView"
         android:textColor="@android:color/holo_red_light"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="-70dp" />
 
 </RelativeLayout>

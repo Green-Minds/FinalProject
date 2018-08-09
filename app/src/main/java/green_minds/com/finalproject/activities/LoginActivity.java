@@ -15,17 +15,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.CycleInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -68,7 +66,6 @@ import green_minds.com.finalproject.adapters.SchoolAutoCompleteAdapter;
 import green_minds.com.finalproject.model.DelayAutoCompleteTextView;
 
 import static green_minds.com.finalproject.model.ImageHelper.getParseFile;
-import static green_minds.com.finalproject.model.ImageHelper.getSmallerParseFile;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -91,6 +88,10 @@ public class LoginActivity extends AppCompatActivity {
     public LoginButton fbLoginButton;
     @BindView(R.id.loginToolbar)
     public android.support.v7.widget.Toolbar toolbar;
+    @BindView(R.id.usernameWrapper)
+    public TextInputLayout usernameWrapper;
+    @BindView(R.id.passwordWrapper)
+    public TextInputLayout passwordWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,8 +106,10 @@ public class LoginActivity extends AppCompatActivity {
         intent = getIntent();
         if (intent.getStringExtra("activity") != null
                 && intent.getStringExtra("activity").equals(this.getClass().getName())) {
-            Log.i("works", "IT WORKS!");
-//            fbLoginButton.callOnClick();
+
+            passwordWrapper.setVisibility(View.GONE);
+            usernameWrapper.setVisibility(View.GONE);
+            btnLogin.setVisibility(View.GONE);
 
             ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
                 @Override
@@ -115,16 +118,13 @@ public class LoginActivity extends AppCompatActivity {
 
                     } else if (!user.isNew()) {
                         btnLogin.setEnabled(false);
-                        //fbLoginButton.setEnabled(false);
                         getUserDetailsFromParse();
                     } else if (user.isNew()) {
                         btnLogin.setEnabled(false);
-                        //fbLoginButton.setEnabled(false);
                         getUserDetailFromFB();
                     }
                 }
             });
-            return;
         }
 
         TextWatcher textWatcher = new TextWatcher() {
@@ -135,14 +135,16 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tvIncorrectInfo.setVisibility(View.GONE);
+                passwordWrapper.setErrorEnabled(false);
+                usernameWrapper.setErrorEnabled(false);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if ((etUsernameLogin.getText().toString().length() > 1) && (etPasswordLogin.getText().toString().length() > 1)) {
                     btnLogin.setEnabled(true);
-                }
+                } else
+                    btnLogin.setEnabled(false);
             }
         };
         etUsernameLogin.addTextChangedListener(textWatcher);
@@ -170,11 +172,9 @@ public class LoginActivity extends AppCompatActivity {
 
                         } else if (!user.isNew()) {
                             btnLogin.setEnabled(false);
-                            //fbLoginButton.setEnabled(false);
                             getUserDetailsFromParse();
                         } else if (user.isNew()) {
                             btnLogin.setEnabled(false);
-                            //fbLoginButton.setEnabled(false);
                             getUserDetailFromFB();
                         }
                     }
@@ -203,26 +203,28 @@ public class LoginActivity extends AppCompatActivity {
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void login(final String username, String password) {
+    private void login(final String username, final String password) {
         showProgressDialog();
         btnLogin.setEnabled(false);
-        //fbLoginButton.setEnabled(false);
+
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
                     hideProgressDialog();
                     alertDisplayer("Successful Login","Welcome back " + user.getString("original_username") + "!");
-                } else {
+                } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND){
                     hideProgressDialog();
                     btnLogin.setEnabled(true);
-                    //fbLoginButton.setEnabled(true);
-                    //etPasswordLogin.startAnimation(invalidCredentials());
-                    tvIncorrectInfo.setText(e.getMessage().toString());
-                    tvIncorrectInfo.setVisibility(View.VISIBLE);
+                    usernameWrapper.setError("Incorrect username/password");
+                    passwordWrapper.setError("Incorrect username/password");
                     e.printStackTrace();
                     return;
-                }
+                } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                    isOnline();
+                    return;
+                } else
+                    return;
             }
         });
     }
@@ -245,7 +247,7 @@ public class LoginActivity extends AppCompatActivity {
         ok.show();
     }
 
-    private void facebookSignupDisplayer() {
+    private void getUserDetailFromFB() {
         LayoutInflater layoutInflater = LayoutInflater.from(LoginActivity.this);
         View promptView = layoutInflater.inflate(R.layout.custom_alert, null);
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
@@ -287,8 +289,8 @@ public class LoginActivity extends AppCompatActivity {
         alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ParseUser user = ParseUser.getCurrentUser();
                         connection = atvSchoolNameAlert.getText().toString();
+                        if (!connection.equals(school[0])) return;
 
                         GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                                 new GraphRequest.GraphJSONObjectCallback() {
@@ -331,37 +333,20 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (atvSchoolNameAlert.getText().toString().length() > 1 && school[0] != null) {
+
+                if (school[0] != null && school[0].equals(atvSchoolNameAlert.getText().toString())) {
                     alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(true);
-                }
-            }
-        });
-
-        atvSchoolNameAlert.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_DEL) {
-                    school[0]= null;
+                } else
                     alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(false);
-                }
-                return false;
             }
         });
-    }
-
-    private TranslateAnimation invalidCredentials() {
-        TranslateAnimation shake = new TranslateAnimation(0, 10, 0, 0);
-        shake.setDuration(500);
-        shake.setInterpolator(new CycleInterpolator(7));
-        return shake;
     }
 
     private void getUserDetailsFromParse() {
         ParseUser user = ParseUser.getCurrentUser();
-        Map<String, String> authData = new HashMap<>();
         authData.put("token", user.getSessionToken());
+        authData.put("id", user.getObjectId());
         user.put("location", getLocation());
-        user.saveInBackground();
         Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
         try {
             parseUserTask.waitForCompletion();
@@ -385,32 +370,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         return point;
-    }
-
-    private void getUserDetailFromFB() {
-        facebookSignupDisplayer();
-//        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-//                new GraphRequest.GraphJSONObjectCallback() {
-//            @Override
-//            public void onCompleted(JSONObject object, GraphResponse response) {
-//                try {
-//                    JSONObject picture = response.getJSONObject().getJSONObject("picture");
-//                    JSONObject data = picture.getJSONObject("data");
-//
-//                    String pictureUrl = data.getString("url");
-//                    new LoginActivity.ProfileAsync(pictureUrl,
-//                            object.getString("email"),
-//                            object.getString("name")).execute();
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//        Bundle parameters = new Bundle();
-//        parameters.putString("fields", "name, email, picture");
-//        request.setParameters(parameters);
-//        request.executeAsync();
     }
 
     @Override
@@ -471,7 +430,7 @@ public class LoginActivity extends AppCompatActivity {
         user.put("location", getLocation());
         user.put("connection", connection);
 
-        final ParseFile smallerParseFile = getSmallerParseFile(image);
+        final ParseFile smallerParseFile = getParseFile(image);
         smallerParseFile.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -482,6 +441,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void done(ParseException e) {
                         if (e == null) {
                             authData.put("token", user.getSessionToken());
+                            authData.put("id", user.getObjectId());
                             Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
                             try {
                                 parseUserTask.waitForCompletion();

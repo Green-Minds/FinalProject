@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +59,12 @@ public class SignupActivity extends AppCompatActivity {
     public TextView tvUsernameTaken;
     @BindView(R.id.signupToolbar)
     public Toolbar toolbar;
+    @BindView(R.id.usernameInputWrapper)
+    public TextInputLayout usernameInputWrapper;
+    @BindView(R.id.passwordInputWrapper)
+    public TextInputLayout passwordInputWrapper;
+    @BindView(R.id.emailInputWrapper)
+    public TextInputLayout emailInputWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +84,10 @@ public class SignupActivity extends AppCompatActivity {
 
             if (code == ParseException.USERNAME_TAKEN) {
                 etEmailInput.setText(intent.getStringExtra("email").toString());
-                tvUsernameTaken.setText("Account with username already exists.");
+                usernameInputWrapper.setError("Username taken");
             } else if (code == ParseException.EMAIL_TAKEN) {
                 etUsernameInput.setText(intent.getStringExtra("username"));
-                tvUsernameTaken.setText("Account with email address already exists.");
+                emailInputWrapper.setError("Email address taken");
             }
             tvUsernameTaken.setVisibility(View.VISIBLE);
             etPasswordInput.setText(intent.getStringExtra("password"));
@@ -94,7 +101,8 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tvUsernameTaken.setVisibility(View.GONE);
+                usernameInputWrapper.setErrorEnabled(false);
+                emailInputWrapper.setErrorEnabled(false);
             }
 
             @Override
@@ -104,7 +112,8 @@ public class SignupActivity extends AppCompatActivity {
                         && etEmailInput.getText().toString().length() > 1) {
 
                     btnInfoNext.setEnabled(true);
-                }
+                } else
+                    btnInfoNext.setEnabled(false);
             }
         };
         etUsernameInput.addTextChangedListener(textWatcher);
@@ -121,8 +130,7 @@ public class SignupActivity extends AppCompatActivity {
                 hideSoftKeyboard(SignupActivity.this);
                 if (!isOnline()) return;
                 if (!android.util.Patterns.EMAIL_ADDRESS.matcher(etEmailInput.getText().toString()).matches()) {
-                    tvUsernameTaken.setText("Invalid email address");
-                    tvUsernameTaken.setVisibility(View.VISIBLE);
+                    emailInputWrapper.setError("Invalid email address");
                     return;
                 }
 
@@ -148,8 +156,8 @@ public class SignupActivity extends AppCompatActivity {
                                 gotoSecondScreen();
                             } else {
                                 btnInfoNext.setEnabled(true);
-                                tvUsernameTaken.setText("Account with username/ email already exists");
-                                tvUsernameTaken.setVisibility(View.VISIBLE);
+                                usernameInputWrapper.setError("Username/Email address taken");
+                                emailInputWrapper.setError("Username/Email address taken");
                                 return;
                             }
                         } else {

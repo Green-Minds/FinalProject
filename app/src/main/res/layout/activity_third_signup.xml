@@ -9,31 +9,20 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/thirdSignupToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:background="@color/colorPrimary"
-        app:theme="@style/ToolbarColoredBackArrow">
-
-        <TextView
-            android:id="@+id/connectionTitle"
-            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="18dp"
-            android:gravity="top"
-            android:maxLines="2"
-            android:title="Create Account"
-            android:text="Create Account"/>
-
-    </android.support.v7.widget.Toolbar>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:title="Create Account"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ToolbarColoredBackArrow"
+        app:titleTextColor="@color/white" />
 
     <ImageView
         android:id="@+id/ivUserPic"
         android:layout_width="185dp"
         android:layout_height="169dp"
-        android:layout_below="@+id/thirdSignupToolbar"
+        android:layout_below="@+id/textView11"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
         android:clickable="true"
         tools:layout_editor_absoluteX="176dp"
         tools:layout_editor_absoluteY="110dp" />
@@ -84,5 +73,14 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="76dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
         android:text="Sign up " />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="-150dp" />
 </RelativeLayout>

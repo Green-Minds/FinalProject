@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -81,27 +80,15 @@ public class SecondSignupActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (!isOnline()) return;
-                if (school[0] != null)
-                if (atvSchoolName.getText().toString().length() > 1 && school[0] != null) {
+                if (school[0] != null && school[0].equals(atvSchoolName.getText().toString())) {
                     btnConnectNext.setEnabled(true);
-                }
-            }
-        });
-
-        atvSchoolName.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_DEL) {
-                    school[0]= null;
+                } else
                     btnConnectNext.setEnabled(false);
-                }
-                return false;
             }
         });
 

@@ -9,31 +9,21 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/secondSignupToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:background="@color/colorPrimary"
-        app:theme="@style/ToolbarColoredBackArrow">
-
-        <TextView
-            android:id="@+id/connectionTitle"
-            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="18dp"
-            android:gravity="top"
-            android:maxLines="2"
-            android:title="Create Account"
-            android:text="Create Account"/>
-
-    </android.support.v7.widget.Toolbar>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:title="Create Account"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ToolbarColoredBackArrow"
+        app:titleTextColor="@color/white" />
 
     <TextView
         android:id="@+id/tvConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/secondSignupToolbar"
+        android:layout_above="@+id/rgSelection"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="150dp"
+        android:layout_marginBottom="10dp"
         android:text="Connect through: "
         android:textColor="@android:color/black" />
 
@@ -41,10 +31,10 @@
         android:id="@+id/rgSelection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvConnect"
+        android:layout_above="@+id/autocomplete_container"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -68,6 +58,7 @@
         android:layout_below="@+id/rgSelection"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
+        android:layout_marginTop="14dp"
         android:ems="10"
         android:hint="Name of Company"
         android:inputType="textPersonName"
@@ -75,19 +66,28 @@
 
     <FrameLayout
         android:id="@+id/autocomplete_container"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/rgSelection"
+        android:layout_below="@+id/textView9"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp">
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp">
 
-        <green_minds.com.finalproject.model.DelayAutoCompleteTextView
-            android:id="@+id/atvSchoolName"
-            style="@style/PrimaryEditText"
-            android:layout_alignParentBottom="true"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/schoolInputWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/usernameInputWrapper"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="141dp"
-            android:hint=" School                                   " />
+            android:theme="@style/TextLabel">
+
+            <green_minds.com.finalproject.model.DelayAutoCompleteTextView
+                android:id="@+id/atvSchoolName"
+                style="@style/AutocompleteTextStyle"
+                android:layout_alignParentBottom="false"
+                android:layout_centerHorizontal="true"
+                android:hint=" School                                   " />
+        </android.support.design.widget.TextInputLayout>
 
         <ProgressBar
             android:id="@+id/pb_loading_indicator"
@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="16dp"
             android:visibility="gone" />
 
     </FrameLayout>
@@ -107,7 +107,16 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="76dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
         android:enabled="false"
-        android:text="Next"/>
+        android:text="Next" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="-40dp" />
 
 </RelativeLayout>
