@@ -7,12 +7,11 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,10 +36,8 @@ import com.parse.SaveCallback;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnTouch;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.fragments.AdjustPinFragment;
-import green_minds.com.finalproject.fragments.MapFragment;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.ImageHelper;
 import green_minds.com.finalproject.model.Pin;
@@ -53,14 +50,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     @BindView(R.id.btn_camera)
     ImageButton btnCamera;
 
-
-    @BindView(R.id.btn_pin)
-    Button btnPin;
-
-    // @BindView(R.id.locBtn)
-    // Button locBtn;
-
-
     @BindView(R.id.mapBtn)
     Button mapBtn;
 
@@ -69,9 +58,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
 
     @BindView(R.id.iv_preview)
     ImageView ivPreview;
-//
-//    @BindView(R.id.tv_upload)
-//    TextView tvUpload;
 
     @BindView(R.id.rb_categories)
     RadioGroup rbCategories;
@@ -93,6 +79,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     private ParseUser currentUser;
     private MenuItem miActionProgressItem;
     private boolean saving;
+    private boolean mMapMode;
     private boolean adjusted = false;
 
     final public static String CODE_KEY = "REQUEST_CODE";
@@ -114,6 +101,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         mCurrentBitmap = null;
         context = this;
         saving = false;
+        mMapMode = false;
 
         btnAdjust.setVisibility(GONE);
 
@@ -189,6 +177,8 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         adjustPinFragment.enableGestures(true);
         m.setVisible(false);
         mapBtn.setVisibility(GONE);
+        mMapMode = true;
+
 
     }
 
@@ -206,10 +196,10 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         newParent.addView(fragmentContainer);
         m.setVisible(true);
         mapBtn.setVisibility(View.VISIBLE);
+        mMapMode = false;
 
     }
 
-    @OnClick(R.id.btn_pin)
     public void uploadPin() {
         if (mCurrentBitmap == null) {
             Toast.makeText(this, "Please upload an image first!", Toast.LENGTH_LONG).show();
@@ -241,24 +231,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
             throw new RuntimeException("Cannot reinstantiate fragment " + f.getClass().getName(), e);
         }
     }
-
-
-//    @OnClick(R.id.locBtn)
-//    public void onLocBtn() {
-//
-//        lat = getIntent().getDoubleExtra("latitude", 0.0);
-//        lon = getIntent().getDoubleExtra("longitude", 0.0);
-//        ParseGeoPoint location = new ParseGeoPoint(lat, lon);
-//
-//        btnPin.setVisibility(View.GONE);
-//        locBtn.setVisibility(View.GONE);
-//        ActionBar a = getSupportActionBar();
-//        a.setTitle("Adjust the position of the pin");
-//        adjustPinFragment= adjustPinFragment.newInstance(lat, lon);
-//        ft = getSupportFragmentManager().beginTransaction();
-//        ft.add(R.id.fragment_container, adjustPinFragment);
-//        ft.commit();
-//    }
 
     private void savePin(ParseGeoPoint location) {
         saving = true;
@@ -360,12 +332,22 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     public void adjustLoc(Double latitude, Double longitude) {
         lat = latitude;
         lon = longitude;
-        // ft = getSupportFragmentManager().beginTransaction();
-        // ft.hide(adjustPinFragment);
-        // ft.commit();
         adjusted = true;
         // ActionBar a = getSupportActionBar();
         // a.setTitle("Please describe your new pin");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(mMapMode){
+            //reset and reopen old page here instead of going back to mainactivity
+            Log.i("HEH", "clicked");
+            return false;
+
+        } else{
+            //go back to main activity
+            return super.onOptionsItemSelected(item);
+        }
     }
 
 

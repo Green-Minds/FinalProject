@@ -58,6 +58,7 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -504,21 +505,19 @@ public class MapFragment extends Fragment implements
 
         if (reason == GoogleMap.OnCameraMoveStartedListener
                 .REASON_API_ANIMATION) {
-            Toast.makeText(mContext, "The user tapped something on the map.",
-                    Toast.LENGTH_SHORT).show();
             tapEvent = true;
         }
 
     }
 
     // Define a DialogFragment that displays the error dialog
-    public static class ErrorDialogFragment extends android.support.v4.app.DialogFragment {
+    public static class NewPinDialogFragment extends android.support.v4.app.DialogFragment {
 
         // Global field to contain the error dialog
         private Dialog mDialog;
 
         // Default constructor. Sets the dialog field to null
-        public ErrorDialogFragment() {
+        public NewPinDialogFragment() {
             super();
             mDialog = null;
         }
@@ -605,60 +604,11 @@ public class MapFragment extends Fragment implements
                         Log.d("MapFragment", "added new Pin at " + lat);
                         mNewPin.setLatLng(new ParseGeoPoint(lat, lon));
 
-                        ParseFile photo = mNewPin.getPhoto();
-                        if(photo != null){
-                            image = photo.getUrl();
-                        }
-                        final int drawableId = getIcon(mNewPin.getCategory());
 
-                        // map.clear();
-                        mClusterManager.clearItems();
-                        LatLng listingPosition = new LatLng(lat, lon);
-                        // Create the marker on the fragment
-                        final Marker mapMarker = map.addMarker(new MarkerOptions()
-                                .position(listingPosition)
-                                .title("checkins: " + mNewPin.getCheckincount())
-                                .snippet(mNewPin.getComment())
-                                .icon(bitmapDescriptorFromVector(mContext, drawableId)));
-
-                        final android.os.Handler handler = new android.os.Handler();
-                        final long start = SystemClock.uptimeMillis();
-                        final long duration = 5000;
-
-                        // Use the bounce interpolator
-                        final android.view.animation.Interpolator interpolator =
-                                new BounceInterpolator();
-
-                        // Animate marker with a bounce updating its position every 15ms
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                // mClusterManager.clearItems();
-                                long elapsed = SystemClock.uptimeMillis() - start;
-                                // Calculate t for bounce based on elapsed time
-                                float t = Math.max(
-                                        1 - interpolator.getInterpolation((float) elapsed
-                                                / duration), 0);
-                                // Set the anchor
-                                mapMarker.setAnchor(0.5f, 1.0f + 14 * t);
-
-                                if (t > 0.0) {
-                                    // Post this event again 15ms from now.
-                                    handler.postDelayed(this, 150);
-                                } else { // done elapsing, show window
-                                    mapMarker.remove();
-                                    // MyItem item = new MyItem(lat, lon, drawableId);
-                                    // item.setTitle("checkins: " + mNewPin.getCheckincount());
-                                    // item.setSnippet(mNewPin.getComment());
-                                    // item.setImage(image);
-                                    // item.setDistance(round(mNewPin.getLatLng().distanceInKilometersTo(loc), 3) + "km");
-                                    // mClusterManager.addItem(item);
-                                    // items.add(item);
-                                    // mClusterManager.cluster();
-                                    showAll();
-                                }
-                            }
-                        });
+                        new SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE)
+                                .setTitleText("Good job!")
+                                .setContentText("You added a new pin!")
+                                .show();
                     }
 
                 } else {
@@ -704,7 +654,7 @@ public class MapFragment extends Fragment implements
         }
         else if (fab0.isSelected()) {
             fab0.setSelected(false);
-            fab0.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+            fab0.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
         }
     }
@@ -718,7 +668,7 @@ public class MapFragment extends Fragment implements
             unselectOthers(1);
         } else if (fab1.isSelected()) {
             fab1.setSelected(false);
-            fab1.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+            fab1.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
         }
     }
@@ -733,7 +683,7 @@ public class MapFragment extends Fragment implements
         }
         else if (fab2.isSelected()) {
             fab2.setSelected(false);
-            fab2.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+            fab2.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
         }
     }
@@ -748,7 +698,7 @@ public class MapFragment extends Fragment implements
         }
         else if (fab3.isSelected()) {
             fab3.setSelected(false);
-            fab3.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+            fab3.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
         }
     }
@@ -763,7 +713,7 @@ public class MapFragment extends Fragment implements
         }
         else if (fab4.isSelected()) {
             fab4.setSelected(false);
-            fab4.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+            fab4.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
         }
     }
