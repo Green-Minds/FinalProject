@@ -1,7 +1,6 @@
 package green_minds.com.finalproject.activities;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.SchoolAutoCompleteAdapter;
 import green_minds.com.finalproject.model.DelayAutoCompleteTextView;
@@ -30,7 +30,7 @@ public class SecondSignupActivity extends AppCompatActivity {
 
     private Intent intent;
     private String[] school = {null};
-    private ProgressDialog pd;
+    private SweetAlertDialog pd;
     private android.support.v7.app.ActionBar actionBar;
 
     @BindView(R.id.rgSelection)
@@ -137,17 +137,17 @@ public class SecondSignupActivity extends AppCompatActivity {
 
     private void showProgressDialog() {
         // Show progress item
-        pd = new ProgressDialog(this);
-        pd.setTitle("Processing...");
-        pd.setMessage("Please wait.");
+        pd = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pd.getProgressHelper().setBarColor(R.color.colorPrimary);
+        pd.setTitleText("Processing...");
+        pd.setContentText("Please wait.");
         pd.setCancelable(false);
-        pd.setIndeterminate(true);
         pd.show();
     }
 
     private void hideProgressDialog() {
         // Hide progress item
-       pd.dismiss();
+       pd.dismissWithAnimation();
     }
 
     private boolean isOnline() {

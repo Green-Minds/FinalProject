@@ -2,9 +2,7 @@ package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,7 +12,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -38,12 +35,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import green_minds.com.finalproject.R;
 
 
 public class SignupActivity extends AppCompatActivity {
 
-    private ProgressDialog pd;
+    private SweetAlertDialog pd;
     private Intent intent;
     private android.support.v7.app.ActionBar actionBar;
 
@@ -200,17 +198,17 @@ public class SignupActivity extends AppCompatActivity {
 
     private void showProgressDialog() {
         // Show progress item
-        pd = new ProgressDialog(this);
-        pd.setTitle("Processing...");
-        pd.setMessage("Please wait.");
+        pd = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pd.getProgressHelper().setBarColor(R.color.colorPrimary);
+        pd.setTitleText("Processing...");
+        pd.setContentText("Please wait.");
         pd.setCancelable(false);
-        pd.setIndeterminate(true);
         pd.show();
     }
 
     private void hideProgressDialog() {
         // Hide progress item
-        pd.dismiss();
+        pd.dismissWithAnimation();
     }
 
     private void completeSignup() {
@@ -256,21 +254,36 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void alertDisplayer(String title,String message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(SignupActivity.this).setCancelable(false)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(SignupActivity.this).setCancelable(false)
+//                .setTitle(title)
+//                .setMessage(message)
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                        Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//                });
+//        AlertDialog ok = builder.create();
+//        ok.show();
+
+        new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText(title)
+                .setContentText(message)
+                .setConfirmText("OK")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        pd.dismissWithAnimation();
                         Intent intent = new Intent(SignupActivity.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
                     }
-                });
-        AlertDialog ok = builder.create();
-        ok.show();
+                }).show();
     }
 }
 

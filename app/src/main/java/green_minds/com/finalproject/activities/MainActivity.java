@@ -207,8 +207,11 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
                         ft.hide(mapFragment);
                         ft.replace(R.id.fragment_container, leaderboardFragment);
                         ft.commit();
+                    } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN){
+                        Toast.makeText(context, getString(R.string.session_error), Toast.LENGTH_LONG).show();
+                        logout();
                     } else {
-                        e.printStackTrace();
+                        Toast.makeText(context, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
                     }
                 }
             });

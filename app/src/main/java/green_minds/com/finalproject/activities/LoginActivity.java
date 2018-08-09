@@ -2,7 +2,6 @@ package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -61,6 +60,7 @@ import java.util.Map;
 import bolts.Task;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.SchoolAutoCompleteAdapter;
 import green_minds.com.finalproject.model.DelayAutoCompleteTextView;
@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private final List < String > mPermissions = Arrays.asList("email", "public_profile");
     private  Map<String, String> authData = new HashMap<>();
-    private ProgressDialog pd;
+    private SweetAlertDialog pd;
     private String connection;
     private Intent intent;
     private android.support.v7.app.ActionBar actionBar;
@@ -113,17 +113,20 @@ public class LoginActivity extends AppCompatActivity {
             usernameWrapper.setVisibility(View.GONE);
             btnLogin.setVisibility(View.GONE);
 
+            if (!isOnline()){
+                startActivity(new Intent(this, SplashActivity.class));
+                finish();
+                return;
+            }
             ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
                 @Override
                 public void done(ParseUser user, ParseException e) {
                     if (user == null) {
 
                     } else if (!user.isNew()) {
-                        btnLogin.setEnabled(false);
                         getUserDetailsFromParse();
                     } else if (user.isNew()) {
-                        btnLogin.setEnabled(false);
-                        getUserDetailFromFB();
+                        facebookSignupDisplay();
                     }
                 }
             });
@@ -157,30 +160,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 hideSoftKeyboard(LoginActivity.this);
                 if (!isOnline()) return;
-                String username = etUsernameLogin.getText().toString().toLowerCase();
+                String username = etUsernameLogin.getText().toString().toLowerCase().trim();
                 String password = etPasswordLogin.getText().toString();
                 login(username, password);
-            }
-        });
-
-        fbLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isOnline()) return;
-                ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
-                    @Override
-                    public void done(ParseUser user, ParseException e) {
-                        if (user == null) {
-
-                        } else if (!user.isNew()) {
-                            btnLogin.setEnabled(false);
-                            getUserDetailsFromParse();
-                        } else if (user.isNew()) {
-                            btnLogin.setEnabled(false);
-                            getUserDetailFromFB();
-                        }
-                    }
-                });
             }
         });
     }
@@ -233,24 +215,39 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void alertDisplayer(String title,String message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this).setCancelable(false)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this).setCancelable(false)
+//                .setTitle(title)
+//                .setMessage(message)
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//                });
+//        AlertDialog ok = builder.create();
+//        ok.show();
+
+        new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText(title)
+                .setContentText(message)
+                .setConfirmText("OK")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        pd.dismissWithAnimation();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
                     }
-                });
-        AlertDialog ok = builder.create();
-        ok.show();
+                }).show();
     }
 
-    private void getUserDetailFromFB() {
+    private void facebookSignupDisplay() {
         LayoutInflater layoutInflater = LayoutInflater.from(LoginActivity.this);
         View promptView = layoutInflater.inflate(R.layout.custom_alert, null);
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
@@ -293,30 +290,17 @@ public class LoginActivity extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         connection = atvSchoolNameAlert.getText().toString();
-                        if (!connection.equals(school[0])) return;
 
-                        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-                                new GraphRequest.GraphJSONObjectCallback() {
-                                    @Override
-                                    public void onCompleted(JSONObject object, GraphResponse response) {
-                                        try {
-                                            JSONObject picture = response.getJSONObject().getJSONObject("picture");
-                                            JSONObject data = picture.getJSONObject("data");
-
-                                            String pictureUrl = data.getString("url");
-                                            new LoginActivity.ProfileAsync(pictureUrl,
-                                                    object.getString("email"),
-                                                    object.getString("name")).execute();
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                });
-
-                        Bundle parameters = new Bundle();
-                        parameters.putString("fields", "name, email, picture");
-                        request.setParameters(parameters);
-                        request.executeAsync();
+                        if (school[0]== null || !connection.equals(school[0])) {
+                            ParseUser.getCurrentUser().deleteInBackground();
+                            ParseUser.logOut();
+                            startActivity(new Intent(LoginActivity.this, SplashActivity.class));
+                            finish();
+                            return;
+                        } else {
+                            showProgressDialog();
+                            getUserDetailFromFB();
+                        }
                     }
                 });
         final AlertDialog alertDialog = alertDialogBuilder.create();
@@ -338,14 +322,40 @@ public class LoginActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
 
                 if (school[0] != null && school[0].equals(atvSchoolNameAlert.getText().toString())) {
-                    alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    alertDialog.getButton(SweetAlertDialog.BUTTON_CONFIRM).setEnabled(true);
                 } else
-                    alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    alertDialog.getButton(SweetAlertDialog.BUTTON_CONFIRM).setEnabled(false);
             }
         });
     }
 
+    private void getUserDetailFromFB() {
+        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        try {
+                            JSONObject picture = response.getJSONObject().getJSONObject("picture");
+                            JSONObject data = picture.getJSONObject("data");
+
+                            String pictureUrl = data.getString("url");
+                            new LoginActivity.ProfileAsync(pictureUrl,
+                                    object.getString("email"),
+                                    object.getString("name")).execute();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "name, email, picture");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
     private void getUserDetailsFromParse() {
+        showProgressDialog();
         ParseUser user = ParseUser.getCurrentUser();
         authData.put("token", user.getSessionToken());
         authData.put("id", user.getObjectId());
@@ -353,6 +363,7 @@ public class LoginActivity extends AppCompatActivity {
         Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
         try {
             parseUserTask.waitForCompletion();
+            hideProgressDialog();
             alertDisplayer("Successful Login","Welcome back " + user.getString("original_username") + "!");
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -448,6 +459,7 @@ public class LoginActivity extends AppCompatActivity {
                             Task<ParseUser> parseUserTask = ParseUser.logInWithInBackground("facebook", authData);
                             try {
                                 parseUserTask.waitForCompletion();
+                                hideProgressDialog();
                                 alertDisplayer("Successful Login","Welcome " + user.getString("original_username") + "!");
                             } catch (InterruptedException err) {
                                 err.printStackTrace();
@@ -463,11 +475,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showProgressDialog() {
         // Show progress item
-        pd = new ProgressDialog(this);
-        pd.setTitle("Processing...");
-        pd.setMessage("Please wait.");
+        pd = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pd.getProgressHelper().setBarColor(R.color.colorPrimary);
+        pd.setTitleText("Logging you in...");
+        pd.setContentText("Please wait.");
         pd.setCancelable(false);
-        pd.setIndeterminate(true);
         pd.show();
     }
 
