@@ -16,19 +16,19 @@
         app:theme="@style/ToolbarColoredBackArrow"
         app:titleTextColor="@color/white" />
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_checkin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal|bottom"
-        android:elevation="12dp"
-        android:layout_marginBottom="8dp"
-        android:text="check in"
-        android:textColor="@color/white"
-        android:background="@drawable/button_toggle"
-        android:visibility="visible" />
+        android:layout_alignParentEnd="true"
+        android:padding="0dp"
+        android:layout_margin="16dp"
+        app:backgroundTint="@color/fab_color"
+        android:clickable="true"
+        app:fabCustomSize="64dp"
+        android:elevation="16dp"
+        app:srcCompat="@drawable/ic_verified" />
 
     <FrameLayout
         android:id="@+id/content"
@@ -37,18 +37,7 @@
         android:background="@color/colorLightPurpleTransparent"
         android:layout_below="@+id/my_toolbar">
 
-        <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/btn_reload"
-            style="@android:style/Widget.ActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_reload" />
-
         <RelativeLayout
-            style="@style/FloatingCard"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible">

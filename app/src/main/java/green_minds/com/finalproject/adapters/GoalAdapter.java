@@ -113,6 +113,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
                         } else {
                             Toast.makeText(mContext, mContext.getString(R.string.removed), Toast.LENGTH_SHORT).show();
                             notifyDataSetChanged();
+                            mListener.setListViewHeight();
                             if(mGoals.size() <= 0){
                                 mListener.showNoDataMessage();
                             }

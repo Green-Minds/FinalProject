@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -65,6 +66,8 @@ public class UserInfoFragment extends Fragment {
         void logout();
 
         void showNoDataMessage();
+
+        void setListViewHeight();
     }
 
     private static final String ARG_PARAM1 = "user";
@@ -272,6 +275,7 @@ public class UserInfoFragment extends Fragment {
     public void setGoals(List<Goal> g) {
         mGoals.clear();
         mGoals.addAll(g);
+        setListViewHeightBasedOnChildren(goalList);
         mGoalAdapter.notifyDataSetChanged();
         if (g.size() <= 0) {
             tvNodata.setVisibility(View.VISIBLE);
@@ -306,6 +310,7 @@ public class UserInfoFragment extends Fragment {
     private void setUpGoals() {
         mGoalAdapter = new GoalAdapter(mContext, mUser, mGoals, mListener);
         goalList.setAdapter(mGoalAdapter);
+        setListViewHeightBasedOnChildren(goalList);
 
         btnAddGoal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -334,6 +339,32 @@ public class UserInfoFragment extends Fragment {
 
     public void showNoDataMessage() {
         tvNodata.setVisibility(View.VISIBLE);
+    }
+
+    public void setListViewHeight(){
+        setListViewHeightBasedOnChildren(goalList);
+    }
+
+
+    //https://kennethflynn.wordpress.com/2012/09/12/putting-android-listviews-in-scrollviews/
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 
 }

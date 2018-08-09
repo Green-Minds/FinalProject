@@ -69,15 +69,18 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
                 switch (item.getItemId()) {
 
                     case R.id.navigation_map:
-                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_map).isChecked()) reloadMap();
+                        if (!bottomNavigationView.getMenu().findItem(R.id.navigation_map).isChecked())
+                            reloadMap();
                         return true;
 
                     case R.id.navigation_user:
-                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_user).isChecked()) getUserInfo();
+                        if (!bottomNavigationView.getMenu().findItem(R.id.navigation_user).isChecked())
+                            getUserInfo();
                         return true;
 
                     case R.id.navigation_board:
-                        if(!bottomNavigationView.getMenu().findItem(R.id.navigation_board).isChecked()) loadUsers();
+                        if (!bottomNavigationView.getMenu().findItem(R.id.navigation_board).isChecked())
+                            loadUsers();
                         return true;
                 }
                 return false;
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         return true;
     }
 
-        @Override
+    @Override
     public void showProgressBar() {
         if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
     }
@@ -142,7 +145,9 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         intent.putExtra("comment", myItem.getSnippet());
         intent.putExtra("distance", myItem.getDistance());
         intent.putExtra("image", myItem.getImageUrl());
-        intent.putExtra("type", myItem.getTypeIcon());
+        intent.putExtra("typeicon", myItem.getTypeIcon());
+        intent.putExtra("type", myItem.getType());
+        intent.putExtra("checkins" , myItem.getCheckins());
         startActivity(intent);
 
     }
@@ -210,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
 
-        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
+        if (netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()) {
             Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_LONG).show();
             return false;
         }
@@ -232,18 +237,18 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         startActivityForResult(i, 30);
     }
 
-    public void goToDetail(Goal g, int checkins){
+    public void goToDetail(Goal g, int checkins) {
         Intent i = new Intent(this, GoalDetailActivity.class);
         i.putExtra("GOAL", g);
         i.putExtra("CHECKINS", checkins);
         startActivity(i);
     }
 
-    public void openGoalEditPage(int pos, ArrayList<Goal> goals){
+    public void openGoalEditPage(int pos, ArrayList<Goal> goals) {
         Intent i = new Intent(this, EditGoalActivity.class);
         boolean beingEdited = false;
         i.putExtra("GOALS", goals);
-        if(pos >= 0){
+        if (pos >= 0) {
             beingEdited = true;
             i.putExtra("GOAL", pos);
         }
@@ -303,7 +308,11 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         });
     }
 
-    public void showNoDataMessage(){
+    public void showNoDataMessage() {
         userInfoFragment.showNoDataMessage();
+    }
+
+    public void setListViewHeight() {
+        userInfoFragment.setListViewHeight();
     }
 }

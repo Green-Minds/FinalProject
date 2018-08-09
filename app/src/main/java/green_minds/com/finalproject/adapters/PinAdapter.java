@@ -68,14 +68,16 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
             holder.tv_type.setTextColor(white);
             holder.tv_checkin_count.setTextColor(white);
             holder.tv_comment.setTextColor(white);
-            holder.checkmark.setVisibility(View.VISIBLE);
+            //holder.checkmark.setVisibility(View.VISIBLE);
 
         } else{
             int black = context.getResources().getColor(R.color.black);
+            int grey = context.getResources().getColor(R.color.grey_5);
             holder.tv_miles_away.setTextColor(black);
             holder.tv_type.setTextColor(black);
             holder.tv_checkin_count.setTextColor(black);
-            holder.checkmark.setVisibility(View.GONE);
+            holder.tv_comment.setTextColor(grey);
+            //holder.checkmark.setVisibility(View.GONE);
         }
         holder.tv_comment.setText(pin.getComment());
 
@@ -121,8 +123,8 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
         @BindView(R.id.container)
         RelativeLayout container;
 
-        @BindView(R.id.iv_checkmark)
-        ImageView checkmark;
+//        @BindView(R.id.iv_checkmark)
+//        ImageView checkmark;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -132,6 +134,9 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
 
         @Override
         public void onClick(View v) {
+            if(mSelectedPos == getLayoutPosition()){
+                return;
+            }
             if(mSelectedPos == RecyclerView.NO_POSITION){
                 if(context instanceof CheckInActivity){
                     ((CheckInActivity)context).activateButton();
