@@ -1,9 +1,7 @@
 package green_minds.com.finalproject.activities;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,7 +14,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -38,6 +35,7 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.model.GlideApp;
 
@@ -56,7 +54,7 @@ public class ThirdSignupActivity extends AppCompatActivity {
     private ParseFile parseFile;
     private ParseFile smallerParseFile;
     private Bitmap imageBitmap;
-    private ProgressDialog pd;
+    private SweetAlertDialog pd;
     private android.support.v7.app.ActionBar actionBar;
 
     @BindView(R.id.ivUserPic)
@@ -229,35 +227,50 @@ public class ThirdSignupActivity extends AppCompatActivity {
     }
 
     private void alertDisplayer(String title, String message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(ThirdSignupActivity.this).setCancelable(false)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(ThirdSignupActivity.this).setCancelable(false)
+//                .setTitle(title)
+//                .setMessage(message)
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                        Intent intent = new Intent(ThirdSignupActivity.this, MainActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//                });
+//        AlertDialog ok = builder.create();
+//        ok.show();
+
+        new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText(title)
+                .setContentText(message)
+                .setConfirmText("OK")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        pd.dismissWithAnimation();
                         Intent intent = new Intent(ThirdSignupActivity.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
                     }
-                });
-        AlertDialog ok = builder.create();
-        ok.show();
+                }).show();
     }
 
     private void showProgressDialog() {
         // Show progress item
-        pd = new ProgressDialog(this);
-        pd.setTitle("Processing...");
-        pd.setMessage("Please wait.");
+        pd = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pd.getProgressHelper().setBarColor(R.color.colorPrimary);
+        pd.setTitleText("Signing you up...");
+        pd.setContentText("Please wait.");
         pd.setCancelable(false);
-        pd.setIndeterminate(true);
         pd.show();
     }
 
     private void hideProgressDialog() {
         // Hide progress item
-        pd.dismiss();
+        pd.dismissWithAnimation();
     }
 }

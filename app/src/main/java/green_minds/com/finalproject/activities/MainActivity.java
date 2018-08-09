@@ -30,6 +30,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.ScoreAdapter;
 import green_minds.com.finalproject.fragments.LeaderboardFragment;
@@ -133,10 +134,20 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
             Intent log = new Intent(MainActivity.this, LoginActivity.class);
         }
 
-        Intent intent = new Intent(MainActivity.this, NewPinActivity.class);
-        intent.putExtra("latitude", currentLocation.getLatitude());
-        intent.putExtra("longitude", currentLocation.getLongitude());
-        startActivityForResult(intent, 20);
+
+        if (currentLocation != null ) {
+            Intent intent = new Intent(MainActivity.this, NewPinActivity.class);
+            intent.putExtra("latitude", currentLocation.getLatitude());
+            intent.putExtra("longitude", currentLocation.getLongitude());
+            startActivityForResult(intent, 20);
+        } else {
+
+            new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("Oops...")
+                    .setContentText("Your location is not available!")
+                    .show();
+
+        }
 
     }
 
@@ -207,8 +218,11 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
                         ft.hide(mapFragment);
                         ft.replace(R.id.fragment_container, leaderboardFragment);
                         ft.commit();
+                    } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN){
+                        Toast.makeText(context, getString(R.string.session_error), Toast.LENGTH_LONG).show();
+                        logout();
                     } else {
-                        e.printStackTrace();
+                        Toast.makeText(context, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
                     }
                 }
             });
