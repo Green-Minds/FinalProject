@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
@@ -76,12 +77,20 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog pd;
     private String connection;
     private Intent intent;
+    private android.support.v7.app.ActionBar actionBar;
 
-    @BindView(R.id.etUsernameLogin) public EditText etUsernameLogin;
-    @BindView(R.id.etPasswordLogin) public EditText etPasswordLogin;
-    @BindView(R.id.btnLogin) public Button btnLogin;
-    @BindView(R.id.tvIncorrectInfo) public TextView tvIncorrectInfo;
-    @BindView(R.id.fbLoginButton) public LoginButton fbLoginButton;
+    @BindView(R.id.etUsernameLogin)
+    public EditText etUsernameLogin;
+    @BindView(R.id.etPasswordLogin)
+    public EditText etPasswordLogin;
+    @BindView(R.id.btnLogin)
+    public Button btnLogin;
+    @BindView(R.id.tvIncorrectInfo)
+    public TextView tvIncorrectInfo;
+    @BindView(R.id.fbLoginButton)
+    public LoginButton fbLoginButton;
+    @BindView(R.id.loginToolbar)
+    public android.support.v7.widget.Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,10 +98,33 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         intent = getIntent();
         if (intent.getStringExtra("activity") != null
-                && intent.getStringExtra("activity") == this.getClass().getName()) {
-            fbLoginButton.performClick();
+                && intent.getStringExtra("activity").equals(this.getClass().getName())) {
+            Log.i("works", "IT WORKS!");
+//            fbLoginButton.callOnClick();
+
+            ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
+                @Override
+                public void done(ParseUser user, ParseException e) {
+                    if (user == null) {
+
+                    } else if (!user.isNew()) {
+                        btnLogin.setEnabled(false);
+                        //fbLoginButton.setEnabled(false);
+                        getUserDetailsFromParse();
+                    } else if (user.isNew()) {
+                        btnLogin.setEnabled(false);
+                        //fbLoginButton.setEnabled(false);
+                        getUserDetailFromFB();
+                    }
+                }
+            });
+            return;
         }
 
         TextWatcher textWatcher = new TextWatcher() {
@@ -131,7 +163,22 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!isOnline()) return;
-                facebookSignupDisplayer();
+                ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
+                    @Override
+                    public void done(ParseUser user, ParseException e) {
+                        if (user == null) {
+
+                        } else if (!user.isNew()) {
+                            btnLogin.setEnabled(false);
+                            //fbLoginButton.setEnabled(false);
+                            getUserDetailsFromParse();
+                        } else if (user.isNew()) {
+                            btnLogin.setEnabled(false);
+                            //fbLoginButton.setEnabled(false);
+                            getUserDetailFromFB();
+                        }
+                    }
+                });
             }
         });
     }
@@ -243,22 +290,28 @@ public class LoginActivity extends AppCompatActivity {
                         ParseUser user = ParseUser.getCurrentUser();
                         connection = atvSchoolNameAlert.getText().toString();
 
-                        ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
-                            @Override
-                            public void done(ParseUser user, ParseException e) {
-                                if (user == null) {
+                        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                                new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject object, GraphResponse response) {
+                                        try {
+                                            JSONObject picture = response.getJSONObject().getJSONObject("picture");
+                                            JSONObject data = picture.getJSONObject("data");
 
-                                } else if (!user.isNew()) {
-                                    btnLogin.setEnabled(false);
-                                    //fbLoginButton.setEnabled(false);
-                                    getUserDetailsFromParse();
-                                } else if (user.isNew()) {
-                                    btnLogin.setEnabled(false);
-                                    //fbLoginButton.setEnabled(false);
-                                    getUserDetailFromFB();
-                                }
-                            }
-                        });
+                                            String pictureUrl = data.getString("url");
+                                            new LoginActivity.ProfileAsync(pictureUrl,
+                                                    object.getString("email"),
+                                                    object.getString("name")).execute();
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "name, email, picture");
+                        request.setParameters(parameters);
+                        request.executeAsync();
                     }
                 });
         final AlertDialog alertDialog = alertDialogBuilder.create();
@@ -281,6 +334,17 @@ public class LoginActivity extends AppCompatActivity {
                 if (atvSchoolNameAlert.getText().toString().length() > 1 && school[0] != null) {
                     alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(true);
                 }
+            }
+        });
+
+        atvSchoolNameAlert.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_DEL) {
+                    school[0]= null;
+                    alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+                return false;
             }
         });
     }
@@ -324,28 +388,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getUserDetailFromFB() {
-        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-                try {
-                    JSONObject picture = response.getJSONObject().getJSONObject("picture");
-                    JSONObject data = picture.getJSONObject("data");
-
-                    String pictureUrl = data.getString("url");
-                    new LoginActivity.ProfileAsync(pictureUrl,
-                            object.getString("email"),
-                            object.getString("name")).execute();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "name, email, picture");
-        request.setParameters(parameters);
-        request.executeAsync();
+        facebookSignupDisplayer();
+//        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+//                new GraphRequest.GraphJSONObjectCallback() {
+//            @Override
+//            public void onCompleted(JSONObject object, GraphResponse response) {
+//                try {
+//                    JSONObject picture = response.getJSONObject().getJSONObject("picture");
+//                    JSONObject data = picture.getJSONObject("data");
+//
+//                    String pictureUrl = data.getString("url");
+//                    new LoginActivity.ProfileAsync(pictureUrl,
+//                            object.getString("email"),
+//                            object.getString("name")).execute();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//
+//        Bundle parameters = new Bundle();
+//        parameters.putString("fields", "name, email, picture");
+//        request.setParameters(parameters);
+//        request.executeAsync();
     }
 
     @Override

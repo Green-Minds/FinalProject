@@ -6,13 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".activities.LoginActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/loginToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ToolbarColoredBackArrow">
+
+        <TextView
+            android:id="@+id/titleTv"
+            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:gravity="top"
+            android:maxLines="2"
+            android:title="Login"
+            android:text="Log In"/>
+
+    </android.support.v7.widget.Toolbar>
+
     <TextView
         android:id="@+id/tvAppName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="120dp"
         android:fontFamily="@font/boogaloo"
         android:text="@string/app_name"
         android:textAllCaps="true"
@@ -22,39 +43,32 @@
 
     <EditText
         android:id="@+id/etUsernameLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        style="@style/PrimaryEditText"
         android:layout_below="@+id/tvAppName"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/text_input_border"
+        android:layout_marginTop="80dp"
         android:ems="10"
         android:hint=" Username"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/etPasswordLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        style="@style/PrimaryEditText"
         android:layout_below="@+id/etUsernameLogin"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Password"
         android:inputType="textPassword" />
 
     <Button
         android:id="@+id/btnLogin"
-        android:layout_width="214dp"
-        android:layout_height="29dp"
+        style="@style/SecondaryPurpleButton"
         android:layout_below="@+id/etPasswordLogin"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="70dp"
-        android:background="@drawable/button_toggle"
+        android:layout_marginTop="120dp"
         android:enabled="false"
-        android:text="Log in "
-        android:textColor="@android:color/white" />
+        android:text="Log In " />
 
     <TextView
         android:id="@+id/tvIncorrectInfo"

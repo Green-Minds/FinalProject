@@ -1,6 +1,5 @@
 package green_minds.com.finalproject.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -44,6 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.activities.UserInfoActivity;
 import green_minds.com.finalproject.adapters.GoalAdapter;
 import green_minds.com.finalproject.model.CategoryHelper;
 import green_minds.com.finalproject.model.GlideApp;
@@ -68,11 +68,9 @@ public class UserInfoFragment extends Fragment {
         void showNoDataMessage();
 
         void setListViewHeight();
-
     }
 
     private static final String ARG_PARAM1 = "user";
-    private ProgressDialog pd;
 
     @BindView(R.id.tv_name)
     TextView tvName;
@@ -182,11 +180,14 @@ public class UserInfoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
         super.onViewCreated(view, savedInstanceState);
-        showProgressDialog();
+        if (getActivity().getClass().getName().equals(UserInfoActivity.class.getName())) {
+            btnAddGoal.setVisibility(View.GONE);
+            btnPopup.setVisibility(View.GONE);
+        }
         setUpProfile();
         setUpGraph();
         setUpGoals();
-        hideProgressDialog();
+
     }
 
     private void setUpProfile() {
@@ -332,7 +333,7 @@ public class UserInfoFragment extends Fragment {
         @Override
         protected void drawLabel(Canvas c, String formattedLabel, float x, float y, MPPointF anchor, float angleDegrees) {
             int i = Integer.parseInt(formattedLabel);
-            Utils.drawImage(c, CategoryHelper.getIconResource(i, mContext), (int) x, (int) y + 24, 50, 50);
+            Utils.drawImage(c, CategoryHelper.getIconResource(i, mContext), (int) x, (int) y + 24, 64, 64);
         }
     }
 
@@ -364,22 +365,6 @@ public class UserInfoFragment extends Fragment {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
-    }
-
-
-    private void showProgressDialog() {
-        // Show progress item
-        pd = new ProgressDialog(mContext);
-        pd.setTitle("Processing...");
-        pd.setMessage("Please wait.");
-        pd.setCancelable(false);
-        pd.setIndeterminate(true);
-        pd.show();
-    }
-
-    private void hideProgressDialog() {
-        // Hide progress item
-        pd.dismiss();
     }
 
 }
