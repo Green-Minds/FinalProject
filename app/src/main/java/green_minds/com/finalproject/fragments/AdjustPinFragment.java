@@ -132,8 +132,9 @@ public class AdjustPinFragment extends Fragment {
             // Map is ready
 
             UiSettings mapUiSettings = map.getUiSettings();
-            mapUiSettings.setZoomControlsEnabled(true);
+            // mapUiSettings.setZoomControlsEnabled(true);
             map.setMinZoomPreference(6.0f);
+            mapUiSettings.setAllGesturesEnabled(false);
             CameraUpdate cameraNewPin = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 17);
             map.moveCamera(cameraNewPin);
             } else {
@@ -180,4 +181,13 @@ public class AdjustPinFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void adjustLoc(Double lat, Double lon);
     }
+
+    public void enableGestures(boolean b) {
+        UiSettings mapUiSettings = map.getUiSettings();
+        mapUiSettings.setZoomControlsEnabled(b);
+        mapUiSettings.setAllGesturesEnabled(b);
+    }
+
+
+
 }

@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,9 @@ public class CheckInActivity extends AppCompatActivity {
     private ParseUser user;
     private Context context;
     private MenuItem miActionProgressItem;
+    private ImageView iv;
+
+    private MenuItem miRefresh;
 
     @BindView(R.id.rv_pins)
     RecyclerView rvPins;
@@ -128,10 +132,14 @@ public class CheckInActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem m = menu.findItem(R.id.miRefresh);
-        m.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        miRefresh = menu.findItem(R.id.miRefresh);
+//        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        iv = (ImageView)inflater.inflate(R.layout.iv_refresh, null);
+//        miRefresh.setActionView(iv);
+        miRefresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                //startAnim();
                 reloadNearbyPins();
                 return false;
             }
@@ -238,6 +246,13 @@ public class CheckInActivity extends AppCompatActivity {
         resLoc.setLongitude(gp.getLongitude());
         return resLoc;
     }
+
+//    private void startAnim(){
+//        Animation rotation = AnimationUtils.loadAnimation(this, R.anim.reload_item_spinning);
+//        rotation.setRepeatCount(Animation.INFINITE);
+//        View i = miRefresh.getActionView();
+//        i.startAnimation(rotation);
+//    }
 
     private void redirectToLogin() {
         Intent i = new Intent(this, green_minds.com.finalproject.activities.UserInfoActivity.class);

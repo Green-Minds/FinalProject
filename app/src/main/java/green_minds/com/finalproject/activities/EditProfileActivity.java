@@ -1,5 +1,6 @@
 package green_minds.com.finalproject.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,6 +52,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private ParseUser mUser;
     private Context mContext;
     private MenuItem miActionProgressItem;
+    private ProgressDialog pd;
 
     @BindView(R.id.tv_username)
     EditText etUsername;
@@ -111,7 +113,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @OnClick({R.id.btn_save})
     public void save() {
-        showProgressBar();
+        showProgressDialog();
         checkUsernameFirst(etUsername.getText().toString().toLowerCase());
     }
 
@@ -127,7 +129,7 @@ public class EditProfileActivity extends AppCompatActivity {
             query.whereEqualTo("username", username).findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
-                    hideProgressBar();
+                    hideProgressDialog();
                     if (e == null) {
                         if (objects.size() == 0) {
                             saveChanges();
@@ -281,14 +283,6 @@ public class EditProfileActivity extends AppCompatActivity {
         return cursor.getInt(orientationColumnIndex);
     }
 
-    private void showProgressBar() {
-        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
-    }
-
-    private void hideProgressBar() {
-        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
-    }
-
     private void goBackToProfile() {
         setResult(RESULT_OK);
         finish();
@@ -297,5 +291,20 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         cancel();
+    }
+
+    private void showProgressDialog() {
+        // Show progress item
+        pd = new ProgressDialog(mContext);
+        pd.setTitle("Processing...");
+        pd.setMessage("Please wait.");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    private void hideProgressDialog() {
+        // Hide progress item
+        pd.dismiss();
     }
 }
