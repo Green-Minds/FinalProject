@@ -1,16 +1,15 @@
 package green_minds.com.finalproject.activities;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -45,7 +45,7 @@ public class EditGoalActivity extends AppCompatActivity {
     private ActionBar mActionBar;
     private Date mSelectedDate;
     private boolean mBeingEdited;
-    private ProgressDialog pd;
+    private boolean performingOverwrite;
 
     @BindView(R.id.calendar)
     CalendarView calendar;
@@ -68,6 +68,14 @@ public class EditGoalActivity extends AppCompatActivity {
     @BindView(R.id.btn_save)
     Button btnSave;
 
+    @BindView(R.id.tv_error)
+    TextView tvError;
+
+    @BindView(R.id.tv_date_error)
+    TextView tvDateError;
+
+    private SweetAlertDialog pDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +88,7 @@ public class EditGoalActivity extends AppCompatActivity {
         mActionBar = getSupportActionBar();
         // Enable the Up button
         mActionBar.setDisplayHomeAsUpEnabled(true);
+        numberOf.addTextChangedListener(textWatcher);
 
         mUser = ParseUser.getCurrentUser();
         mBeingEdited = getIntent().getBooleanExtra("beingedited", false);
@@ -87,6 +96,7 @@ public class EditGoalActivity extends AppCompatActivity {
         mGoals = getIntent().getParcelableArrayListExtra("GOALS");
 
         mCurrentGoal = null;
+        performingOverwrite = false;
         //set values appropriately if editing goal and not making new one
         if (mBeingEdited) {
             int pos = getIntent().getIntExtra("GOAL", 0);
@@ -113,6 +123,7 @@ public class EditGoalActivity extends AppCompatActivity {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar c = Calendar.getInstance();
+                tvDateError.setVisibility(View.GONE);
                 c.set(year, month, dayOfMonth);
                 mSelectedDate = new Date(c.getTimeInMillis());
             }
@@ -157,10 +168,22 @@ public class EditGoalActivity extends AppCompatActivity {
     @OnClick(R.id.btn_save)
     public void save() {
         //check if fields are all valid
+
+        Calendar cToday = Calendar.getInstance();
+        Calendar cSelected = Calendar.getInstance();
+        cSelected.setTime(mSelectedDate);
+        boolean sameDay = cToday.get(Calendar.YEAR) == cSelected.get(Calendar.YEAR) &&
+                cToday.get(Calendar.DAY_OF_YEAR) == cSelected.get(Calendar.DAY_OF_YEAR);
+        if (sameDay || cToday.after(cSelected)) {
+            tvDateError.setVisibility(View.VISIBLE);
+            return;
+        }
+
         try {
             doFieldChecks();
         } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            tvError.setText(e.getMessage());
+            tvError.setVisibility(View.VISIBLE);
             return;
         }
         if (mBeingEdited) {
@@ -170,7 +193,8 @@ public class EditGoalActivity extends AppCompatActivity {
             int type = dropdown.getSelectedItemPosition();
             goal.setType(type);
             if (mGoals.contains(goal) && !mBeingEdited) {
-                launchOverrideAlert(goal);
+                //launchOverrideAlert(goal);
+                showOverwrite(goal);
             } else {
                 saveGoal(goal, false);
             }
@@ -178,7 +202,8 @@ public class EditGoalActivity extends AppCompatActivity {
     }
 
     private void saveGoal(final Goal goal, boolean overwrite) {
-        showProgressDialog();
+        if (!performingOverwrite) showLoading();
+
         int goalNum = Integer.parseInt(numberOf.getText().toString()); //input validity checked earlier
         goal.setDeadline(mSelectedDate);
         goal.setGoal(goalNum);
@@ -193,7 +218,7 @@ public class EditGoalActivity extends AppCompatActivity {
         mUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
-                hideProgressDialog();
+                hideLoading();
                 if (e != null) {
                     e.printStackTrace();
                     if (e.getCode() == com.parse.ParseException.CONNECTION_FAILED) {
@@ -218,14 +243,6 @@ public class EditGoalActivity extends AppCompatActivity {
     private void doFieldChecks() throws Exception {
         int goalNum = 0;
         String num = numberOf.getText().toString();
-        Calendar cToday = Calendar.getInstance();
-        Calendar cSelected = Calendar.getInstance();
-        cSelected.setTime(mSelectedDate);
-        boolean sameDay = cToday.get(Calendar.YEAR) == cSelected.get(Calendar.YEAR) &&
-                cToday.get(Calendar.DAY_OF_YEAR) == cSelected.get(Calendar.DAY_OF_YEAR);
-        if (sameDay || cToday.after(cSelected)) {
-            throw new Exception(getString(R.string.exception_date));
-        }
 
         if (num.isEmpty()) throw new Exception(getString(R.string.exception_empty_string));
         try {
@@ -241,16 +258,29 @@ public class EditGoalActivity extends AppCompatActivity {
         }
     }
 
-    private void launchOverrideAlert(final Goal goal) {
-        AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(mContext);
-        }
-        builder.setTitle(R.string.alert_dialog_title).setMessage(R.string.alert_dialog_body)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+    private void showLoading() {
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Saving New Goal!");
+        pDialog.setCancelable(false);
+        pDialog.show();
+    }
+
+    private void showOverwrite(final Goal goal) {
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
+        pDialog.setTitleText("Overwrite existing goal?")
+                .setContentText("You already have a goal with this category.")
+                .setConfirmText("Confirm")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        performingOverwrite = true;
+                        sDialog.setTitleText("Saving new goal!")
+                                .setConfirmText(null)
+                                .setContentText("")
+                                .setConfirmClickListener(null)
+                                .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+                        sDialog.setCancelable(false);
                         Goal existingGoal = null;
                         for (int i = 0; i < mGoals.size(); i++) {
                             if (mGoals.get(i).equals(goal)) existingGoal = mGoals.get(i);
@@ -258,26 +288,34 @@ public class EditGoalActivity extends AppCompatActivity {
                         saveGoal(existingGoal, true);
                     }
                 })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(mContext, getString(R.string.save_canceled), Toast.LENGTH_SHORT).show();
+                .setCancelText("Cancel")
+                .showCancelButton(true).setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.cancel();
                     }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                 })
                 .show();
     }
-    private void showProgressDialog() {
-        // Show progress item
-        pd = new ProgressDialog(mContext);
-        pd.setTitle("Processing...");
-        pd.setMessage("Please wait.");
-        pd.setCancelable(false);
-        pd.setIndeterminate(true);
-        pd.show();
+
+    private void hideLoading() {
+        performingOverwrite = false;
+        pDialog.dismiss();
     }
 
-    private void hideProgressDialog() {
-        // Hide progress item
-        pd.dismiss();
-    }
+    TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            tvError.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
 }

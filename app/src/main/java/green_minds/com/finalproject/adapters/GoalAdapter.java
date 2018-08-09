@@ -4,9 +4,12 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,26 +69,53 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
 
         final Goal finalGoal = goal;
 
-        if (!mContext.getClass().equals(UserInfoActivity.class)) {
-            convertView.findViewById(R.id.btn_detail).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.goToDetail(finalGoal, checkins);
-                }
-            });
-            convertView.findViewById(R.id.btn_remove).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    removeGoal(finalGoal);
-                }
-            });
-            convertView.findViewById(R.id.btn_edit).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.openGoalEditPage(position, mGoals);
-                }
-            });
-        }
+//        if (!mContext.getClass().equals(UserInfoActivity.class)) {
+//            convertView.findViewById(R.id.btn_detail).setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mListener.goToDetail(finalGoal, checkins);
+//                }
+//            });
+//            convertView.findViewById(R.id.btn_remove).setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    removeGoal(finalGoal);
+//                }
+//            });
+//            convertView.findViewById(R.id.btn_edit).setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mListener.openGoalEditPage(position, mGoals);
+//                }
+//            });
+//        }
+
+        final ImageButton btnPopup = convertView.findViewById(R.id.btn_popup);
+        btnPopup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(getContext(), btnPopup);
+                popup.getMenuInflater()
+                        .inflate(R.menu.goal_menu, popup.getMenu());
+
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //TODO - add to strings.xml
+                        String[] ids = mContext.getResources().getResourceName(item.getItemId()).split("\\/");
+                        String id = ids[1];
+                        if (id.equals("mi_edit")) {
+                            mListener.openGoalEditPage(position, mGoals);
+                        } else if (id.equals("mi_delete")) {
+                            removeGoal(finalGoal);
+                        } else {
+                            mListener.goToDetail(finalGoal, checkins);
+                        }
+                        return true;
+                    }
+                });
+                popup.show(); //showing popup menu
+            }
+        });
 
         return convertView;
     }

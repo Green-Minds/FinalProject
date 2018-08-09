@@ -37,37 +37,15 @@
             android:layout_below="@+id/numberOf" />
 
         <ImageButton
-            android:id="@+id/btn_detail"
+            android:id="@+id/btn_popup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="7dp"
             android:layout_weight="0"
             android:background="@color/transparent"
-            android:tint="@color/primaryGrey"
-            app:srcCompat="@drawable/ic_calendar" />
-
-        <ImageButton
-            android:id="@+id/btn_remove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_weight="0"
-            android:background="@color/transparent"
-            android:tint="@color/primaryGrey"
-            app:srcCompat="@drawable/ic_garbage" />
-
-        <ImageButton
-            android:id="@+id/btn_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_weight="0"
-            android:background="@color/transparent"
-            android:tint="@color/primaryGrey"
-            app:srcCompat="@drawable/ic_pencil" />
+            android:tint="@color/grey_5"
+            app:srcCompat="@drawable/ic_menu_dot" />
 
     </LinearLayout>
 

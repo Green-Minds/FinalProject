@@ -12,15 +12,17 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ToolbarColoredBackArrow"
-        app:titleTextColor="@color/white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:titleTextColor="@color/white" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorLightPurpleTransparent"
-        android:layout_below="@+id/my_toolbar">
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/my_toolbar"
+        android:layout_centerVertical="true"
+        android:background="@color/colorLightPurpleTransparent">
 
         <LinearLayout
             android:id="@+id/layout_text"
@@ -46,55 +48,92 @@
             <RelativeLayout
                 android:id="@+id/rl_text"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:descendantFocusability="beforeDescendants"
+                android:focusableInTouchMode="true">
 
                 <TextView
                     android:id="@+id/tv_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/et_numberof"
+                    android:layout_alignBottom="@+id/et_container"
+                    android:layout_marginBottom="12dp"
                     android:text="I want to save"
                     android:textSize="16sp" />
 
-                <EditText
-                    android:id="@+id/et_numberof"
-                    android:layout_width="60dp"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/et_container"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/tv_text"
-                    android:ems="10"
-                    android:hint="# of"
-                    android:inputType="number"
-                    android:textSize="16sp" />
+                    android:theme="@style/TextLabel">
+
+                    <EditText
+                        android:id="@+id/et_numberof"
+                        style="@style/PrimaryEditText"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="# of"
+                        android:inputType="number"
+                        android:textSize="16sp" />
+                </android.support.design.widget.TextInputLayout>
 
                 <TextView
                     android:id="@+id/tv_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/tv_text"
-                    android:layout_toEndOf="@+id/et_numberof"
+                    android:layout_toEndOf="@+id/et_container"
                     android:text="bottles"
                     android:textSize="16sp" />
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/tv_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Error"
+                android:textColor="@color/red_5"
+                android:visibility="gone" />
+
         </LinearLayout>
 
-        <CalendarView
-            android:id="@+id/calendar"
-            style="@style/FloatingCard"
+        <LinearLayout
             android:layout_width="match_parent"
+            style="@style/FloatingCard"
             android:layout_height="wrap_content"
             android:layout_below="@+id/layout_text"
-            android:layout_centerHorizontal="true" />
+            android:gravity="center_horizontal"
+            android:id="@+id/cal_wrapper"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_date_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Select a date in the future!"
+                android:textColor="@color/red_5"
+                android:visibility="gone" />
+
+            <CalendarView
+                android:id="@+id/calendar"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_save"
-            style="@style/PurpleButton"
-            android:layout_marginTop="8dp"
+            style="@style/SecondaryPurpleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/calendar"
+            android:layout_below="@+id/cal_wrapper"
             android:layout_centerHorizontal="true"
-            android:text="make new goal!" />
+            android:layout_marginTop="8dp"
+            android:text="Make New Goal" />
 
     </RelativeLayout>
 

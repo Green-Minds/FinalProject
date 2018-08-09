@@ -329,7 +329,7 @@ public class UserInfoFragment extends Fragment {
         @Override
         protected void drawLabel(Canvas c, String formattedLabel, float x, float y, MPPointF anchor, float angleDegrees) {
             int i = Integer.parseInt(formattedLabel);
-            Utils.drawImage(c, CategoryHelper.getIconResource(i, mContext), (int) x, (int) y + 24, 64, 64);
+            Utils.drawImage(c, CategoryHelper.getIconResource(i, mContext), (int) x, (int) y + 20, 50, 50);
         }
     }
 

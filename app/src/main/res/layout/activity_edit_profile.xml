@@ -36,26 +36,23 @@
             android:paddingRight="48dp"
             android:paddingTop="16dp">
 
-            <TextView
-                android:id="@+id/textView"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/et_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/molengo"
-                android:text="Username"
-                android:textColor="@color/colorPrimary"
-                android:textSize="20sp"
-                tools:layout_editor_absoluteX="36dp"
-                tools:layout_editor_absoluteY="32dp" />
+                android:layout_height="match_parent"
+                android:theme="@style/TextLabel">
 
-            <EditText
-                android:id="@+id/tv_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Username"
-                android:inputType="textPersonName"
-                tools:layout_editor_absoluteX="36dp"
-                tools:layout_editor_absoluteY="53dp" />
+                <EditText
+                    android:id="@+id/tv_username"
+                    style="@style/PrimaryEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:ems="10"
+                    android:hint="Username"
+                    android:inputType="textPersonName"
+                    android:textSize="16sp" />
+            </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
 
@@ -134,21 +131,20 @@
 
             <Button
                 android:id="@+id/btn_cancel"
-                style="@style/PurpleButton"
+                style="@style/SecondaryPurpleButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
                 android:layout_marginEnd="8dp"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
                 android:text="Cancel" />
 
             <Button
                 android:id="@+id/btn_save"
-                style="@style/PurpleButton"
+                style="@style/SecondaryPurpleButton"
                 android:layout_width="wrap_content"
+                android:layout_marginRight="12dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_weight="1"
                 android:text="Save" />
         </LinearLayout>
