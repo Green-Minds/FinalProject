@@ -7,11 +7,11 @@
     tools:context=".fragments.LeaderboardFragment">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/thirdSignupToolbar"
+        android:id="@+id/leaderboardToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:background="@color/colorPrimary">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:gravity="top">
 
         <TextView
             android:id="@+id/connectionTitle"
@@ -30,7 +30,7 @@
         android:id="@+id/swipe_container_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/thirdSignupToolbar"
+        android:layout_below="@+id/leaderboardToolbar"
         android:background="@color/white">
 
         <android.support.v7.widget.RecyclerView
@@ -41,7 +41,6 @@
             android:layout_alignParentTop="true"
             android:scrollbarSize="5dp"
             android:scrollbarThumbVertical="@android:color/darker_gray"
-            android:background="@color/colorLightPurpleTransparent"
             android:scrollbars="vertical" />
     </android.support.v4.widget.SwipeRefreshLayout>
 

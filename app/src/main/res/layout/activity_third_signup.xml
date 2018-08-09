@@ -27,25 +27,13 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/tvImgHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/thirdSignupToolbar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:text="Set Profile Image"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
     <ImageView
         android:id="@+id/ivUserPic"
         android:layout_width="185dp"
         android:layout_height="169dp"
-        android:layout_below="@+id/tvImgHeader"
+        android:layout_below="@+id/thirdSignupToolbar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:clickable="true"
         tools:layout_editor_absoluteX="176dp"
         tools:layout_editor_absoluteY="110dp" />
@@ -60,16 +48,15 @@
         android:layout_marginTop="8dp"
         android:text="TextView"
         android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:visibility="gone" />
+        android:textSize="16sp" />
 
     <LinearLayout
         android:id="@+id/set_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvImgHeader"
+        android:layout_below="@+id/ivUserPic"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="-120dp"
         android:orientation="vertical">
 
         <ImageView
@@ -93,12 +80,9 @@
 
     <Button
         android:id="@+id/btnSignup"
-        android:layout_width="218dp"
-        android:layout_height="33dp"
+        style="@style/SecondaryPurpleButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="76dp"
-        android:background="@drawable/button_toggle"
-        android:text="Sign up "
-        android:textColor="@android:color/white" />
+        android:text="Sign up " />
 </RelativeLayout>

@@ -27,28 +27,13 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/tvRegister"
+    <EditText
+        android:id="@+id/etUsernameInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/signupToolbar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:text="Sign Up"
-        android:textAllCaps="false"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/etUsernameInput"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:layout_below="@+id/tvRegister"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="65dp"
-        android:background="@drawable/text_input_border"
+        android:layout_marginTop="100dp"
         android:ems="10"
         android:hint=" Username "
         android:inputType="textPersonName"
@@ -57,11 +42,10 @@
     <EditText
         android:id="@+id/etEmailInput"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/etUsernameInput"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="28dp"
-        android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Email Address "
         android:inputType="textEmailAddress" />
@@ -69,34 +53,30 @@
     <EditText
         android:id="@+id/etPasswordInput"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/etEmailInput"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="28dp"
-        android:background="@drawable/text_input_border"
         android:ems="10"
         android:hint=" Password"
         android:inputType="textPassword" />
 
     <Button
         android:id="@+id/btnInfoNext"
-        android:layout_width="218dp"
-        android:layout_height="32dp"
+        style="@style/SecondaryPurpleButton"
         android:layout_below="@+id/etPasswordInput"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="95dp"
-        android:background="@drawable/button_toggle"
         android:enabled="false"
-        android:text="Next"
-        android:textColor="@android:color/white" />
+        android:text="Next" />
 
     <TextView
         android:id="@+id/tvUsernameTaken"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvRegister"
+        android:layout_below="@+id/signupToolbar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="33dp"
+        android:layout_marginTop="50dp"
         android:text="TextView"
         android:textColor="@android:color/holo_red_light"
         android:visibility="gone" />

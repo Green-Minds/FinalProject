@@ -28,26 +28,12 @@
     </android.support.v7.widget.Toolbar>
 
     <TextView
-        android:id="@+id/tvConnection"
+        android:id="@+id/tvConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/secondSignupToolbar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:text="Set Connection"
-        android:textAllCaps="false"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tvConnect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvConnection"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="150dp"
         android:text="Connect through: "
         android:textColor="@android:color/black" />
 
@@ -97,12 +83,10 @@
 
         <green_minds.com.finalproject.model.DelayAutoCompleteTextView
             android:id="@+id/atvSchoolName"
-            android:layout_width="280dp"
-            android:layout_height="wrap_content"
+            style="@style/PrimaryEditText"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="141dp"
-            android:background="@drawable/text_input_border"
             android:hint=" School                                   " />
 
         <ProgressBar
@@ -119,14 +103,11 @@
 
     <Button
         android:id="@+id/btnConnectNext"
-        android:layout_width="218dp"
-        android:layout_height="33dp"
+        style="@style/SecondaryPurpleButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="76dp"
-        android:background="@drawable/button_toggle"
         android:enabled="false"
-        android:text="Next"
-        android:textColor="@android:color/white" />
+        android:text="Next"/>
 
 </RelativeLayout>

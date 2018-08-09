@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,17 +67,18 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         holder.tvPosition.setText(String.valueOf(position + 1));
         holder.tvUserLeaderbaord.setText(user.getString("original_username"));
         holder.tvPts.setText(String.valueOf(user.getInt("points")) + " points");
+        holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.white));
+        holder.tvPts.setTextColor(context.getResources().getColor(R.color.black));
+        holder.tvPosition.setTextColor(context.getResources().getColor(R.color.black));
+        holder.tvUserLeaderbaord.setTextColor(context.getResources().getColor(R.color.black));
+        holder.itemView.setClickable(true);
 
         if (user.getInt("points") == 1) holder.tvPts.setText(String.valueOf(user.getInt("points")) + " point");
-        Log.i("Test", ParseUser.getCurrentUser().getUsername());
         if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
-//            holder.itemView.setBackground(context.getDrawable(R.drawable.gradient));
-//            holder.tvPts.setTextColor(context.getResources().getColor(R.color.white));
-//            holder.tvPosition.setTextColor(context.getResources().getColor(R.color.white));
-//            holder.tvUserLeaderbaord.setTextColor(context.getResources().getColor(R.color.white));
-//            holder.tvUserLeaderbaord.setTextSize(20);
-//            holder.tvPts.setTextSize(17);
-//            holder.tvPosition.setTextSize(17);
+            holder.itemView.setBackground(context.getDrawable(R.drawable.gradient));
+            holder.tvPts.setTextColor(context.getResources().getColor(R.color.white));
+            holder.tvPosition.setTextColor(context.getResources().getColor(R.color.white));
+            holder.tvUserLeaderbaord.setTextColor(context.getResources().getColor(R.color.white));
             holder.itemView.setClickable(false);
             holder.tvUserLeaderbaord.setText("You");
         }

@@ -1,5 +1,6 @@
 package green_minds.com.finalproject.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -57,6 +58,7 @@ public class UserInfoActivity extends AppCompatActivity implements UserInfoFragm
     private ArrayList<Goal> goals;
     private Context context;
     private ScoreAdapter scoreAdapter;
+    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,17 +123,27 @@ public class UserInfoActivity extends AppCompatActivity implements UserInfoFragm
 
     @Override
     public void showProgressBar() {
-
+        pd = new ProgressDialog(this);
+        pd.setTitle("Processing...");
+        pd.setMessage("Please wait.");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
     }
 
     @Override
     public void hideProgressBar() {
-
+        pd.dismiss();
     }
 
     @Override
     public void logout() {
 
+    }
+
+    @Override
+    public void showNoDataMessage() {
+        userInfoFragment.showNoDataMessage();
     }
 
 //    private void setUpGraph(){
