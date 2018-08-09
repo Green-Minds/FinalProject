@@ -96,7 +96,6 @@ public class UserInfoActivity extends AppCompatActivity implements UserInfoFragm
 
     }
 
-    @Override
     public void showProgressBar() {
         pd = new ProgressDialog(this);
         pd.setTitle("Processing...");
@@ -106,7 +105,6 @@ public class UserInfoActivity extends AppCompatActivity implements UserInfoFragm
         pd.show();
     }
 
-    @Override
     public void hideProgressBar() {
         pd.dismiss();
     }

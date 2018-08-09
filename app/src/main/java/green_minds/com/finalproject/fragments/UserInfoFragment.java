@@ -59,10 +59,6 @@ public class UserInfoFragment extends Fragment {
 
         void goToDetail(Goal g, int c);
 
-        void showProgressBar();
-
-        void hideProgressBar();
-
         void logout();
 
         void showNoDataMessage();
