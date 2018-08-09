@@ -40,7 +40,8 @@
         android:layout_alignParentStart="true"
         android:background="@android:color/white"
         android:onClick="gotoLogin"
-        android:text="Login" />
+        android:text="Login"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/btnSignupPage"
@@ -50,7 +51,8 @@
         android:layout_alignParentEnd="true"
         android:background="@android:color/white"
         android:onClick="gotoSignup"
-        android:text="SignUp" />
+        android:text="SignUp"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/btnLoginviaFB"
@@ -59,7 +61,9 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@android:color/white"
-        android:text="Login with Facebook" />
+        android:onClick="facebookLogin"
+        android:text="Login with Facebook"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/textView4"

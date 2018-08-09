@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        showMap();
         ButterKnife.bind(this);
+        showMap();
         context = this;
 
         bottomNavigationView.setSelectedItemId(R.id.navigation_map);
