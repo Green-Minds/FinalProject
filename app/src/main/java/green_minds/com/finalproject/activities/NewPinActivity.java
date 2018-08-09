@@ -45,7 +45,7 @@ import green_minds.com.finalproject.model.Pin;
 import static android.view.View.GONE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-public class NewPinActivity extends AppCompatActivity implements AdjustPinFragment.OnFragmentInteractionListener{
+public class NewPinActivity extends AppCompatActivity implements AdjustPinFragment.OnFragmentInteractionListener {
 
     @BindView(R.id.btn_camera)
     ImageButton btnCamera;
@@ -92,6 +92,8 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     private Double lon;
     private MenuItem m;
 
+    //private SweetAlertDialog pDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +124,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         lon = getIntent().getDoubleExtra("longitude", 0.0);
         ParseGeoPoint location = new ParseGeoPoint(lat, lon);
 
-        adjustPinFragment= adjustPinFragment.newInstance(lat, lon);
+        adjustPinFragment = adjustPinFragment.newInstance(lat, lon);
         ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.fragment_container, adjustPinFragment);
         ft.commit();
@@ -141,6 +143,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         m.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                //showLoading();
                 uploadPin();
                 return true;
             }
@@ -155,6 +158,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         bmp = BitmapFactory.decodeFile(filepath);
         GlideApp.with(getApplicationContext())
                 .load(bmp)
+                .centerCrop()
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder)
                 .into(ivPreview);
@@ -167,6 +171,8 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     public void onLocBtn() {
         ViewGroup parent = (ViewGroup) fragmentContainer.getParent();
         parent.removeView(fragmentContainer);
+
+        getActionBar().setTitle("Adjust your pin");
 
         fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         ViewGroup newParent = findViewById(R.id.mainLayout);
@@ -184,6 +190,8 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
 
     @OnClick(R.id.btn_adjust)
     public void onAdjustBtn() {
+
+        getActionBar().setTitle("Please describe your new pin");
 
         btnAdjust.setVisibility(View.GONE);
         ViewGroup parent = (ViewGroup) fragmentContainer.getParent();
@@ -216,8 +224,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     }
 
 
-    private Fragment recreateFragment(Fragment f)
-    {
+    private Fragment recreateFragment(Fragment f) {
         try {
             Fragment.SavedState savedState = getSupportFragmentManager().saveFragmentInstanceState(f);
 
@@ -225,8 +232,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
             newInstance.setInitialSavedState(savedState);
 
             return newInstance;
-        }
-        catch (Exception e) // InstantiationException, IllegalAccessException
+        } catch (Exception e) // InstantiationException, IllegalAccessException
         {
             throw new RuntimeException("Cannot reinstantiate fragment " + f.getClass().getName(), e);
         }
@@ -234,7 +240,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
 
     private void savePin(ParseGeoPoint location) {
         saving = true;
-        showProgressBar();
         final Pin pin = new Pin();
 
         int radioButtonID = rbCategories.getCheckedRadioButtonId();
@@ -252,7 +257,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         photo.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                hideProgressBar();
                 if (e != null) {
                     e.printStackTrace();
                     Toast.makeText(context, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
@@ -284,7 +288,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         });
     }
 
-    private void savePinToUser(final Pin pin){
+    private void savePinToUser(final Pin pin) {
 
         currentUser.increment("pincount");
         currentUser.increment("points", 10);
@@ -292,7 +296,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         currentUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                hideProgressBar();
+                //hideLoading();
                 if (e != null) {
                     e.printStackTrace();
                     Toast.makeText(context, "USER" + getString(R.string.pin_save_failure), Toast.LENGTH_SHORT).show();
@@ -309,7 +313,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
 
     @OnClick(R.id.btn_camera)
     public void loadCamera() {
-        if(saving) return;
+        if (saving) return;
         Intent i = new Intent(this, green_minds.com.finalproject.activities.CameraActivity.class);
         i.putExtra(CODE_KEY, REQUEST_CODE);
         startActivityForResult(i, REQUEST_CODE);
@@ -318,14 +322,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     private void redirectToLogin() {
         Intent i = new Intent(this, green_minds.com.finalproject.activities.UserInfoActivity.class);
         startActivity(i);
-    }
-
-    private void showProgressBar() {
-        if(miActionProgressItem !=null) miActionProgressItem.setVisible(true);
-    }
-
-    private void hideProgressBar() {
-        if(miActionProgressItem !=null) miActionProgressItem.setVisible(false);
     }
 
     @Override
@@ -339,12 +335,12 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mMapMode){
+        if (mMapMode) {
             //reset and reopen old page here instead of going back to mainactivity
             Log.i("HEH", "clicked");
             return false;
 
-        } else{
+        } else {
             //go back to main activity
             return super.onOptionsItemSelected(item);
         }
