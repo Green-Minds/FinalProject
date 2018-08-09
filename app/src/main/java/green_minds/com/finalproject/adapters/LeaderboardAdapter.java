@@ -30,6 +30,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     private Context context;
     private LeaderboardFragment.OnFragmentInteractionListener mListener;
 
+    public Integer mPosition;
+
     public LeaderboardAdapter(List<ParseUser> users) {mUsers = users;}
 
     public LeaderboardAdapter(ArrayList<ParseUser> users, LeaderboardFragment.OnFragmentInteractionListener listener) {
@@ -75,6 +77,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
         if (user.getInt("points") == 1) holder.tvPts.setText(String.valueOf(user.getInt("points")) + " point");
         if (user.getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
+            mPosition = position;
             holder.itemView.setBackground(context.getDrawable(R.drawable.gradient));
             holder.tvPts.setTextColor(context.getResources().getColor(R.color.white));
             holder.tvPosition.setTextColor(context.getResources().getColor(R.color.white));

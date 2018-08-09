@@ -3,6 +3,7 @@ package green_minds.com.finalproject.fragments;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,14 +27,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.LeaderboardAdapter;
+import green_minds.com.finalproject.model.EndlessRecyclerOnScrollListener;
 
 public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
 
     private static final String ARG_PARAM1 = "users";
+    private static final String ARG_PARAM2 = "skip";
     private OnFragmentInteractionListener mListener;
+    private EndlessRecyclerOnScrollListener scrollListener;
     private LeaderboardAdapter leaderboardAdapter;
     private ArrayList<ParseUser> users;
     private Context mContext;
+    private Integer skip;
 
     @BindView(R.id.swipe_container_fragment)
     public SwipeRefreshLayout swipeContainer;
@@ -46,10 +51,11 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
         // Required empty public constructor
     }
 
-    public static LeaderboardFragment newInstance(ArrayList<ParseUser> users) {
+    public static LeaderboardFragment newInstance(ArrayList<ParseUser> users, Integer skip) {
         LeaderboardFragment fragment = new LeaderboardFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_PARAM1, users);
+        args.putInt(ARG_PARAM2, skip);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,6 +63,7 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         users = getArguments().getParcelableArrayList(ARG_PARAM1);
+        skip = getArguments().getInt(ARG_PARAM2);
         leaderboardAdapter = new LeaderboardAdapter(users, mListener);
         super.onCreate(savedInstanceState);
     }
@@ -75,10 +82,20 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
         connectionTitle.setText(ParseUser.getCurrentUser().getString("connection") + " Leaderboard");
         rvUsers.setLayoutManager(new LinearLayoutManager(mContext));
         rvUsers.setAdapter(leaderboardAdapter);
+
         swipeContainer.setOnRefreshListener(this);
         swipeContainer.setColorSchemeColors(getResources().getColor(R.color.colorPrimary), getResources().getColor(R.color.colorAccent),
                 getResources().getColor(R.color.colorPrimaryDark));
-        mListener.hideProgressBar();
+
+        scrollListener = new EndlessRecyclerOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                addDataToList();
+            }
+        };
+        rvUsers.addOnScrollListener(scrollListener);
+
+        if (leaderboardAdapter.mPosition != null) rvUsers.scrollToPosition(leaderboardAdapter.mPosition);
     }
 
     @Override
@@ -111,22 +128,48 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
         boolean isOnline();
     }
 
+    private void addDataToList() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ParseQuery query = ParseUser.getQuery();
+                query.orderByDescending("points").addDescendingOrder("pincount")
+                        .whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection"))
+                        .setSkip(skip).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
+                    @Override
+                    public void done(List<ParseUser> objects, ParseException e) {
+                        if(e == null){
+                            users.addAll(objects);
+                            leaderboardAdapter.notifyDataSetChanged();
+                            if (leaderboardAdapter.mPosition != null && leaderboardAdapter.mPosition >= skip)
+                                rvUsers.scrollToPosition(leaderboardAdapter.mPosition);
+                            skip += objects.size();
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }, 1500);
+    }
+
     private class refreshTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
             ParseQuery query = ParseUser.getQuery();
             query.orderByDescending("points").addDescendingOrder("pincount")
-                    .whereEqualTo("connection", ParseUser.getCurrentUser()
-                            .getString("connection")).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
+                    .whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection"))
+                    .setLimit(20).findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
-                    ParseUser user = null;
                     if(e == null){
                         leaderboardAdapter.clear();
                         users.addAll(objects);
                         leaderboardAdapter.notifyDataSetChanged();
+                        skip = objects.size();
                         swipeContainer.setRefreshing(false);
+                        scrollListener.reset(0, true);
                     } else {
                         e.printStackTrace();
                     }
