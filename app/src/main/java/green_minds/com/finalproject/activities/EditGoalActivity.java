@@ -1,5 +1,6 @@
 package green_minds.com.finalproject.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,6 +45,7 @@ public class EditGoalActivity extends AppCompatActivity {
     private ActionBar mActionBar;
     private Date mSelectedDate;
     private boolean mBeingEdited;
+    private ProgressDialog pd;
 
     @BindView(R.id.calendar)
     CalendarView calendar;
@@ -176,7 +178,7 @@ public class EditGoalActivity extends AppCompatActivity {
     }
 
     private void saveGoal(final Goal goal, boolean overwrite) {
-        //TODO - show progress here
+        showProgressDialog();
         int goalNum = Integer.parseInt(numberOf.getText().toString()); //input validity checked earlier
         goal.setDeadline(mSelectedDate);
         goal.setGoal(goalNum);
@@ -191,7 +193,7 @@ public class EditGoalActivity extends AppCompatActivity {
         mUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
-                //TODO - remove progress here
+                hideProgressDialog();
                 if (e != null) {
                     e.printStackTrace();
                     if (e.getCode() == com.parse.ParseException.CONNECTION_FAILED) {
@@ -263,5 +265,19 @@ public class EditGoalActivity extends AppCompatActivity {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+    private void showProgressDialog() {
+        // Show progress item
+        pd = new ProgressDialog(mContext);
+        pd.setTitle("Processing...");
+        pd.setMessage("Please wait.");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    private void hideProgressDialog() {
+        // Hide progress item
+        pd.dismiss();
     }
 }
