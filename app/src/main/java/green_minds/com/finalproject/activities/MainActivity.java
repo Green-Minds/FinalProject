@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
-import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
@@ -31,6 +30,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.ScoreAdapter;
 import green_minds.com.finalproject.fragments.LeaderboardFragment;
