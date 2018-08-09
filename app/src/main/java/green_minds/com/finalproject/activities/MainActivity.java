@@ -11,6 +11,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
     private UserInfoFragment userInfoFragment;
     private MapFragment mapFragment;
     private ArrayList<ParseUser> users = new ArrayList<>();
+    private Integer skip = null;
     private MenuItem miActionProgressItem;
     private ParseUser parseUser;
     private ArrayList<Goal> goals;
@@ -154,14 +156,17 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
 
     @Override
     public void logout() {
+        Log.i("Logout", "Logging out");
         if (!isOnline()) return;
         if (AccessToken.getCurrentAccessToken() != null) {
+            Log.i("Valid", "loggin out");
             LoginManager.getInstance().logOut();
         }
         ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
             @Override
             public void done(ParseException e) {
                 if (ParseUser.getCurrentUser() == null) {
+                    Log.i("Logout2", "Logged out");
                     startActivity(new Intent(MainActivity.this, SplashActivity.class));
                     finish();
                 }
@@ -196,8 +201,8 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
                     if (e == null) {
                         users.clear();
                         users.addAll(objects);
-
-                        leaderboardFragment = leaderboardFragment.newInstance(users);
+                        skip = objects.size();
+                        leaderboardFragment = leaderboardFragment.newInstance(users, skip);
                         ft = getSupportFragmentManager().beginTransaction();
                         ft.hide(mapFragment);
                         ft.replace(R.id.fragment_container, leaderboardFragment);

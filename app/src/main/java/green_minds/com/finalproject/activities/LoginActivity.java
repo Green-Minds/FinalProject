@@ -103,6 +103,8 @@ public class LoginActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+
+
         intent = getIntent();
         if (intent.getStringExtra("activity") != null
                 && intent.getStringExtra("activity").equals(this.getClass().getName())) {
@@ -212,6 +214,7 @@ public class LoginActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
                     hideProgressDialog();
+                    Log.i("Login", "Logged in");
                     alertDisplayer("Successful Login","Welcome back " + user.getString("original_username") + "!");
                 } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND){
                     hideProgressDialog();
