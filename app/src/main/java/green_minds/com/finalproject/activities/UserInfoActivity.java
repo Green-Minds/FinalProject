@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -34,8 +33,6 @@ public class UserInfoActivity extends AppCompatActivity implements UserInfoFragm
 
     @BindView(R.id.profileToolbar)
     public Toolbar toolbar;
-    @BindView(R.id.tvTitle)
-    public TextView tvTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +46,7 @@ public class UserInfoActivity extends AppCompatActivity implements UserInfoFragm
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         parseUser = getIntent().getParcelableExtra("user");
-        tvTitle.setText(parseUser.get("original_username").toString());
+        actionBar.setTitle(parseUser.get("original_username").toString());
         setupUserInfo();
     }
 
