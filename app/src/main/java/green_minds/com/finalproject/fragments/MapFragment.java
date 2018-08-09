@@ -32,6 +32,8 @@ import android.widget.Toast;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -75,6 +77,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import green_minds.com.finalproject.R;
+import green_minds.com.finalproject.activities.MainActivity;
+import green_minds.com.finalproject.activities.MapActivity;
 import green_minds.com.finalproject.model.GlideApp;
 import green_minds.com.finalproject.model.InfoWindowData;
 import green_minds.com.finalproject.model.MyItem;
@@ -400,6 +404,27 @@ public class MapFragment extends Fragment implements
                 Looper.myLooper());
     }
 
+
+    private boolean isGooglePlayServicesAvailable() {
+        // Check that Google Play services is available
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext);
+        // If Google Play services is available
+        if (ConnectionResult.SUCCESS == resultCode) {
+            // In debug mode, log the status
+            Log.d("Location Updates", "Google Play services is available.");
+            return true;
+        } else {
+
+            new SweetAlertDialog(mContext, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("Oops...")
+                    .setContentText("Google Play Services not available!")
+                    .show();
+
+            return false;
+        }
+    }
+
+
     public void onLocationChanged(Location location) {
         // GPS may be turned off
         if (location == null) {
@@ -490,14 +515,12 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onCameraMoveCanceled() {
-        // Toast.makeText(this, "Camera movement canceled.",
-        //        Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     public void onCameraMove() {
-        // Toast.makeText(this, "The camera is moving.",
-        //        Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
