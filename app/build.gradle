@@ -73,5 +73,4 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     implementation 'com.github.f0ris.sweetalert:library:1.5.3'
-
 }

@@ -172,17 +172,28 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
         if (AccessToken.getCurrentAccessToken() != null) {
             Log.i("Valid", "loggin out");
             LoginManager.getInstance().logOut();
-        }
-        ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (ParseUser.getCurrentUser() == null) {
-                    Log.i("Logout2", "Logged out");
-                    startActivity(new Intent(MainActivity.this, SplashActivity.class));
-                    finish();
+            ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (ParseUser.getCurrentUser() == null) {
+                        Log.i("Logout2", "Logged out");
+                        startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                        finish();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (ParseUser.getCurrentUser() == null) {
+                        Log.i("Logout2", "Logged out");
+                        startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                        finish();
+                    }
+                }
+            });
+        }
     }
 
     private void reloadMap() {

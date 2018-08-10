@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
@@ -42,6 +43,8 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
 
     @BindView(R.id.swipe_container_fragment)
     public SwipeRefreshLayout swipeContainer;
+    @BindView(R.id.progressBar)
+    public ProgressBar progressBar;
     @BindView(R.id.rvUsersFragment)
     public RecyclerView rvUsers;
     @BindView(R.id.connectionTitle)
@@ -79,6 +82,7 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
+        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_bar_colors));
         connectionTitle.setText(ParseUser.getCurrentUser().getString("connection") + " Leaderboard");
         rvUsers.setLayoutManager(new LinearLayoutManager(mContext));
         rvUsers.setAdapter(leaderboardAdapter);
@@ -123,12 +127,20 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     public interface OnFragmentInteractionListener {
-        void showProgressBar();
-        void hideProgressBar();
         boolean isOnline();
     }
 
+    public void showProgressBar() {
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar() {
+        if (progressBar != null) progressBar.setVisibility(View.GONE);
+    }
+
+
     private void addDataToList() {
+        showProgressBar();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -143,6 +155,7 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
                             leaderboardAdapter.notifyDataSetChanged();
                             if (leaderboardAdapter.mPosition != null && leaderboardAdapter.mPosition >= skip)
                                 rvUsers.scrollToPosition(leaderboardAdapter.mPosition);
+                            hideProgressBar();
                             skip += objects.size();
                         } else {
                             e.printStackTrace();

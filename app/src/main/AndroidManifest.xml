@@ -32,6 +32,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <service android:name=".activities.LoginActivity$ClosingService"
+            android:stopWithTask="false"/>
+
         <activity
             android:name=".activities.SplashActivity"
             android:screenOrientation="portrait">

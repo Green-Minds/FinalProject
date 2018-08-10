@@ -72,4 +72,9 @@
         <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
 
+    <style name="MyProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressBackgroundTint">@color/colorTeal</item>
+        <item name="android:progressTint">@color/colorPrimaryDark</item>
+    </style>
+
 </resources>

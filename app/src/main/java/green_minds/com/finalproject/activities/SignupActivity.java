@@ -248,28 +248,14 @@ public class SignupActivity extends AppCompatActivity {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
                 point = new ParseGeoPoint(latitude, longitude);
+            } else {
+                point = new ParseGeoPoint();
             }
         }
         return point;
     }
 
     private void alertDisplayer(String title,String message){
-//        AlertDialog.Builder builder = new AlertDialog.Builder(SignupActivity.this).setCancelable(false)
-//                .setTitle(title)
-//                .setMessage(message)
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                        Intent intent = new Intent(SignupActivity.this, MainActivity.class);
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(intent);
-//                        finish();
-//                    }
-//                });
-//        AlertDialog ok = builder.create();
-//        ok.show();
-
         new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(title)
                 .setContentText(message)
