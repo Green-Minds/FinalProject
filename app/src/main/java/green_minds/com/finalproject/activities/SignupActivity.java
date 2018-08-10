@@ -256,20 +256,22 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void alertDisplayer(String title,String message){
-        new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText(title)
-                .setContentText(message)
-                .setConfirmText("OK")
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        pd.dismissWithAnimation();
-                        Intent intent = new Intent(SignupActivity.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    }
-                }).show();
+        pd = new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE);
+        pd.setTitleText(title);
+        pd.setContentText(message);
+        pd.setConfirmText("OK");
+        pd.setCancelable(false);
+        pd.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                pd.dismissWithAnimation();
+                Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+        pd.show();
     }
 }
 

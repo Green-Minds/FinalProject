@@ -38,10 +38,13 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
         if (!mLoading && (totalItemCount - visibleItemCount)
                 <= (firstVisibleItem + visibleThreshold)) {
             // End has been reached
+            if (totalItemCount < visibleThreshold) {
 
-            onLoadMore();
+            } else {
+                onLoadMore();
 
-            mLoading = true;
+                mLoading = true;
+            }
         }
     }
 

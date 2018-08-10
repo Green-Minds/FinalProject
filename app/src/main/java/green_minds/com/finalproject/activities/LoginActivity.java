@@ -222,6 +222,7 @@ public class LoginActivity extends AppCompatActivity {
     private void alertDisplayer(String title,String message){
         pd = new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE);
         pd.setTitleText(title);
+        pd.setCancelable(false);
         pd.setContentText(message);
         pd.setConfirmText("OK");
         pd.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
