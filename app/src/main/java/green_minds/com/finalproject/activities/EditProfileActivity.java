@@ -23,7 +23,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.request.RequestOptions;
-
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -83,12 +82,24 @@ public class EditProfileActivity extends AppCompatActivity {
         etUsername.setSelection(etUsername.getText().length());
         etUsername.addTextChangedListener(textWatcher);
 
-        ParseFile photo = mUser.getParseFile("photo");
-        if (photo == null) {
-            GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+        ParseFile smallerPhoto = mUser.getParseFile("smaller_photo");
+        if (smallerPhoto != null) {
+            String url = smallerPhoto.getUrl();
+            GlideApp.with(mContext).load(url).circleCrop()
+                    .placeholder(R.drawable.anon)
+                    .error(R.drawable.anon)
+                    .into(ivProfPic);
         } else {
-            String url = photo.getUrl();
-            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).error(R.drawable.anon).into(ivProfPic);
+            ParseFile photo = mUser.getParseFile("photo");
+            if (photo != null) {
+                String url = photo.getUrl();
+                GlideApp.with(mContext).load(url).circleCrop()
+                        .placeholder(R.drawable.anon)
+                        .error(R.drawable.anon)
+                        .into(ivProfPic);
+            } else {
+                GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
+            }
         }
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
