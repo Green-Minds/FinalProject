@@ -44,7 +44,7 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (ParseUser.getCurrentUser() != null) {
-            scheduleSplashScreen(3200);
+            scheduleSplashScreen(3100);
         } else {
             btnLoginPage.setVisibility(View.VISIBLE);
             btnSignupPage.setVisibility(View.VISIBLE);

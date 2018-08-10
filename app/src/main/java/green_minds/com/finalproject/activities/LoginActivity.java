@@ -2,8 +2,8 @@ package green_minds.com.finalproject.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,9 +14,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,6 +36,7 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -72,8 +74,9 @@ public class LoginActivity extends AppCompatActivity {
     private final List < String > mPermissions = Arrays.asList("email", "public_profile");
     private  Map<String, String> authData = new HashMap<>();
     private SweetAlertDialog pd;
-    private String connection;
+    private static String connection;
     private Intent intent;
+    private static Boolean needsConnection = false;
     private android.support.v7.app.ActionBar actionBar;
 
     @BindView(R.id.etUsernameLogin)
@@ -99,11 +102,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        Intent serviceIntent = new Intent(this, ClosingService.class);
+        this.startService(serviceIntent);
+
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-
 
         intent = getIntent();
         if (intent.getStringExtra("activity") != null
@@ -126,6 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                     } else if (!user.isNew()) {
                         getUserDetailsFromParse();
                     } else if (user.isNew()) {
+                        needsConnection = true;
                         facebookSignupDisplay();
                     }
                 }
@@ -215,43 +220,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void alertDisplayer(String title,String message){
-//        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this).setCancelable(false)
-//                .setTitle(title)
-//                .setMessage(message)
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(intent);
-//                        finish();
-//                    }
-//                });
-//        AlertDialog ok = builder.create();
-//        ok.show();
-
-        new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText(title)
-                .setContentText(message)
-                .setConfirmText("OK")
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        pd.dismissWithAnimation();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    }
-                }).show();
+        pd = new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE);
+        pd.setTitleText(title);
+        pd.setContentText(message);
+        pd.setConfirmText("OK");
+        pd.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                pd.dismissWithAnimation();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        }).show();
     }
 
     private void facebookSignupDisplay() {
         LayoutInflater layoutInflater = LayoutInflater.from(LoginActivity.this);
         View promptView = layoutInflater.inflate(R.layout.custom_alert, null);
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
-        alertDialogBuilder.setView(promptView);
+        final SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this);
+        sweetAlertDialog.setCustomView(promptView);
 
         final DelayAutoCompleteTextView atvSchoolNameAlert = promptView.findViewById(R.id.atvSchoolNameAlert);
         final RadioGroup rgSelectionAlert = promptView.findViewById(R.id.rgSelectionAlert);
@@ -286,26 +275,28 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        connection = atvSchoolNameAlert.getText().toString();
+        sweetAlertDialog.setCancelable(false);
+        sweetAlertDialog.setConfirmButton("OK", new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                connection = atvSchoolNameAlert.getText().toString();
 
-                        if (school[0]== null || !connection.equals(school[0])) {
-                            ParseUser.getCurrentUser().deleteInBackground();
-                            ParseUser.logOut();
-                            startActivity(new Intent(LoginActivity.this, SplashActivity.class));
-                            finish();
-                            return;
-                        } else {
-                            showProgressDialog();
-                            getUserDetailFromFB();
-                        }
-                    }
-                });
-        final AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-        alertDialog.getButton(alertDialog.BUTTON_POSITIVE).setEnabled(false);
+                if (school[0]== null || !connection.equals(school[0])) {
+                    ParseUser.getCurrentUser().deleteInBackground();
+                    ParseUser.logOut();
+                    startActivity(new Intent(LoginActivity.this, SplashActivity.class));
+                    finish();
+                    return;
+                } else {
+                    sweetAlertDialog.dismiss();
+                    showProgressDialog();
+                    getUserDetailFromFB();
+                }
+            }
+        });
+        sweetAlertDialog.create();
+        sweetAlertDialog.show();
+        sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CONFIRM).setEnabled(false);
 
         atvSchoolNameAlert.addTextChangedListener(new TextWatcher() {
             @Override
@@ -322,9 +313,9 @@ public class LoginActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
 
                 if (school[0] != null && school[0].equals(atvSchoolNameAlert.getText().toString())) {
-                    alertDialog.getButton(SweetAlertDialog.BUTTON_CONFIRM).setEnabled(true);
+                    sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CONFIRM).setEnabled(true);
                 } else
-                    alertDialog.getButton(SweetAlertDialog.BUTTON_CONFIRM).setEnabled(false);
+                    sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CONFIRM).setEnabled(false);
             }
         });
     }
@@ -381,6 +372,8 @@ public class LoginActivity extends AppCompatActivity {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
                 point = new ParseGeoPoint(latitude, longitude);
+            } else {
+                point = new ParseGeoPoint();
             }
         }
         return point;
@@ -471,6 +464,41 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    public static class ClosingService extends Service {
+
+        @Nullable
+        @Override
+        public IBinder onBind(Intent intent) {
+            return null;
+        }
+
+        @Override
+        public void onTaskRemoved(Intent rootIntent) {
+            super.onTaskRemoved(rootIntent);
+
+            if ((connection == null) && (needsConnection == true) && (ParseUser.getCurrentUser() != null)) {
+                ParseUser.getCurrentUser().deleteInBackground();
+                LoginManager.getInstance().logOut();
+                ParseUser.logOutInBackground();
+                Log.i("Service", "Working");
+            }
+
+            // Destroy the service
+            stopSelf();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if ((connection == null) && (needsConnection == true) && (ParseUser.getCurrentUser() != null)) {
+            ParseUser.getCurrentUser().deleteInBackground();
+            LoginManager.getInstance().logOut();
+            ParseUser.logOutInBackground();
+            Log.i("Destroy", "Working");
+        }
     }
 
     private void showProgressDialog() {
