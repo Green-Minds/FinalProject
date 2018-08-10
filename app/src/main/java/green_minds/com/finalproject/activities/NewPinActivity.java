@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.utils.Utils;
@@ -36,6 +37,7 @@ import com.parse.SaveCallback;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.fragments.AdjustPinFragment;
 import green_minds.com.finalproject.model.GlideApp;
@@ -71,6 +73,9 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     @BindView(R.id.mainLayout)
     RelativeLayout mainLayout;
 
+    @BindView(R.id.tv_error)
+    TextView tvError;
+
     @BindView(R.id.btn_adjust)
     FloatingActionButton btnAdjust;
 
@@ -81,6 +86,8 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     private boolean saving;
     private boolean mMapMode;
     private boolean adjusted = false;
+
+    private SweetAlertDialog pDialog;
 
     final public static String CODE_KEY = "REQUEST_CODE";
     final public static int REQUEST_CODE = 31;
@@ -105,6 +112,13 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         saving = false;
         mMapMode = false;
 
+        rbCategories.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                tvError.setVisibility(View.GONE);
+            }
+        });
+
         btnAdjust.setVisibility(GONE);
 
         setSupportActionBar(myToolbar);
@@ -112,7 +126,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         ActionBar a = getSupportActionBar();
         // Enable the Up button
         a.setDisplayHomeAsUpEnabled(true);
-        a.setTitle("Please describe your new pin");
+        a.setTitle("New pin");
 
         if (ParseUser.getCurrentUser() == null) {
             redirectToLogin();
@@ -143,7 +157,6 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         m.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                //showLoading();
                 uploadPin();
                 return true;
             }
@@ -153,17 +166,20 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Bitmap bmp = null;
-        String filepath = data.getStringExtra("image");
-        bmp = BitmapFactory.decodeFile(filepath);
-        GlideApp.with(getApplicationContext())
-                .load(bmp)
-                .centerCrop()
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.placeholder)
-                .into(ivPreview);
+        if(resultCode == RESULT_OK && data != null){
+            tvError.setVisibility(View.GONE);
+            Bitmap bmp = null;
+            String filepath = data.getStringExtra("image");
+            bmp = BitmapFactory.decodeFile(filepath);
+            GlideApp.with(getApplicationContext())
+                    .load(bmp)
+                    .centerCrop()
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder)
+                    .into(ivPreview);
 
-        mCurrentBitmap = bmp;
+            mCurrentBitmap = bmp;
+        }
     }
 
 
@@ -214,11 +230,13 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
 
     public void uploadPin() {
         if (mCurrentBitmap == null) {
-            Toast.makeText(this, "Please upload an image first!", Toast.LENGTH_LONG).show();
+            tvError.setText("Please upload an image first!");
+            tvError.setVisibility(View.VISIBLE);
             return;
         }
         if (rbCategories.getCheckedRadioButtonId() == -1) {
-            Toast.makeText(this, "Please check a category first!", Toast.LENGTH_LONG).show();
+            tvError.setText("Please check a category first!");
+            tvError.setVisibility(View.VISIBLE);
             return;
         }
 
@@ -243,6 +261,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
     }
 
     private void savePin(ParseGeoPoint location) {
+        showLoading();
         saving = true;
         final Pin pin = new Pin();
 
@@ -262,6 +281,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
             @Override
             public void done(ParseException e) {
                 if (e != null) {
+                    hideLoading();
                     e.printStackTrace();
                     Toast.makeText(context, getString(R.string.misc_error), Toast.LENGTH_SHORT).show();
                 } else {
@@ -283,6 +303,7 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
             @Override
             public void done(ParseException e) {
                 if (e != null) {
+                    hideLoading();
                     Toast.makeText(context, getString(R.string.pin_save_failure), Toast.LENGTH_SHORT).show();
                     //maybe use saveEventually here
                 } else {
@@ -300,12 +321,11 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         currentUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                //hideLoading();
+                hideLoading();
                 if (e != null) {
                     e.printStackTrace();
                     Toast.makeText(context, "USER" + getString(R.string.pin_save_failure), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, "New Pin Complete!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent();
                     intent.putExtra("id", pin.getObjectId());
                     setResult(RESULT_OK, intent);
@@ -337,17 +357,16 @@ public class NewPinActivity extends AppCompatActivity implements AdjustPinFragme
         // a.setTitle("Please describe your new pin");
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mMapMode) {
-            //reset and reopen old page here instead of going back to mainactivity
-            Log.i("HEH", "clicked");
-            return false;
+    private void showLoading(){
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Saving new pin, please wait.");
+        pDialog.setCancelable(false);
+        pDialog.show();
+    }
 
-        } else {
-            //go back to main activity
-            return super.onOptionsItemSelected(item);
-        }
+    private void hideLoading(){
+        if(pDialog !=null) pDialog.dismiss();
     }
 
 

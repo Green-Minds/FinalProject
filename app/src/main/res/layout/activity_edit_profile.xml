@@ -73,10 +73,10 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/molengo"
+                android:fontFamily="@font/open_sans"
                 android:text="Profile Picture"
                 android:textColor="@color/colorPrimary"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <RelativeLayout
                 android:layout_width="104dp"
@@ -114,6 +114,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@id/imageButton"
+                    android:fontFamily="@font/open_sans"
                     android:text="  Upload New"
                     android:textColor="@color/primaryGrey" />
 

@@ -7,5 +7,10 @@
         <item>@font/boogaloo</item>
         <item>@font/cutive</item>
         <item>@font/fontdiner_swanky</item>
+        <item>@font/noto_sans_bold_italic</item>
+        <item>@font/noto_serif_bold_italic</item>
+        <item>@font/open_sans</item>
+        <item>@font/quicksand</item>
+        <item>@font/quicksand_medium</item>
     </array>
 </resources>

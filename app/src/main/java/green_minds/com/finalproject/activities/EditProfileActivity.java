@@ -88,7 +88,7 @@ public class EditProfileActivity extends AppCompatActivity {
             GlideApp.with(mContext).load(R.drawable.anon).circleCrop().into(ivProfPic);
         } else {
             String url = photo.getUrl();
-            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.loading).error(R.drawable.anon).into(ivProfPic);
+            GlideApp.with(mContext).load(url).circleCrop().placeholder(R.drawable.anon).error(R.drawable.anon).into(ivProfPic);
         }
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);

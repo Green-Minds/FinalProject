@@ -8,7 +8,6 @@
     android:background="@color/colorLightPurpleTransparent"
     tools:context=".activities.NewPinActivity">
 
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_adjust"
         android:layout_width="wrap_content"
@@ -88,6 +87,15 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/tv_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="error"
+                    android:textColor="@color/red_5"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
