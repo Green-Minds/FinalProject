@@ -16,6 +16,17 @@
         app:theme="@style/ToolbarColoredBackArrow"
         app:titleTextColor="@color/white" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/my_toolbar"
+        android:layout_marginTop="-7dp"
+        android:indeterminate="true"
+        android:progressDrawable="@drawable/progress_bar_colors"
+        android:visibility="gone" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_checkin"
         android:layout_width="wrap_content"
@@ -35,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorLightPurpleTransparent"
-        android:layout_below="@+id/my_toolbar">
+        android:layout_below="@+id/progressBar">
 
         <RelativeLayout
             android:layout_width="match_parent"

@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +53,6 @@ public class CheckInActivity extends AppCompatActivity {
     private Location lastLocation;
     private ParseUser user;
     private Context context;
-    private MenuItem miActionProgressItem;
     private ImageView iv;
 
     private MenuItem miRefresh;
@@ -62,6 +62,9 @@ public class CheckInActivity extends AppCompatActivity {
 
     @BindView(R.id.btn_checkin)
     FloatingActionButton btnCheckin;
+
+    @BindView(R.id.progressBar)
+    public ProgressBar progressBar;
 
     @BindView(R.id.tv_nodata)
     TextView tvNoData;
@@ -133,13 +136,10 @@ public class CheckInActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         miRefresh = menu.findItem(R.id.miRefresh);
-//        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        iv = (ImageView)inflater.inflate(R.layout.iv_refresh, null);
-//        miRefresh.setActionView(iv);
         miRefresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                //startAnim();
+                showProgressBar();
                 reloadNearbyPins();
                 return false;
             }
@@ -247,13 +247,6 @@ public class CheckInActivity extends AppCompatActivity {
         return resLoc;
     }
 
-//    private void startAnim(){
-//        Animation rotation = AnimationUtils.loadAnimation(this, R.anim.reload_item_spinning);
-//        rotation.setRepeatCount(Animation.INFINITE);
-//        View i = miRefresh.getActionView();
-//        i.startAnimation(rotation);
-//    }
-
     private void redirectToLogin() {
         Intent i = new Intent(this, green_minds.com.finalproject.activities.UserInfoActivity.class);
         startActivity(i);
@@ -280,11 +273,11 @@ public class CheckInActivity extends AppCompatActivity {
     }
 
     private void showProgressBar() {
-        if (miActionProgressItem != null) miActionProgressItem.setVisible(true);
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
     }
 
     private void hideProgressBar() {
-        if (miActionProgressItem != null) miActionProgressItem.setVisible(false);
+        if (progressBar != null) progressBar.setVisibility(View.GONE);
     }
 
     public void activateButton(){
