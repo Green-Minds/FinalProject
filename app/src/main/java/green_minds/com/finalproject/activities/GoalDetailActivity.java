@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
-import com.parse.ParseUser;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,6 +29,9 @@ public class GoalDetailActivity extends AppCompatActivity {
     @BindView(R.id.tv_estimate)
     TextView tvEstimate;
 
+    @BindView(R.id.tvCreatedAt)
+    TextView tvCreatedAt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,10 +47,10 @@ public class GoalDetailActivity extends AppCompatActivity {
         a.setDisplayHomeAsUpEnabled(true);
         a.setTitle("Viewing Goal Details");
 
-        SimpleDateFormat format = new SimpleDateFormat("MMMM dd, YY");
+        SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy");
 
-        progressBar.setGoal(g, ParseUser.getCurrentUser());
-        int checkins = getIntent().getIntExtra("CHECKINS", 0);
+        progressBar.setGoal(g);
+        int checkins = g.getPoints();
         int goal = g.getGoal();
         Date date = g.getDeadline();
         Calendar c = Calendar.getInstance();
@@ -58,12 +59,26 @@ public class GoalDetailActivity extends AppCompatActivity {
         double daily = (goal - checkins) / (daysBetween);
         DecimalFormat df = new DecimalFormat();
         df.setMaximumFractionDigits(1);
-        String info = getString(R.string.goal_details, checkins, goal);
-        String estimate = getString(R.string.goal_details_estimate, df.format(daily) , format.format(date));
+        String estimate = "";
+        if(daily <= 1){
+            estimate = getString(R.string.goal_details_estimate_one, format.format(date));
+        } else{
+            estimate = getString(R.string.goal_details_estimate, df.format(daily) , format.format(date));
+        }
+        String info;
+        if(checkins == 1){
+            info = getString(R.string.goal_details_one, checkins, goal);
+        } else {
+            info = getString(R.string.goal_details, checkins, goal);
+        }
+
         if((goal - checkins) <=0) estimate = getString(R.string.goal_congrats);
         else if(daysBetween < 0) estimate = getString(R.string.goal_fail);
         tvInformation.setText(info);
         tvEstimate.setText(estimate);
+
+        String updatedAt = format.format(g.getUpdatedAt());
+        tvCreatedAt.setText("Goal last edited on " + updatedAt + ".");
     }
 
     public double daysBetween(Date d1, Date d2) {

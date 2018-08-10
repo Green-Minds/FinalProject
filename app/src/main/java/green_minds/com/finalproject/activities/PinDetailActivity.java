@@ -7,6 +7,10 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.request.RequestOptions;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import green_minds.com.finalproject.R;
@@ -49,7 +53,11 @@ public class PinDetailActivity extends AppCompatActivity {
         tvComment.setText(mComment);
         tvDistance.setText("distance: " + mDistance);
 
-        GlideApp.with(PinDetailActivity.this).load(mImage).centerCrop().into(ivImage);
+        GlideApp.with(PinDetailActivity.this).load(mImage)
+                .thumbnail(Glide.with(this)
+                        .load(R.drawable.loading)
+                        .apply(new RequestOptions().transforms(new CenterCrop()))).centerCrop()
+                .into(ivImage);
 
     }
 

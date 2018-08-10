@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -38,9 +39,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import green_minds.com.finalproject.R;
 import green_minds.com.finalproject.adapters.PinAdapter;
 import green_minds.com.finalproject.model.CategoryHelper;
+import green_minds.com.finalproject.model.Goal;
 import green_minds.com.finalproject.model.Pin;
 import green_minds.com.finalproject.model.RelativePositionPin;
 
@@ -54,6 +57,8 @@ public class CheckInActivity extends AppCompatActivity {
     private ParseUser user;
     private Context context;
     private ImageView iv;
+    private ArrayList<Goal> mGoals;
+    private SweetAlertDialog pDialog;
 
     private MenuItem miRefresh;
 
@@ -94,17 +99,6 @@ public class CheckInActivity extends AppCompatActivity {
         //set up adapter
         mPins = new ArrayList<>();
         context = this;
-        adapter = new PinAdapter(mPins, context);
-        rvPins.setLayoutManager(new LinearLayoutManager(this));
-        rvPins.setAdapter(adapter);
-
-        //need a location to start with because requestlocationupdates takes ~3 seconds to start up
-        Double lat = getIntent().getDoubleExtra("latitude", 0.0);
-        Double lon = getIntent().getDoubleExtra("longitude", 0.0);
-        lastLocation = new Location("");
-        lastLocation.setLatitude(lat);
-        lastLocation.setLongitude(lon);
-
         locationListener = new MyLocationListener();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -117,8 +111,23 @@ public class CheckInActivity extends AppCompatActivity {
         } else {
             //start getting location in background
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
-            getListOfPins();
         }
+
+        getUserInfo();
+    }
+
+    private void completeSetup() {
+        adapter = new PinAdapter(mPins, context);
+        rvPins.setLayoutManager(new LinearLayoutManager(this));
+        rvPins.setAdapter(adapter);
+        //need a location to start with because requestlocationupdates takes ~3 seconds to start up
+        Double lat = getIntent().getDoubleExtra("latitude", 0.0);
+        Double lon = getIntent().getDoubleExtra("longitude", 0.0);
+        lastLocation = new Location("");
+        lastLocation.setLatitude(lat);
+        lastLocation.setLongitude(lon);
+
+        getListOfPins();
     }
 
     public void reloadNearbyPins() {
@@ -195,9 +204,9 @@ public class CheckInActivity extends AppCompatActivity {
                                     mPins.clear();
                                     mPins.addAll(rpList);
                                     adapter.notifyDataSetChanged();
-                                    if(mPins.size() <= 0){
+                                    if (mPins.size() <= 0) {
                                         tvNoData.setVisibility(View.VISIBLE);
-                                    } else{
+                                    } else {
                                         tvNoData.setVisibility(View.GONE);
                                     }
                                     hideProgressBar();
@@ -210,24 +219,64 @@ public class CheckInActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_checkin)
     public void checkin() {
+        showLoading();
         final Pin pin = mPins.get(adapter.mSelectedPos).getPin();
         pin.increment("checkincount");
         pin.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                int numtimes = pin.getCheckincount();
+                if (e != null) {
+                    hideLoading();
+                    e.printStackTrace();
+                    Toast.makeText(context, "Error, not checked in. Please try again later!", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 user.increment("points");
                 String cat_key = CategoryHelper.getTypeKey(pin.getCategory());
                 user.increment(cat_key);
 
-                user.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        Toast.makeText(context, "Checked in!", Toast.LENGTH_LONG).show();
-                        finish();
+                Goal match = null;
+                for (Goal g : mGoals) {
+                    if (g.getType() == pin.getCategory()) {
+                        match = g;
                     }
-                });
+                }
+
+                if (match != null) {
+                    match.increment("points");
+                    match.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e != null) {
+                                hideLoading();
+                                e.printStackTrace();
+                                Toast.makeText(context, "Error, not checked in. Please try again later!", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            saveUser();
+                        }
+                    });
+                } else {
+                    saveUser();
+                }
+            }
+        });
+    }
+
+    private void saveUser() {
+        user.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                hideLoading();
+                if (e == null) {
+                    Toast.makeText(context, "Checked in!", Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    e.printStackTrace();
+                    Toast.makeText(context, "Error, not checked in. Please try again later!", Toast.LENGTH_LONG).show();
+                    finish();
+                }
             }
         });
     }
@@ -245,6 +294,42 @@ public class CheckInActivity extends AppCompatActivity {
         resLoc.setLatitude(gp.getLatitude());
         resLoc.setLongitude(gp.getLongitude());
         return resLoc;
+    }
+
+    private void getUserInfo() {
+        showProgressBar();
+        user = ParseUser.getCurrentUser();
+        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
+        userQuery.include("goals");
+
+        userQuery.whereEqualTo("objectId", user.getObjectId()).findInBackground(new FindCallback<ParseUser>() {
+
+            @Override
+            public void done(List<ParseUser> objects, com.parse.ParseException e) {
+                if (e == null) {
+                    if (objects.size() < 1) {
+                        Toast.makeText(context, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    user = objects.get(0);
+                    mGoals = (ArrayList<Goal>) user.get("goals");
+
+                    if (mGoals == null) {
+                        mGoals = new ArrayList<>();
+                    }
+
+                    completeSetup();
+
+                } else if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
+                    Toast.makeText(context, getString(R.string.session_error), Toast.LENGTH_LONG).show();
+                } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                    Toast.makeText(context, getString(R.string.network_error), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context, getString(R.string.misc_error), Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void redirectToLogin() {
@@ -280,8 +365,22 @@ public class CheckInActivity extends AppCompatActivity {
         if (progressBar != null) progressBar.setVisibility(View.GONE);
     }
 
-    public void activateButton(){
+    public void activateButton() {
         btnCheckin.setEnabled(true);
+    }
+
+    private void showLoading(){
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Checking you in...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+    }
+
+    private void hideLoading(){
+        if(pDialog !=null){
+            pDialog.dismiss();
+        }
     }
 
     //TODO - consider what happens if user navigates away while network call still in progress

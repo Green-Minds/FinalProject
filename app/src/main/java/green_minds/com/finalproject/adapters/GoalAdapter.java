@@ -62,10 +62,10 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
         tvIdentifier.setText(CategoryHelper.getPinIdentifier(type));
 
         CustomProgressBar progressBar = convertView.findViewById(R.id.progress);
-        progressBar.setGoal(goal, mUser);
+        progressBar.setGoal(goal);
         progressBar.setVisibility(View.VISIBLE);
 
-        final int checkins = mUser.getInt(CategoryHelper.getTypeKey(type));
+        final int checkins = goal.getPoints();
 
         final Goal finalGoal = goal;
 

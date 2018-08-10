@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -260,7 +261,7 @@ public class EditGoalActivity extends AppCompatActivity {
     private void showLoading() {
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("Saving New Goal!");
+        pDialog.setTitleText("Saving Goal!");
         pDialog.setCancelable(false);
         pDialog.show();
     }
@@ -268,13 +269,13 @@ public class EditGoalActivity extends AppCompatActivity {
     private void showOverwrite(final Goal goal) {
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
         pDialog.setTitleText("Overwrite existing goal?")
-                .setContentText("You already have a goal with this category.")
+                .setContentText("You already have a goal with this category. Your previous progress will be lost.")
                 .setConfirmText("Confirm")
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
                         performingOverwrite = true;
-                        sDialog.setTitleText("Saving new goal!")
+                        sDialog.setTitleText("Saving goal!")
                                 .setConfirmText(null)
                                 .setContentText("")
                                 .setConfirmClickListener(null)
@@ -284,6 +285,11 @@ public class EditGoalActivity extends AppCompatActivity {
                         for (int i = 0; i < mGoals.size(); i++) {
                             if (mGoals.get(i).equals(goal)) existingGoal = mGoals.get(i);
                         }
+                        if(existingGoal == null){
+                            Toast.makeText(mContext, "Error overwriting pin, please try again later.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        existingGoal.put("points", 0);
                         saveGoal(existingGoal, true);
                     }
                 })

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -91,7 +92,10 @@ public class PinAdapter extends RecyclerView.Adapter<PinAdapter.ViewHolder>{
         ParseFile photo = pin.getPhoto();
         if(photo != null){
             String imageUrl = photo.getUrl();
-            GlideApp.with(context).load(imageUrl).apply(new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(8))).into(holder.iv_preview);
+            GlideApp.with(context).load(imageUrl).apply(new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(8)))
+                    .placeholder(R.drawable.placeholder)
+                    .thumbnail(Glide.with(context).load(R.drawable.loading))
+                    .into(holder.iv_preview);
         }
     }
 
