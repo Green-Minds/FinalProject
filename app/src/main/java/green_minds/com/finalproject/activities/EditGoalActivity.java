@@ -279,6 +279,8 @@ public class EditGoalActivity extends AppCompatActivity {
                                 .setConfirmText(null)
                                 .setContentText("")
                                 .setConfirmClickListener(null)
+                                .setCancelClickListener(null)
+                                .showCancelButton(false)
                                 .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                         sDialog.setCancelable(false);
                         Goal existingGoal = null;
