@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -24,14 +25,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -104,22 +108,33 @@ public class MapFragment extends Fragment implements
         GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraMoveCanceledListener,
-        GoogleMap.OnCameraIdleListener{
+        GoogleMap.OnCameraIdleListener {
 
     private MapFragment.OnFragmentInteractionListener mListener;
     private Context mContext;
 
-    @BindView(R.id.newPinBtn) public FloatingActionButton newPinBtn;
-    @BindView(R.id.checkinBtn) public FloatingActionButton checkinBtn;
-    @BindView(R.id.fab) public FloatingActionButton fab;
-    @BindView(R.id.fab0) public FloatingActionButton fab0;
-    @BindView(R.id.fab1) public FloatingActionButton fab1;
-    @BindView(R.id.fab2) public FloatingActionButton fab2;
-    @BindView(R.id.fab3) public FloatingActionButton fab3;
-    @BindView(R.id.fab4) public FloatingActionButton fab4;
-    @BindView(R.id.ivAdjust) public ImageView ivAdjust;
-    @BindView(R.id.adjustBtn) public Button adjustBtn;
-    @BindView(R.id.tvAdjust) public TextView tvAdjust;
+    @BindView(R.id.newPinBtn)
+    public FloatingActionButton newPinBtn;
+    @BindView(R.id.checkinBtn)
+    public FloatingActionButton checkinBtn;
+    @BindView(R.id.fab)
+    public FloatingActionButton fab;
+    @BindView(R.id.fab0)
+    public FloatingActionButton fab0;
+    @BindView(R.id.fab1)
+    public FloatingActionButton fab1;
+    @BindView(R.id.fab2)
+    public FloatingActionButton fab2;
+    @BindView(R.id.fab3)
+    public FloatingActionButton fab3;
+    @BindView(R.id.fab4)
+    public FloatingActionButton fab4;
+    @BindView(R.id.ivAdjust)
+    public ImageView ivAdjust;
+    @BindView(R.id.adjustBtn)
+    public Button adjustBtn;
+    @BindView(R.id.tvAdjust)
+    public TextView tvAdjust;
 
     private final int REQUEST_CODE = 20;
     final public static String PIN_KEY = "pin";
@@ -233,6 +248,7 @@ public class MapFragment extends Fragment implements
             return cluster.getSize() > 10;
         }
     }
+
     protected void loadMap(GoogleMap googleMap) {
         map = googleMap;
         if (map != null) {
@@ -271,7 +287,7 @@ public class MapFragment extends Fragment implements
             user = ParseUser.getCurrentUser();
             if (user != null) {
                 ParseGeoPoint loc = user.getParseGeoPoint("location");
-                if (loc != null ) {
+                if (loc != null) {
                     LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
                     map.moveCamera(cameraUpdate);
@@ -301,7 +317,7 @@ public class MapFragment extends Fragment implements
             onCameraIdle();
             if (user != null) {
                 ParseGeoPoint loc = user.getParseGeoPoint("location");
-                if (loc != null ) {
+                if (loc != null) {
                     LatLng userloc = new LatLng(loc.getLatitude(), loc.getLongitude());
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userloc, 17);
                     map.moveCamera(cameraUpdate);
@@ -318,21 +334,24 @@ public class MapFragment extends Fragment implements
 
     @OnClick(R.id.fab)
     protected void onFab() {
-        if(!isFABOpen){
+        if (!isFABOpen) {
             showFABMenu();
-        }else {
-            closeFABMenu(); }
+        } else {
+            closeFABMenu();
+        }
     }
+
     private void closeFABMenu() {
-        isFABOpen=false;
+        isFABOpen = false;
         fab0.animate().translationY(0);
         fab1.animate().translationY(0);
         fab2.animate().translationY(0);
         fab3.animate().translationY(0);
         fab4.animate().translationY(0);
     }
+
     private void showFABMenu() {
-        isFABOpen=true;
+        isFABOpen = true;
         fab0.animate().translationY(-getResources().getDimension(R.dimen.standard_65));
         fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_115));
         fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_165));
@@ -474,8 +493,8 @@ public class MapFragment extends Fragment implements
     public void onCameraIdle() {
         // this piece is here because otherwise infowindows instantly dissappear
         if (tapEvent) {
-            tapEvent = false; }
-        else {
+            tapEvent = false;
+        } else {
             if (fab0.isSelected()) {
                 fab0.setSelected(false);
                 onFab0();
@@ -609,10 +628,10 @@ public class MapFragment extends Fragment implements
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
-                if (e==null){
+                if (e == null) {
                     mNewPin = objects.get(0);
 
-                    if (mNewPin.has("latlng"))  {
+                    if (mNewPin.has("latlng")) {
                         Log.d("MapActivity", "new pin exists?" + (mNewPin != null));
                         lat = mNewPin.getLatLng().getLatitude();
                         lon = mNewPin.getLatLng().getLongitude();
@@ -672,8 +691,7 @@ public class MapFragment extends Fragment implements
             fab0.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(0);
             unselectOthers(0);
-        }
-        else if (fab0.isSelected()) {
+        } else if (fab0.isSelected()) {
             fab0.setSelected(false);
             fab0.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
@@ -701,8 +719,7 @@ public class MapFragment extends Fragment implements
             fab2.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(2);
             unselectOthers(2);
-        }
-        else if (fab2.isSelected()) {
+        } else if (fab2.isSelected()) {
             fab2.setSelected(false);
             fab2.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
@@ -716,8 +733,7 @@ public class MapFragment extends Fragment implements
             fab3.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(3);
             unselectOthers(3);
-        }
-        else if (fab3.isSelected()) {
+        } else if (fab3.isSelected()) {
             fab3.setSelected(false);
             fab3.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
@@ -731,8 +747,7 @@ public class MapFragment extends Fragment implements
             fab4.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
             onFab(4);
             unselectOthers(4);
-        }
-        else if (fab4.isSelected()) {
+        } else if (fab4.isSelected()) {
             fab4.setSelected(false);
             fab4.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white_90_transparent)));
             showAll();
@@ -753,17 +768,17 @@ public class MapFragment extends Fragment implements
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
-                if (e==null){
-                    for (int i = objects.size()-1; i >= 0; i--) {
+                if (e == null) {
+                    for (int i = objects.size() - 1; i >= 0; i--) {
 
-                        if (objects.get(i).has("latlng"))  {
+                        if (objects.get(i).has("latlng")) {
                             lat = objects.get(i).getLatLng().getLatitude();
                             lon = objects.get(i).getLatLng().getLongitude();
                             Pin pin = objects.get(i);
                             pins.add(pin);
 
                             ParseFile photo = pin.getPhoto();
-                            if(photo != null){
+                            if (photo != null) {
                                 image = photo.getUrl();
                             }
 
@@ -789,7 +804,6 @@ public class MapFragment extends Fragment implements
             }
         });
     }
-
 
 
     private static double round(double value, int places) {
@@ -824,6 +838,7 @@ public class MapFragment extends Fragment implements
             fab4.setBackgroundTintList(ColorStateList.valueOf(-1));
         }
     }
+
     protected void showAll() {
         CameraPosition currentCameraPosition = map.getCameraPosition();
         currentLoc = currentCameraPosition.target;
@@ -837,10 +852,10 @@ public class MapFragment extends Fragment implements
         pinQuery.findInBackground(new FindCallback<Pin>() {
             @Override
             public void done(List<Pin> objects, ParseException e) {
-                if (e==null){
-                    for (int i = objects.size()-1; i >= 0; i--) {
+                if (e == null) {
+                    for (int i = objects.size() - 1; i >= 0; i--) {
 
-                        if (objects.get(i).has("latlng"))  {
+                        if (objects.get(i).has("latlng")) {
                             lat = objects.get(i).getLatLng().getLatitude();
                             lon = objects.get(i).getLatLng().getLongitude();
                             type = objects.get(i).getCategory();
@@ -852,7 +867,7 @@ public class MapFragment extends Fragment implements
                                     BitmapDescriptorFactory.fromResource(drawableId);
 
                             ParseFile photo = pin.getPhoto();
-                            if(photo != null){
+                            if (photo != null) {
                                 image = photo.getUrl();
                             }
 
@@ -933,21 +948,33 @@ public class MapFragment extends Fragment implements
 
         @Override
         public View getInfoWindow(Marker marker) {
+            final Handler handler = new Handler();
+            final Marker finalmarker = marker;
             TextView title = myContentsView.findViewById(R.id.title);
             TextView distance = myContentsView.findViewById(R.id.distance);
             ImageView img = myContentsView.findViewById(R.id.img);
-            ImageButton unfoldBtn = myContentsView.findViewById(R.id.unfoldBtn);
 
             if (clickedClusterItem != null) {
                 title.setText(clickedClusterItem.getTitle());
                 distance.setText("distance: " + clickedClusterItem.getDistance());
-                GlideApp.with(mContext).load(clickedClusterItem.getImageUrl()).apply(new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(8))).placeholder(R.drawable.placeholder).into(img);
-                unfoldBtn.setOnClickListener(new View.OnClickListener() {
+                GlideApp.with(mContext).load(clickedClusterItem.getImageUrl()).listener(new RequestListener<Drawable>() {
                     @Override
-                    public void onClick(View view) {
-                        Toast.makeText(mContext, "Error - Map Fragment was null!!", Toast.LENGTH_LONG).show();
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
                     }
-                });
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                finalmarker.showInfoWindow();
+                            }
+                        });
+
+                        return false;
+                    }
+                }).apply(new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(8))).placeholder(R.drawable.placeholder).into(img);
             }
             return myContentsView;
         }
@@ -973,9 +1000,13 @@ public class MapFragment extends Fragment implements
 
     public interface OnFragmentInteractionListener {
         void showProgressBar();
+
         void hideProgressBar();
+
         void goToCheckin(Location currentLocation);
+
         void goToNewPin(Location currentLocation);
+
         void goToPinDetails(MyItem myItem);
 
     }

@@ -9,16 +9,6 @@
     android:padding="8dp">
 
 
-    <ImageButton
-        android:id="@+id/unfoldBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/distance"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/transparent"
-        android:tint="@color/white"
-        app:srcCompat="@drawable/ic_unfold" />
-
     <ImageView
         android:id="@+id/img"
         android:layout_width="64dp"
