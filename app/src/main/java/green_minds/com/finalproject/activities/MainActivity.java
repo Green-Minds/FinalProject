@@ -11,7 +11,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
@@ -167,16 +166,13 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
 
     @Override
     public void logout() {
-        Log.i("Logout", "Logging out");
         if (!isOnline()) return;
         if (AccessToken.getCurrentAccessToken() != null) {
-            Log.i("Valid", "loggin out");
             LoginManager.getInstance().logOut();
             ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (ParseUser.getCurrentUser() == null) {
-                        Log.i("Logout2", "Logged out");
                         startActivity(new Intent(MainActivity.this, SplashActivity.class).putExtra("logout", true));
                         finish();
                     }
@@ -187,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
                 @Override
                 public void done(ParseException e) {
                     if (ParseUser.getCurrentUser() == null) {
-                        Log.i("Logout2", "Logged out");
                         startActivity(new Intent(MainActivity.this, SplashActivity.class).putExtra("logout", true));
                         finish();
                     }
@@ -216,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
             ParseQuery query = ParseUser.getQuery();
             query.orderByDescending("points").addDescendingOrder("pincount")
                     .whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection"))
-                    .setLimit(20).findInBackground(new FindCallback<ParseUser>() {
+                    .setLimit(10).findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     ParseUser user = null;

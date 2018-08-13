@@ -147,7 +147,7 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
                 ParseQuery query = ParseUser.getQuery();
                 query.orderByDescending("points").addDescendingOrder("pincount")
                         .whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection"))
-                        .setSkip(skip).setLimit(20).findInBackground(new FindCallback<ParseUser>() {
+                        .setSkip(skip).setLimit(10).findInBackground(new FindCallback<ParseUser>() {
                     @Override
                     public void done(List<ParseUser> objects, ParseException e) {
                         if(e == null){
@@ -173,7 +173,7 @@ public class LeaderboardFragment extends Fragment implements SwipeRefreshLayout.
             ParseQuery query = ParseUser.getQuery();
             query.orderByDescending("points").addDescendingOrder("pincount")
                     .whereEqualTo("connection", ParseUser.getCurrentUser().getString("connection"))
-                    .setLimit(20).findInBackground(new FindCallback<ParseUser>() {
+                    .setLimit(10).findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     if(e == null){
