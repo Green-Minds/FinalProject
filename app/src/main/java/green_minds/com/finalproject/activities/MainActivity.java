@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
                 public void done(ParseException e) {
                     if (ParseUser.getCurrentUser() == null) {
                         Log.i("Logout2", "Logged out");
-                        startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                        startActivity(new Intent(MainActivity.this, SplashActivity.class).putExtra("logout", true));
                         finish();
                     }
                 }
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements LeaderboardFragme
                 public void done(ParseException e) {
                     if (ParseUser.getCurrentUser() == null) {
                         Log.i("Logout2", "Logged out");
-                        startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                        startActivity(new Intent(MainActivity.this, SplashActivity.class).putExtra("logout", true));
                         finish();
                     }
                 }

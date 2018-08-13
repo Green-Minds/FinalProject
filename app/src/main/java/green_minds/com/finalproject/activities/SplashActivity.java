@@ -43,6 +43,9 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
 
+        Boolean logout = getIntent().getBooleanExtra("logout", false);
+        if (logout) ParseUser.logOut();
+
         if (ParseUser.getCurrentUser() != null) {
             scheduleSplashScreen(2500);
         } else {
