@@ -786,14 +786,14 @@ public class MapFragment extends Fragment implements
                             user = ParseUser.getCurrentUser();
                             final ParseGeoPoint userloc = user.getParseGeoPoint("location");
                             InfoWindowData info = new InfoWindowData();
-                            info.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
+                            info.setDistance(round(pin.getLatLng().distanceInMilesTo(userloc), 3) + "mi");
                             MyItem item = new MyItem(lat, lon, drawableId);
                             item.setTitle("checkins: " + objects.get(i).getCheckincount());
                             item.setSnippet(objects.get(i).getComment());
                             item.setImage(image);
                             item.setType(type);
                             item.setCheckins(objects.get(i).getCheckincount());
-                            item.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
+                            item.setDistance(round(pin.getLatLng().distanceInMilesTo(userloc), 3) + "mi");
                             mClusterManager.addItem(item);
                             mClusterManager.cluster();
                         }
@@ -882,7 +882,7 @@ public class MapFragment extends Fragment implements
                             item.setCheckins(objects.get(i).getCheckincount());
                             item.setSnippet(objects.get(i).getComment());
                             item.setImage(image);
-                            item.setDistance(round(pin.getLatLng().distanceInKilometersTo(userloc), 3) + "km");
+                            item.setDistance(round(pin.getLatLng().distanceInMilesTo(userloc), 3) + "mi");
                             Log.d("MapFragment", "user location lat: " + userloc.getLatitude() + " pin loc " + pin.getLatLng().getLatitude() + " distance in pin " + item.getDistance());
                             Log.d("MapFragment", "does cluster item exist? " + (item != null) + " " + item.getTitle());
                             mClusterManager.addItem(item);
